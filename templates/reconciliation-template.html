@@ -1,0 +1,50 @@
+<!-- Шаблон Акта сверки для PDF -->
+<div class="doc-page" id="reconciliation-pdf-content">
+    {{HEADER}}
+    
+    <div class="doc-title" style="text-align:center;">АКТ СВЕРКИ</div>
+    <div class="doc-invoice-header">№ {{RECON_NUMBER}} от {{RECON_DATE}}</div>
+    
+    <div class="doc-meta">
+        <div class="doc-meta-left">
+            <div class="doc-meta-row">
+                <span class="doc-meta-label">Клиент:</span>
+                <span class="doc-meta-value">{{CLIENT_NAME}}</span>
+            </div>
+            <div class="doc-meta-row">
+                <span class="doc-meta-label">Период:</span>
+                <span class="doc-meta-value">{{PERIOD_FROM}} — {{PERIOD_TO}}</span>
+            </div>
+        </div>
+    </div>
+
+    <table class="doc-table doc-recon-table">
+        <thead>
+            <tr>
+                <th style="width:80px;">Дата</th>
+                <th>Наименование</th>
+                <th style="width:100px;">Начальный остаток</th>
+                <th style="width:100px;">Реализация</th>
+                <th style="width:100px;">Оплата</th>
+                <th style="width:110px;">Конечный остаток</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{RECON_ROWS}}
+        </tbody>
+    </table>
+
+    <div class="order-total" style="margin: 15px 20px;">
+        <span>Конечный остаток:</span>
+        <span style="color:#CC0000; font-weight:bold;">{{FINAL_BALANCE}} UZS</span>
+    </div>
+
+    <div class="doc-footer">
+        <div>
+            <div class="signature-line">От организации</div>
+        </div>
+        <div>
+            <div class="signature-line">От "PROFITPRINT2024" MChJ</div>
+        </div>
+    </div>
+</div>

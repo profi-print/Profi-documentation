@@ -1,0 +1,58 @@
+<!-- Шаблон Заказа на производство для PDF -->
+<div class="doc-page" id="order-pdf-content">
+    {{HEADER}}
+    
+    <div class="doc-title">Заказ на производство</div>
+    
+    <div class="doc-meta">
+        <div class="doc-meta-left">
+            <div class="doc-meta-row">
+                <span class="doc-meta-label">Номер заказа:</span>
+                <span class="doc-meta-value">{{ORDER_NUMBER}}</span>
+            </div>
+            <div class="doc-meta-row">
+                <span class="doc-meta-label">Дата заказа:</span>
+                <span class="doc-meta-value">{{ORDER_DATE}}</span>
+            </div>
+            <div class="doc-meta-row">
+                <span class="doc-meta-label">Дата завершения заказа:</span>
+                <span class="doc-meta-value">{{COMPLETION_DATE}}</span>
+            </div>
+        </div>
+        <div class="doc-meta-right">
+            <div class="doc-meta-row">
+                <span class="doc-meta-label">Заказчик:</span>
+                <span class="doc-meta-value">{{CLIENT_NAME}}</span>
+            </div>
+        </div>
+    </div>
+
+    <table class="doc-table">
+        <thead>
+            <tr>
+                <th class="col-number">№</th>
+                <th class="col-sku">Артикул</th>
+                <th class="col-name">Наименование</th>
+                <th class="col-qty">Кол-во произв.</th>
+                <th class="col-price">Цена</th>
+                <th class="col-total">Стоимость</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ITEMS_ROWS}}
+            <tr class="doc-total-row">
+                <td colspan="5" style="text-align:right; font-weight:bold;">Итого:</td>
+                <td class="col-total" style="font-weight:bold; color:#CC0000;">{{TOTAL_AMOUNT}} UZS</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="doc-footer">
+        <div>
+            <div class="signature-line">Подпись заказчика</div>
+        </div>
+        <div>
+            <div class="signature-line">Подпись исполнителя</div>
+        </div>
+    </div>
+</div>

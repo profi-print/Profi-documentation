@@ -1,0 +1,338 @@
+/* ============================================
+   ProfitPrint — Стили документов (PDF)
+   Точное соответствие скриншоту Excel
+   ============================================ */
+
+/* Document Page (A4) */
+.doc-page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 0;
+    margin: 0 auto;
+    background: white;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 11pt;
+    color: #000;
+    position: relative;
+}
+
+/* Top Blue Bar */
+.doc-top-bar {
+    width: 100%;
+    height: 18px;
+    background: #003087;
+    margin-bottom: 0;
+}
+
+/* Document Header */
+.doc-header {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 20px 10px 20px;
+    border-bottom: 2px solid #003087;
+    margin-bottom: 15px;
+}
+
+.doc-logo {
+    width: 70px;
+    height: 70px;
+    background: #CC0000;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 11px;
+    line-height: 1.2;
+    margin-right: 20px;
+    flex-shrink: 0;
+    text-align: center;
+    padding: 5px;
+}
+
+.doc-logo .logo-main {
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.doc-logo .logo-sub {
+    font-size: 9px;
+    font-weight: 400;
+}
+
+.doc-company-info {
+    flex: 1;
+}
+
+.doc-company-name {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #003087;
+    margin-bottom: 4px;
+    font-family: 'Times New Roman', serif;
+}
+
+.doc-company-details {
+    font-size: 9pt;
+    color: #333;
+    line-height: 1.6;
+}
+
+.doc-company-details p {
+    margin: 1px 0;
+}
+
+/* Document Title */
+.doc-title {
+    text-align: left;
+    font-size: 22pt;
+    font-weight: bold;
+    color: #003087;
+    margin: 15px 20px 15px 20px;
+    font-family: 'Times New Roman', serif;
+}
+
+/* Document Meta Info */
+.doc-meta {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    margin-bottom: 15px;
+    font-size: 10pt;
+}
+
+.doc-meta-left,
+.doc-meta-right {
+    flex: 1;
+}
+
+.doc-meta-row {
+    display: flex;
+    margin-bottom: 6px;
+    align-items: baseline;
+}
+
+.doc-meta-label {
+    font-weight: bold;
+    min-width: 160px;
+    color: #333;
+}
+
+.doc-meta-value {
+    flex: 1;
+    border-bottom: 1px solid #999;
+    padding-bottom: 2px;
+    margin-left: 5px;
+    min-height: 18px;
+}
+
+/* Document Table */
+.doc-table {
+    width: calc(100% - 40px);
+    margin: 0 20px;
+    border-collapse: collapse;
+    font-size: 10pt;
+    font-family: 'Times New Roman', serif;
+}
+
+.doc-table th {
+    background: #003087;
+    color: white;
+    padding: 6px 8px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #003087;
+    font-size: 9pt;
+}
+
+.doc-table td {
+    padding: 5px 8px;
+    border: 1px solid #999;
+    vertical-align: middle;
+}
+
+.doc-table tbody tr:nth-child(even) {
+    background: #F8F9FA;
+}
+
+.doc-table .col-number {
+    width: 40px;
+    text-align: center;
+}
+
+.doc-table .col-sku {
+    width: 100px;
+}
+
+.doc-table .col-name {
+    width: auto;
+}
+
+.doc-table .col-qty {
+    width: 80px;
+    text-align: right;
+}
+
+.doc-table .col-price {
+    width: 100px;
+    text-align: right;
+}
+
+.doc-table .col-total {
+    width: 110px;
+    text-align: right;
+}
+
+/* Total Row */
+.doc-total-row {
+    background: #FFF0F5 !important;
+}
+
+.doc-total-row td {
+    border: 2px solid #FF69B4;
+    font-weight: bold;
+    color: #CC0000;
+    font-size: 11pt;
+    padding: 8px;
+}
+
+/* Document Footer */
+.doc-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9pt;
+    color: #666;
+    border-top: 1px solid #ccc;
+    padding-top: 8px;
+}
+
+.doc-footer .signature-line {
+    border-top: 1px solid #333;
+    width: 150px;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 8pt;
+    color: #666;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .doc-page {
+        width: 100%;
+        min-height: auto;
+        box-shadow: none;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* PDF Preview Container */
+.pdf-preview-container {
+    background: #E5E7EB;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.pdf-preview-container .doc-page {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+/* Reconciliation specific */
+.doc-recon-table th {
+    background: #003087;
+    color: white;
+    padding: 6px 8px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #003087;
+    font-size: 9pt;
+}
+
+.doc-recon-table td {
+    padding: 5px 8px;
+    border: 1px solid #999;
+    font-size: 10pt;
+}
+
+.doc-recon-table .col-balance {
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Invoice specific styles */
+.doc-invoice-header {
+    text-align: center;
+    font-size: 18pt;
+    font-weight: bold;
+    color: #003087;
+    margin: 10px 20px;
+}
+
+.doc-meta-table {
+    width: calc(100% - 40px);
+    margin: 20px 20px;
+    border-collapse: collapse;
+}
+
+.doc-meta-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.meta-label {
+    background: #f5f5f5;
+    font-weight: bold;
+    width: 20%;
+}
+
+.meta-value {
+    width: 30%;
+}
+
+.doc-client-info {
+    margin: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-left: 4px solid #003087;
+    font-size: 11pt;
+    line-height: 1.6;
+}
+
+.doc-recon-table th {
+    background: #003087;
+    color: white;
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.doc-recon-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: right;
+}
+
+.doc-recon-table td:first-child {
+    text-align: left;
+}
+
+.pdf-container {
+    width: 210mm; /* Размер А4 */
+    padding: 20mm 15mm 20mm 20mm; /* Верх, Право, Низ, Лево */
+    box-sizing: border-box;
+}

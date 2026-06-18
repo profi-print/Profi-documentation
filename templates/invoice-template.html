@@ -1,0 +1,55 @@
+<!-- Шаблон Накладной для PDF -->
+<div class="doc-page" id="invoice-pdf-content">
+    {{HEADER}}
+    
+    <div class="doc-title" style="text-align:center;">НАКЛАДНАЯ</div>
+    <div class="doc-invoice-header">№ {{INVOICE_NUMBER}} от {{INVOICE_DATE}}</div>
+    
+    <div class="doc-meta">
+        <div class="doc-meta-left">
+            <div class="doc-meta-row">
+                <span class="doc-meta-label">Номер Накладной:</span>
+                <span class="doc-meta-value">{{INVOICE_NUMBER}}</span>
+            </div>
+            <div class="doc-meta-row">
+                <span class="doc-meta-label">Дата отгрузки:</span>
+                <span class="doc-meta-value">{{INVOICE_DATE}}</span>
+            </div>
+        </div>
+        <div class="doc-meta-right">
+            <div class="doc-meta-row">
+                <span class="doc-meta-label">Заказчик:</span>
+                <span class="doc-meta-value">{{CLIENT_NAME}}</span>
+            </div>
+        </div>
+    </div>
+
+    <table class="doc-table">
+        <thead>
+            <tr>
+                <th class="col-number">№</th>
+                <th class="col-sku">Артикул</th>
+                <th class="col-name">Наименование</th>
+                <th class="col-qty">Кол-во</th>
+                <th class="col-price">Цена</th>
+                <th class="col-total">Стоимость</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ITEMS_ROWS}}
+            <tr class="doc-total-row">
+                <td colspan="5" style="text-align:right; font-weight:bold;">Итого:</td>
+                <td class="col-total" style="font-weight:bold; color:#CC0000;">{{TOTAL_AMOUNT}} UZS</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="doc-footer">
+        <div>
+            <div class="signature-line">Отпустил</div>
+        </div>
+        <div>
+            <div class="signature-line">Принял</div>
+        </div>
+    </div>
+</div>

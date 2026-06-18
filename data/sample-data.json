@@ -1,0 +1,143 @@
+{
+  "clients": [
+    {
+      "id": "client1",
+      "name": "Aziz tea",
+      "contact": "Азиз",
+      "phone": "+998 90 123-45-67",
+      "address": "г. Наманган"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod1",
+      "sku": "K07-78*39,5*129-3",
+      "name": "Коробка 78х39,5х129-3 80гр №9",
+      "price": 340,
+      "unit": "шт"
+    },
+    {
+      "id": "prod2",
+      "sku": "K07-78*39,5*129-4",
+      "name": "Коробка 78х39,5х129-4 80гр №110",
+      "price": 340,
+      "unit": "шт"
+    },
+    {
+      "id": "prod3",
+      "sku": "K07-78*39,5*129-2",
+      "name": "Коробка 78х39,5х129-2 60гр №110",
+      "price": 340,
+      "unit": "шт"
+    },
+    {
+      "id": "prod4",
+      "sku": "K07-70*39,5*100-1",
+      "name": "Коробка 70х39,5х100 30гр",
+      "price": 260,
+      "unit": "шт"
+    }
+  ],
+  "orders": [
+    {
+      "id": "order1",
+      "number": "07-701",
+      "date": "2024-10-16",
+      "completionDate": "2024-11-15",
+      "clientId": "client1",
+      "items": [
+        {
+          "productId": "prod1",
+          "name": "Коробка 78х39,5х129-3 80гр №9",
+          "quantityProduced": 2975,
+          "price": 340,
+          "cost": 1011500,
+          "quantityOrdered": 3000
+        },
+        {
+          "productId": "prod2",
+          "name": "Коробка 78х39,5х129-4 80гр №110",
+          "quantityProduced": 6000,
+          "price": 340,
+          "cost": 2040000,
+          "quantityOrdered": 6000
+        },
+        {
+          "productId": "prod3",
+          "name": "Коробка 78х39,5х129-2 60гр №110",
+          "quantityProduced": 9000,
+          "price": 340,
+          "cost": 3060000,
+          "quantityOrdered": 9000
+        },
+        {
+          "productId": "prod4",
+          "name": "Коробка 70х39,5х100 30гр",
+          "quantityProduced": 57750,
+          "price": 260,
+          "cost": 15015000,
+          "quantityOrdered": 50000
+        }
+      ]
+    }
+  ],
+  "invoices": [
+    {
+      "id": "inv1",
+      "number": "07-701-1",
+      "date": "2024-10-16",
+      "clientId": "client1",
+      "items": [
+        {
+          "productId": "prod1",
+          "sku": "K07-78*39,5*129-3",
+          "name": "Коробка 78х39,5х129-3 80гр №9",
+          "quantity": 2975,
+          "price": 340,
+          "cost": 1011500
+        },
+        {
+          "productId": "prod2",
+          "sku": "K07-78*39,5*129-4",
+          "name": "Коробка 78х39,5х129-4 80гр №110",
+          "quantity": 6000,
+          "price": 340,
+          "cost": 2040000
+        },
+        {
+          "productId": "prod3",
+          "sku": "K07-78*39,5*129-2",
+          "name": "Коробка 78х39,5х129-2 60гр №110",
+          "quantity": 9000,
+          "price": 340,
+          "cost": 3060000
+        },
+        {
+          "productId": "prod4",
+          "sku": "K07-70*39,5*100-1",
+          "name": "Коробка 70х39,5х100 30гр",
+          "quantity": 57750,
+          "price": 260,
+          "cost": 15015000
+        }
+      ]
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay1",
+      "clientId": "client1",
+      "date": "2024-10-23",
+      "amount": 5000000,
+      "description": "Приход денежных средств"
+    },
+    {
+      "id": "pay2",
+      "clientId": "client1",
+      "date": "2024-12-04",
+      "amount": 3000000,
+      "description": "Приход денежных средств"
+    }
+  ],
+  "reconciliations": []
+}

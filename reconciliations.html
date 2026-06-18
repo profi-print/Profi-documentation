@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Акты сверки — ProfitPrint</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/documents.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* Стили для детального просмотра (такие же, как в дашборде) */
+        .detail-section {
+            margin-bottom: 20px;
+        }
+        .detail-section h3 {
+            font-size: 16px;
+            color: #003087;
+            margin-bottom: 10px;
+        }
+        .detail-section h4 {
+            font-size: 14px;
+            color: #1e293b;
+            margin: 10px 0;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+        .items-table th {
+            background: #f1f5f9;
+            padding: 6px;
+            font-size: 12px;
+            text-align: left;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .items-table td {
+            padding: 5px 6px;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
+                    <div class="logo-icon">PP</div>
+                    <span>ProfitPrint</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">📊 Дашборд</a></li>
+                <li><a href="orders.html">📋 Заказы</a></li>
+                <li><a href="invoices.html">📦 Накладные</a></li>
+                <li><a href="clients.html">👥 Клиенты</a></li>
+                <li><a href="products.html">📁 Продукты</a></li>
+                <li><a href="reconciliations.html" class="active">📑 Акты сверки</a></li>
+                <li><a href="backups.html">🗑️ Резервные копии</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Акты сверки</h1>
+                <div class="top-actions">
+                    <button class="btn btn-primary" onclick="showReconciliationForm()">+ Новый акт сверки</button>
+                </div>
+            </header>
+
+            <div class="content-section">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Номер</th>
+                            <th>Дата</th>
+                            <th>Клиент</th>
+                            <th>Период</th>
+                            <th>Конечный остаток</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reconciliations-table-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Модальное окно создания/редактирования -->
+            <div class="modal-overlay" id="reconciliation-modal">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h2 id="reconciliation-modal-title">Новый акт сверки</h2>
+                        <button class="modal-close" onclick="closeReconciliationModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="reconciliation-form">
+                            <input type="hidden" id="reconciliation-id">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Номер акта</label>
+                                    <input type="text" id="reconciliation-number">
+                                </div>
+                                <div class="form-group">
+                                    <label>Дата акта</label>
+                                    <input type="date" id="reconciliation-date">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Клиент *</label>
+                                    <select id="reconciliation-client">
+                                        <option value="">— Выберите клиента —</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Период с</label>
+                                    <input type="date" id="reconciliation-period-from">
+                                </div>
+                                <div class="form-group">
+                                    <label>Период по</label>
+                                    <input type="date" id="reconciliation-period-to">
+                                </div>
+                            </div>
+
+                            <div class="items-section">
+                                <h3>Движение по счёту клиента</h3>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="addReconRow()" style="margin-bottom:10px;">+ Добавить счёт</button>
+                                <table class="items-table doc-recon-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Наименование</th>
+                                            <th>Начальный остаток</th>
+                                            <th>Реализация</th>
+                                            <th>Оплата</th>
+                                            <th>Конечный остаток</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reconciliation-items-body">
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="order-total">
+                                <span>Конечный остаток:</span>
+                                <span id="reconciliation-final-balance">0 UZS</span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeReconciliationModal()">Отмена</button>
+                        <button class="btn btn-primary" onclick="saveReconciliation()">💾 Сохранить</button>
+                        <button class="btn btn-success" onclick="generateReconciliationPDF()">📄 PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модальное окно просмотра деталей (как в дашборде) -->
+            <div class="modal-overlay" id="detail-modal">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h2 id="detail-title">Детали акта сверки</h2>
+                        <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+                    </div>
+                    <div class="modal-body" id="detail-body"></div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="closeDetailModal()">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pdf-preview" style="display:none;"></div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/pdf-generator.js"></script>
+    <script src="js/reconciliations.js"></script>
+</body>
+</html>

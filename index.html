@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProfitPrint — Дашборд</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/documents.css">
+    <style>
+        /* Стили как в последней версии дашборда */
+        .dashboard { display: flex; flex-direction: column; gap: 20px; }
+        .quick-start {
+            background: #f8f9fc; border: 1px solid #e0e4ea; border-radius: 10px;
+            padding: 12px 16px; display: flex; flex-wrap: wrap; align-items: center;
+            gap: 12px; font-size: 13px; color: #334155;
+        }
+        .quick-start h3 { margin: 0; font-size: 15px; font-weight: 600; color: #1e293b; }
+        .steps { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        .step {
+            background: white; border: 1px solid #d1d5db; border-radius: 6px;
+            padding: 6px 12px; cursor: pointer; font-weight: 500; transition: all 0.15s;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .step:hover { border-color: #003087; background: #f0f3ff; }
+        .step-number {
+            background: #003087; color: white; border-radius: 50%;
+            width: 20px; height: 20px; display: flex; align-items: center;
+            justify-content: center; font-size: 11px; font-weight: bold;
+        }
+        .arrow { color: #94a3b8; font-size: 16px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+        .stat-card {
+            background: white; border: 1px solid #e2e8f0; border-radius: 10px;
+            padding: 16px 12px; text-align: center; cursor: pointer; transition: box-shadow 0.15s;
+        }
+        .stat-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .stat-icon { font-size: 26px; margin-bottom: 4px; }
+        .stat-info h3 { margin: 0; font-size: 12px; color: #64748b; font-weight: 500; }
+        .stat-number { font-size: 24px; font-weight: 700; color: #003087; margin: 2px 0 0; }
+        .stat-label { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+        .summary-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+        .summary-card {
+            background: white; border: 1px solid #e2e8f0; border-radius: 10px;
+            padding: 16px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .summary-card.clickable { cursor: pointer; }
+        .summary-text h4 { margin: 0; font-size: 13px; font-weight: 500; color: #475569; }
+        .summary-amount { font-size: 22px; font-weight: 700; color: #003087; margin-top: 4px; }
+        .summary-card.debt .summary-amount { color: #b91c1c; }
+        .summary-icon { font-size: 30px; opacity: 0.8; }
+        .dashboard-section {
+            background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px;
+        }
+        .dashboard-section h2 {
+            margin: 0 0 12px 0; font-size: 15px; font-weight: 600; color: #1e293b;
+            border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;
+        }
+        .two-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table th {
+            background: #f1f5f9; color: #334155; font-weight: 600; padding: 8px;
+            text-align: left; border-bottom: 2px solid #e2e8f0;
+        }
+        .data-table td { padding: 8px; border-bottom: 1px solid #f1f5f9; }
+        .btn { padding: 6px 12px; border-radius: 6px; font-weight: 500; cursor: pointer; border: 1px solid transparent; }
+        .btn-primary { background: #003087; color: white; }
+        .btn-secondary { background: #e2e8f0; color: #334155; border-color: #cbd5e1; }
+        .btn-sm { padding: 4px 8px; font-size: 12px; }
+        .btn-success { background: #0f766e; color: white; }
+        .btn-danger { background: #b91c1c; color: white; }
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15,23,42,0.5); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-content {
+            background: white; border-radius: 12px; width: 90%; max-width: 500px;
+            max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .modal-large { max-width: 900px; }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 20px; border-bottom: 1px solid #e2e8f0;
+        }
+        .modal-header h2 { margin: 0; font-size: 17px; color: #1e293b; }
+        .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #64748b; }
+        .modal-body { padding: 16px 20px; }
+        .modal-footer {
+            padding: 12px 20px; display: flex; justify-content: flex-end; gap: 8px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; font-size: 13px; font-weight: 500; color: #334155; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small"><div class="logo-icon">PP</div><span>ProfitPrint</span></div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">📊 Дашборд</a></li>
+                <li><a href="orders.html">📋 Заказы</a></li>
+                <li><a href="invoices.html">📦 Накладные</a></li>
+                <li><a href="clients.html">👥 Клиенты</a></li>
+                <li><a href="products.html">📁 Продукты</a></li>
+                <li><a href="reconciliations.html">📑 Акты сверки</a></li>
+                <li><a href="backups.html">🗑️ Резервные копии</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar">
+    <h1>Дашборд</h1>
+    <div class="top-actions">
+        <button class="btn btn-secondary" onclick="showHelp()">❓ Справка</button>
+        <button class="btn btn-secondary" onclick="exportData()">📤 Экспорт</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Импорт</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+        <a href="backups.html" class="btn btn-secondary">🗑️ Корзина</a>
+        <button class="btn btn-primary" onclick="syncWithServer()">🔄 Синхронизировать</button>
+    </div>
+</header>
+
+            <div class="dashboard">
+                <!-- Быстрый старт -->
+                <div class="quick-start">
+                    <h3>Быстрый старт</h3>
+                    <div class="steps">
+                        <div class="step" onclick="openQuickClient()"><span class="step-number">1</span> Клиент</div>
+                        <span class="arrow">→</span>
+                        <div class="step" onclick="openQuickProduct()"><span class="step-number">2</span> Продукт</div>
+                        <span class="arrow">→</span>
+                        <div class="step" onclick="location.href='orders.html'"><span class="step-number">3</span> Заказ</div>
+                        <span class="arrow">→</span>
+                        <div class="step" onclick="location.href='invoices.html'"><span class="step-number">4</span> Накладная</div>
+                        <span class="arrow">→</span>
+                        <div class="step" onclick="location.href='reconciliations.html'"><span class="step-number">5</span> Акт сверки</div>
+                    </div>
+                </div>
+
+                <!-- Статистика -->
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="location.href='orders.html'">
+                        <div class="stat-icon">📋</div><div class="stat-info"><h3>Заказы</h3><div class="stat-number" id="stat-orders">0</div><div class="stat-label">всего</div></div>
+                    </div>
+                    <div class="stat-card" onclick="location.href='invoices.html'">
+                        <div class="stat-icon">📦</div><div class="stat-info"><h3>Накладные</h3><div class="stat-number" id="stat-invoices">0</div><div class="stat-label">отгружено</div></div>
+                    </div>
+                    <div class="stat-card" onclick="location.href='reconciliations.html'">
+                        <div class="stat-icon">📑</div><div class="stat-info"><h3>Акты сверки</h3><div class="stat-number" id="stat-reconciliations">0</div><div class="stat-label">сформировано</div></div>
+                    </div>
+                    <div class="stat-card" onclick="location.href='clients.html'">
+                        <div class="stat-icon">👥</div><div class="stat-info"><h3>Клиенты</h3><div class="stat-number" id="stat-clients">0</div><div class="stat-label">в базе</div></div>
+                    </div>
+                    <div class="stat-card" onclick="location.href='products.html'">
+                        <div class="stat-icon">📁</div><div class="stat-info"><h3>Продукты</h3><div class="stat-number" id="stat-products">0</div><div class="stat-label">номенклатура</div></div>
+                    </div>
+                </div>
+
+                <!-- Финансовая сводка -->
+                <div class="summary-row">
+                    <div class="summary-card">
+                        <div class="summary-text"><h4>Реализация</h4><div class="summary-amount" id="total-realization">0 UZS</div></div>
+                        <div class="summary-icon">📦</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-text"><h4>Оплаты</h4><div class="summary-amount" id="total-payments">0 UZS</div></div>
+                        <div class="summary-icon">💵</div>
+                    </div>
+                    <div class="summary-card debt clickable" onclick="showDebtDetails()">
+                        <div class="summary-text"><h4>Задолженность</h4><div class="summary-amount" id="total-debt">0 UZS</div></div>
+                        <div class="summary-icon">⚠️</div>
+                    </div>
+                </div>
+
+                <!-- Последние заказы и накладные -->
+                <div class="two-cols">
+                    <div class="dashboard-section">
+                        <h2>📋 Последние заказы</h2>
+                        <table class="data-table">
+                            <thead><tr><th>Номер</th><th>Дата</th><th>Клиент</th><th>Сумма</th><th></th></tr></thead>
+                            <tbody id="recent-orders-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="dashboard-section">
+                        <h2>📦 Последние накладные</h2>
+                        <table class="data-table">
+                            <thead><tr><th>Номер</th><th>Дата</th><th>Клиент</th><th>Сумма</th><th></th></tr></thead>
+                            <tbody id="recent-invoices-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PDF preview -->
+    <div id="pdf-preview" style="display:none;"></div>
+
+    <!-- Модальное окно: быстрый клиент -->
+    <div class="modal-overlay" id="quick-client-modal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Новый клиент</h2><button class="modal-close" onclick="closeQuickClient()">&times;</button></div>
+            <div class="modal-body">
+                <form id="quick-client-form">
+                    <div class="form-group"><label>Название *</label><input type="text" id="quick-client-name" required></div>
+                    <div class="form-group"><label>Контактное лицо</label><input type="text" id="quick-client-contact"></div>
+                    <div class="form-group"><label>Телефон</label><input type="text" id="quick-client-phone"></div>
+                    <div class="form-group"><label>Адрес</label><input type="text" id="quick-client-address"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeQuickClient()">Отмена</button>
+                <button class="btn btn-primary" onclick="saveQuickClient()">💾 Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: быстрый продукт -->
+    <div class="modal-overlay" id="quick-product-modal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Новый продукт</h2><button class="modal-close" onclick="closeQuickProduct()">&times;</button></div>
+            <div class="modal-body">
+                <form id="quick-product-form">
+                    <div class="form-group"><label>Артикул *</label><input type="text" id="quick-product-sku" required></div>
+                    <div class="form-group"><label>Наименование *</label><input type="text" id="quick-product-name" required></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Цена</label><input type="number" id="quick-product-price" value="0" min="0"></div>
+                        <div class="form-group"><label>Ед. изм.</label><select id="quick-product-unit"><option value="шт">шт</option><option value="кг">кг</option><option value="м">м</option><option value="м²">м²</option><option value="уп">уп</option></select></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeQuickProduct()">Отмена</button>
+                <button class="btn btn-primary" onclick="saveQuickProduct()">💾 Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: задолженность -->
+    <div class="modal-overlay" id="debt-modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header"><h2>⚠️ Детализация задолженности</h2><button class="modal-close" onclick="closeDebtModal()">&times;</button></div>
+            <div class="modal-body">
+                <table class="data-table">
+                    <thead><tr><th>Клиент</th><th>Реализация</th><th>Оплаты</th><th>Задолженность</th></tr></thead>
+                    <tbody id="debt-table-body"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer"><button class="btn btn-primary" onclick="closeDebtModal()">Закрыть</button></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: детали заказа / накладной -->
+<div class="modal-overlay" id="detail-modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h2 id="detail-title">Детали документа</h2>
+            <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="detail-body"></div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="closeDetailModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/pdf-generator.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

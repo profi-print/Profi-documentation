@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клиенты — ProfitPrint</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
+                    <div class="logo-icon">PP</div>
+                    <span>ProfitPrint</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">📊 Дашборд</a></li>
+                <li><a href="orders.html">📋 Заказы</a></li>
+                <li><a href="invoices.html">📦 Накладные</a></li>
+                <li><a href="clients.html" class="active">👥 Клиенты</a></li>
+                <li><a href="products.html">📁 Продукты</a></li>
+                <li><a href="reconciliations.html">📑 Акты сверки</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Клиенты</h1>
+                <div class="top-actions">
+                    <button class="btn btn-primary" onclick="showClientForm()">+ Новый клиент</button>
+                </div>
+            </header>
+
+            <div class="content-section">
+                <div class="search-bar">
+                    <input type="text" id="client-search" placeholder="🔍 Поиск клиентов..." oninput="renderClients()">
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Контактное лицо</th>
+                            <th>Телефон</th>
+                            <th>Адрес</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clients-table-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-overlay" id="client-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="client-modal-title">Новый клиент</h2>
+                        <button class="modal-close" onclick="closeClientModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="client-form">
+                            <input type="hidden" id="client-id">
+                            <div class="form-group">
+                                <label>Название компании *</label>
+                                <input type="text" id="client-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Контактное лицо</label>
+                                <input type="text" id="client-contact">
+                            </div>
+                            <div class="form-group">
+                                <label>Телефон</label>
+                                <input type="text" id="client-phone" placeholder="+998 (__) ___-__-__">
+                            </div>
+                            <div class="form-group">
+                                <label>Адрес</label>
+                                <input type="text" id="client-address">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeClientModal()">Отмена</button>
+                        <button class="btn btn-primary" onclick="saveClient()">💾 Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script>
+        function renderClients() {
+            const clients = Storage.getClients();
+            const search = (document.getElementById('client-search')?.value || '').toLowerCase();
+            const tbody = document.getElementById('clients-table-body');
+            const filtered = clients.filter(c => c.name.toLowerCase().includes(search));
+
+            tbody.innerHTML = filtered.map(c => `
+                <tr onclick="showClientDetail('${c.id}')" style="cursor:pointer;">
+                    <td><strong>${escapeHtml(c.name)}</strong></td>
+                    <td>${escapeHtml(c.contact || '')}</td>
+                    <td>${escapeHtml(c.phone || '')}</td>
+                    <td>${escapeHtml(c.address || '')}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editClient('${c.id}')">✏️</button>
+                        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteClient('${c.id}')">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showClientDetail(clientId) {
+            const client = Storage.getClient(clientId);
+            if (!client) return;
+            let html = `<div class="detail-section">`;
+            html += `<h3>${escapeHtml(client.name)}</h3>`;
+            html += `<div class="detail-grid">`;
+            html += `<div class="label">Контактное лицо</div><div>${escapeHtml(client.contact || '-')}</div>`;
+            html += `<div class="label">Телефон</div><div>${escapeHtml(client.phone || '-')}</div>`;
+            html += `<div class="label">Адрес</div><div>${escapeHtml(client.address || '-')}</div>`;
+            html += `</div></div>`;
+            document.getElementById('detail-title').textContent = client.name;
+            document.getElementById('detail-body').innerHTML = html;
+            document.getElementById('detail-modal').classList.add('show');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.remove('show');
+        }
+
+        function showClientForm() {
+            document.getElementById('client-modal-title').textContent = 'Новый клиент';
+            document.getElementById('client-form').reset();
+            document.getElementById('client-id').value = '';
+            document.getElementById('client-modal').classList.add('show');
+        }
+
+        function editClient(id) {
+            const client = Storage.getClient(id);
+            if (!client) return;
+            document.getElementById('client-modal-title').textContent = 'Редактировать клиента';
+            document.getElementById('client-id').value = client.id;
+            document.getElementById('client-name').value = client.name;
+            document.getElementById('client-contact').value = client.contact || '';
+            document.getElementById('client-phone').value = client.phone || '';
+            document.getElementById('client-address').value = client.address || '';
+            document.getElementById('client-modal').classList.add('show');
+        }
+
+        function saveClient() {
+            const name = document.getElementById('client-name').value.trim();
+            if (!name) { alert('Введите название компании'); return; }
+
+            const client = {
+                id: document.getElementById('client-id').value || generateId(),
+                name,
+                contact: document.getElementById('client-contact').value.trim(),
+                phone: document.getElementById('client-phone').value.trim(),
+                address: document.getElementById('client-address').value.trim()
+            };
+
+            Storage.saveClient(client);
+            closeClientModal();
+            renderClients();
+        }
+
+        function deleteClient(id) {
+            if (confirm('Переместить клиента в корзину?')) {
+                Storage.deleteClient(id);
+                renderClients();
+            }
+        }
+
+        function closeClientModal() {
+            document.getElementById('client-modal').classList.remove('show');
+        }
+
+        // Инициализация: синхронизация и рендер
+        Storage.init().then(() => renderClients());
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Резервные копии — ProfitPrint</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/documents.css">
+    <style>
+        .trash-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .trash-table th {
+            background: #f1f5f9; padding: 10px; text-align: left; border-bottom: 2px solid #e2e8f0;
+            font-size: 14px; color: #334155;
+        }
+        .trash-table td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .btn-restore { background: #0f766e; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+        .btn-permadelete { background: #b91c1c; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; margin-left: 6px; }
+        .btn-details { background: #e2e8f0; color: #334155; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        .empty { text-align: center; padding: 30px; color: #666; }
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15,23,42,0.5); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-content {
+            background: white; border-radius: 12px; width: 90%; max-width: 800px;
+            max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 20px; border-bottom: 1px solid #e2e8f0;
+        }
+        .modal-header h2 { margin: 0; font-size: 17px; color: #1e293b; }
+        .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #64748b; }
+        .modal-body { padding: 16px 20px; }
+        .modal-footer { padding: 12px 20px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #e2e8f0; }
+        .detail-section { margin-bottom: 20px; }
+        .detail-section h3 { font-size: 14px; font-weight: 600; color: #003087; margin-bottom: 8px; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 13px; }
+        .detail-grid div { padding: 4px 0; border-bottom: 1px solid #f1f5f9; }
+        .detail-grid .label { font-weight: 500; color: #64748b; }
+        .items-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .items-table th { background: #f1f5f9; padding: 6px; font-size: 12px; text-align: left; }
+        .items-table td { padding: 5px 6px; border-bottom: 1px solid #eee; font-size: 12px; }
+        .json-block { background: #1e293b; color: #e2e8f0; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 12px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small"><div class="logo-icon">PP</div><span>ProfitPrint</span></div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">📊 Дашборд</a></li>
+                <li><a href="orders.html">📋 Заказы</a></li>
+                <li><a href="invoices.html">📦 Накладные</a></li>
+                <li><a href="clients.html">👥 Клиенты</a></li>
+                <li><a href="products.html">📁 Продукты</a></li>
+                <li><a href="reconciliations.html">📑 Акты сверки</a></li>
+                <li><a href="backups.html" class="active">🗑️ Резервные копии</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Резервные копии (корзина)</h1>
+                <div class="top-actions">
+                    <button class="btn btn-secondary" onclick="exportAllTrash()">📤 Экспорт всей корзины</button>
+                    <button class="btn btn-secondary" onclick="clearTrash()">🗑️ Очистить корзину</button>
+                </div>
+            </header>
+
+            <div class="content-section">
+                <table class="trash-table" id="trash-table">
+                    <thead>
+                        <tr>
+                            <th>Тип</th>
+                            <th>Номер / Идентификатор</th>
+                            <th>Дата удаления</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trash-body"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Модальное окно детализации -->
+    <div class="modal-overlay" id="detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detail-title">Детали элемента</h2>
+                <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="detail-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="exportSingleItem()">📤 Экспорт этого элемента</button>
+                <button class="btn btn-primary" onclick="restoreFromDetail()">↩️ Восстановить</button>
+                <button class="btn btn-secondary" onclick="closeDetailModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/backups.js"></script>
+</body>
+</html>

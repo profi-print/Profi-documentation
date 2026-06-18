@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Продукты — ProfitPrint</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
+                    <div class="logo-icon">PP</div>
+                    <span>ProfitPrint</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">📊 Дашборд</a></li>
+                <li><a href="orders.html">📋 Заказы</a></li>
+                <li><a href="invoices.html">📦 Накладные</a></li>
+                <li><a href="clients.html">👥 Клиенты</a></li>
+                <li><a href="products.html" class="active">📁 Продукты</a></li>
+                <li><a href="reconciliations.html">📑 Акты сверки</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Продукты (Номенклатура)</h1>
+                <div class="top-actions">
+                    <button class="btn btn-primary" onclick="showProductForm()">+ Новый продукт</button>
+                </div>
+            </header>
+
+            <div class="content-section">
+                <div class="search-bar">
+                    <input type="text" id="product-search" placeholder="🔍 Поиск продуктов..." oninput="renderProducts()">
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Артикул</th>
+                            <th>Наименование</th>
+                            <th>Количество</th>
+                            <th>Цена (UZS)</th>
+                            <th>Стоимость</th>
+                            <th>Кол-во произв.</th>
+                            <th>Кол-во заказано</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Модальное окно создания/редактирования -->
+            <div class="modal-overlay" id="product-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="product-modal-title">Новый продукт</h2>
+                        <button class="modal-close" onclick="closeProductModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="product-form">
+                            <input type="hidden" id="product-id">
+                            <div class="form-group">
+                                <label>Артикул *</label>
+                                <input type="text" id="product-sku" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Наименование *</label>
+                                <input type="text" id="product-name" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Количество</label>
+                                    <input type="number" id="product-quantity" value="0" min="0" oninput="updateProductCost()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Цена (UZS)</label>
+                                    <input type="number" id="product-price" value="0" min="0" oninput="updateProductCost()">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Стоимость (авто)</label>
+                                    <input type="text" id="product-cost" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Кол-во произв.</label>
+                                    <input type="number" id="product-produced" value="0" min="0">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Кол-во заказано</label>
+                                    <input type="number" id="product-ordered" value="0" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Ед. измерения</label>
+                                    <select id="product-unit">
+                                        <option value="шт">шт</option>
+                                        <option value="кг">кг</option>
+                                        <option value="м">м</option>
+                                        <option value="м²">м²</option>
+                                        <option value="уп">уп</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeProductModal()">Отмена</button>
+                        <button class="btn btn-primary" onclick="saveProduct()">💾 Сохранить</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модальное окно просмотра деталей продукта -->
+            <div class="modal-overlay" id="detail-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="detail-title">Детали продукта</h2>
+                        <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+                    </div>
+                    <div class="modal-body" id="detail-body"></div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="closeDetailModal()">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script>
+        // Функция пересчёта стоимости в форме
+        function updateProductCost() {
+            const qty = parseFloat(document.getElementById('product-quantity').value) || 0;
+            const price = parseFloat(document.getElementById('product-price').value) || 0;
+            const cost = qty * price;
+            document.getElementById('product-cost').value = cost.toLocaleString('ru-RU') + ' UZS'; // или просто число, но для наглядности с UZS
+        }
+
+        function renderProducts() {
+            const products = Storage.getProducts();
+            const search = (document.getElementById('product-search')?.value || '').toLowerCase();
+            const tbody = document.getElementById('products-table-body');
+
+            const filtered = products.filter(p =>
+                p.name.toLowerCase().includes(search) || p.sku.toLowerCase().includes(search)
+            );
+
+            tbody.innerHTML = filtered.map(p => {
+                const cost = p.cost !== undefined ? p.cost : (p.quantity || 0) * (p.price || 0);
+                return `
+                    <tr onclick="showProductDetail('${p.id}')" style="cursor:pointer;">
+                        <td><code>${escapeHtml(p.sku)}</code></td>
+                        <td><strong>${escapeHtml(p.name)}</strong></td>
+                        <td>${p.quantity || 0}</td>
+                        <td>${formatCurrency(p.price)}</td>
+                        <td>${formatCurrency(cost)}</td>
+                        <td>${p.produced || 0}</td>
+                        <td>${p.ordered || 0}</td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editProduct('${p.id}')">✏️</button>
+                            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteProduct('${p.id}')">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function showProductForm() {
+            document.getElementById('product-modal-title').textContent = 'Новый продукт';
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            document.getElementById('product-quantity').value = 0;
+            document.getElementById('product-price').value = 0;
+            document.getElementById('product-produced').value = 0;
+            document.getElementById('product-ordered').value = 0;
+            updateProductCost();
+            document.getElementById('product-modal').classList.add('show');
+        }
+
+        function editProduct(id) {
+            const product = Storage.getProduct(id);
+            if (!product) return;
+            document.getElementById('product-modal-title').textContent = 'Редактировать продукт';
+            document.getElementById('product-id').value = product.id;
+            document.getElementById('product-sku').value = product.sku;
+            document.getElementById('product-name').value = product.name;
+            document.getElementById('product-quantity').value = product.quantity || 0;
+            document.getElementById('product-price').value = product.price || 0;
+            document.getElementById('product-produced').value = product.produced || 0;
+            document.getElementById('product-ordered').value = product.ordered || 0;
+            document.getElementById('product-unit').value = product.unit || 'шт';
+            updateProductCost();
+            document.getElementById('product-modal').classList.add('show');
+        }
+
+        function saveProduct() {
+            const sku = document.getElementById('product-sku').value.trim();
+            const name = document.getElementById('product-name').value.trim();
+            if (!sku || !name) { alert('Заполните артикул и наименование'); return; }
+
+            const quantity = parseFloat(document.getElementById('product-quantity').value) || 0;
+            const price = parseFloat(document.getElementById('product-price').value) || 0;
+            const cost = quantity * price;
+            const produced = parseInt(document.getElementById('product-produced').value) || 0;
+            const ordered = parseInt(document.getElementById('product-ordered').value) || 0;
+
+            const product = {
+                id: document.getElementById('product-id').value || generateId(),
+                sku,
+                name,
+                quantity,
+                price,
+                cost,
+                produced,
+                ordered,
+                unit: document.getElementById('product-unit').value
+            };
+
+            Storage.saveProduct(product);
+            closeProductModal();
+            renderProducts();
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Переместить продукт в корзину?')) {
+                Storage.deleteProduct(id);
+                renderProducts();
+            }
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.remove('show');
+        }
+
+        function showProductDetail(productId) {
+            const product = Storage.getProduct(productId);
+            if (!product) return;
+            const cost = product.cost !== undefined ? product.cost : (product.quantity || 0) * (product.price || 0);
+            let html = `<div class="detail-section">`;
+            html += `<h3>${escapeHtml(product.name)}</h3>`;
+            html += `<div class="detail-grid">`;
+            html += `<div class="label">Артикул</div><div><code>${escapeHtml(product.sku)}</code></div>`;
+            html += `<div class="label">Количество</div><div>${product.quantity || 0}</div>`;
+            html += `<div class="label">Цена</div><div>${formatCurrency(product.price)}</div>`;
+            html += `<div class="label">Стоимость</div><div>${formatCurrency(cost)}</div>`;
+            html += `<div class="label">Кол-во произв.</div><div>${product.produced || 0}</div>`;
+            html += `<div class="label">Кол-во заказано</div><div>${product.ordered || 0}</div>`;
+            html += `<div class="label">Ед. изм.</div><div>${escapeHtml(product.unit || 'шт')}</div>`;
+            html += `</div></div>`;
+
+            document.getElementById('detail-title').textContent = `Продукт: ${product.name}`;
+            document.getElementById('detail-body').innerHTML = html;
+            document.getElementById('detail-modal').classList.add('show');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.remove('show');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        Storage.init().then(() => renderProducts());
+    </script>
+</body>
+</html>

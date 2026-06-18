@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказы — ProfitPrint</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/documents.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        .detail-section { margin-bottom: 20px; }
+        .detail-section h3 { font-size: 16px; color: #003087; margin-bottom: 10px; }
+        .detail-section h4 { font-size: 14px; color: #1e293b; margin: 10px 0; }
+        .items-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .items-table th { background: #f1f5f9; padding: 6px; font-size: 12px; text-align: left; border-bottom: 2px solid #e2e8f0; }
+        .items-table td { padding: 5px 6px; border-bottom: 1px solid #eee; font-size: 12px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: white; border-radius: 12px; width: 90%; max-width: 900px; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        .modal-large { max-width: 900px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; }
+        .modal-header h2 { margin: 0; font-size: 17px; color: #1e293b; }
+        .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #64748b; }
+        .modal-body { padding: 16px 20px; }
+        .modal-footer { padding: 12px 20px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
+                    <div class="logo-icon">PP</div>
+                    <span>ProfitPrint</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">📊 Дашборд</a></li>
+                <li><a href="orders.html" class="active">📋 Заказы</a></li>
+                <li><a href="invoices.html">📦 Накладные</a></li>
+                <li><a href="clients.html">👥 Клиенты</a></li>
+                <li><a href="products.html">📁 Продукты</a></li>
+                <li><a href="reconciliations.html">📑 Акты сверки</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Заказы на производство</h1>
+                <div class="top-actions">
+                    <button class="btn btn-primary" onclick="showNewOrderForm()">+ Новый заказ</button>
+                </div>
+            </header>
+
+            <div class="content-section">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Номер</th>
+                            <th>Дата</th>
+                            <th>Завершение</th>
+                            <th>Заказчик</th>
+                            <th>Сумма</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body"></tbody>
+                </table>
+            </div>
+
+            <!-- Модальное окно создания/редактирования заказа -->
+            <div class="modal-overlay" id="order-modal">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h2 id="modal-title">Новый заказ на производство</h2>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="order-form">
+                            <input type="hidden" id="order-id">
+                            <div class="form-row">
+                                <div class="form-group"><label>Номер заказа</label><input type="text" id="order-number"></div>
+                                <div class="form-group"><label>Дата заказа</label><input type="date" id="order-date"></div>
+                                <div class="form-group"><label>Дата завершения</label><input type="date" id="order-completion-date"></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-large">
+                                    <label>Заказчик</label>
+                                    <select id="order-client"><option value="">— Выберите клиента —</option></select>
+                                </div>
+                            </div>
+
+                            <div class="items-section">
+                                <h3>Позиции заказа</h3>
+                                <table class="items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Артикул</th>
+                                            <th>Наименование</th>
+                                            <th>Кол-во произв.</th>
+                                            <th>Цена</th>
+                                            <th>Стоимость</th>
+                                            <th>Количество заказано</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="order-items-body"></tbody>
+                                </table>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="addOrderItem()">+ Добавить позицию</button>
+                            </div>
+
+                            <div class="order-total">
+                                <span>Итого:</span>
+                                <span id="order-total-amount">0 UZS</span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+                        <button class="btn btn-primary" onclick="saveOrder()">💾 Сохранить</button>
+                        <button class="btn btn-success" onclick="generateOrderPDF()">📄 PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модальное окно просмотра деталей заказа -->
+            <div class="modal-overlay" id="detail-modal">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h2 id="detail-title">Детали заказа</h2>
+                        <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+                    </div>
+                    <div class="modal-body" id="detail-body"></div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="closeDetailModal()">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pdf-preview" style="display:none;"></div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/pdf-generator.js"></script>
+    <script src="js/orders.js"></script>
+</body>
+</html>

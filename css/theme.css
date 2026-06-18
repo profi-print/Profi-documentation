@@ -1,0 +1,48 @@
+/* ============================================
+   ProfitPrint Theme — Цветовая схема
+   ============================================ */
+
+:root {
+    /* Основные цвета */
+    --primary-blue: #003087;
+    --primary-blue-light: #0047AB;
+    --primary-blue-dark: #001F5C;
+
+    /* Акцентные цвета */
+    --accent-red: #CC0000;
+    --accent-red-light: #E60000;
+
+    /* Итоги */
+    --total-pink: #FF69B4;
+    --total-purple: #9B30FF;
+    --total-bg: #FFF0F5;
+
+    /* Нейтральные */
+    --bg-main: #F5F7FA;
+    --bg-white: #FFFFFF;
+    --bg-sidebar: #1A1A2E;
+    --bg-sidebar-hover: #16213E;
+
+    /* Текст */
+    --text-primary: #1A1A2E;
+    --text-secondary: #6B7280;
+    --text-light: #FFFFFF;
+
+    /* Границы */
+    --border-color: #E5E7EB;
+    --border-dark: #D1D5DB;
+
+    /* Тени */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+
+    /* Скругления */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    /* Шрифты */
+    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+}
