@@ -1,5 +1,5 @@
 /* ============================================
-   ProfitPrint — Основные стили
+   ProfitPrint — Основные стили + адаптив
    ============================================ */
 
 * {
@@ -15,13 +15,12 @@ body {
     line-height: 1.5;
 }
 
-/* Layout */
 .app-container {
     display: flex;
     min-height: 100vh;
 }
 
-/* Sidebar */
+/* ---------- Sidebar ---------- */
 .sidebar {
     width: 240px;
     background: var(--bg-sidebar);
@@ -36,7 +35,7 @@ body {
 
 .sidebar-header {
     padding: 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo-small {
@@ -71,7 +70,7 @@ body {
 .nav-menu li a {
     display: block;
     padding: 12px 20px;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     font-size: 14px;
     transition: all 0.2s;
@@ -84,7 +83,7 @@ body {
     border-left: 3px solid var(--primary-blue-light);
 }
 
-/* Main Content */
+/* ---------- Main Content ---------- */
 .main-content {
     margin-left: 240px;
     flex: 1;
@@ -118,7 +117,7 @@ body {
     padding: 24px;
 }
 
-/* Dashboard */
+/* ---------- Dashboard ---------- */
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -170,7 +169,7 @@ body {
     color: var(--text-primary);
 }
 
-/* Tables */
+/* ---------- Tables ---------- */
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -208,7 +207,7 @@ body {
     border-bottom: none;
 }
 
-/* Buttons */
+/* ---------- Buttons ---------- */
 .btn {
     padding: 8px 16px;
     border: none;
@@ -264,7 +263,7 @@ body {
     font-size: 12px;
 }
 
-/* Forms */
+/* ---------- Forms ---------- */
 .form-group {
     margin-bottom: 16px;
 }
@@ -295,7 +294,7 @@ body {
 .form-group select:focus {
     outline: none;
     border-color: var(--primary-blue);
-    box-shadow: 0 0 0 3px rgba(0,48,135,0.1);
+    box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.1);
 }
 
 .form-row {
@@ -308,7 +307,7 @@ body {
     grid-column: 1 / -1;
 }
 
-/* Modal */
+/* ---------- Modal ---------- */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -316,7 +315,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 1000;
     justify-content: center;
     align-items: center;
@@ -379,7 +378,7 @@ body {
     gap: 8px;
 }
 
-/* Items Table in Modal */
+/* ---------- Items Table ---------- */
 .items-section {
     margin-top: 20px;
 }
@@ -425,7 +424,7 @@ body {
     border-color: var(--primary-blue);
 }
 
-/* Order Total */
+/* ---------- Order Total ---------- */
 .order-total {
     margin-top: 16px;
     padding: 12px 16px;
@@ -440,7 +439,7 @@ body {
     color: var(--accent-red);
 }
 
-/* Search Bar */
+/* ---------- Search Bar ---------- */
 .search-bar {
     margin-bottom: 16px;
 }
@@ -459,209 +458,128 @@ body {
     border-color: var(--primary-blue);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 60px;
-    }
-
-    .sidebar-header span,
-    .nav-menu li a span {
-        display: none;
-    }
-
-    .main-content {
-        margin-left: 60px;
-    }
-
-    .dashboard-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Wizard Styles */
-.wizard-steps {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px 40px;
-    background: #F8F9FA;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.wizard-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    position: relative;
-    flex: 1;
-}
-
-.wizard-step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 18px;
-    left: 50%;
-    width: 100%;
-    height: 2px;
-    background: var(--border-color);
-    z-index: 0;
-}
-
-.wizard-step.active:not(:last-child)::after {
-    background: var(--primary-blue);
-}
-
-.step-number {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--border-color);
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 14px;
-    position: relative;
-    z-index: 1;
-    transition: all 0.3s;
-}
-
-.wizard-step.active .step-number {
-    background: var(--primary-blue);
-    color: white;
-}
-
-.step-label {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-weight: 500;
-}
-
-.wizard-step.active .step-label {
-    color: var(--primary-blue);
-    font-weight: 600;
-}
-
-.wizard-content {
-    animation: fadeIn 0.3s ease;
-}
-
+/* ---------- Анимация появления ---------- */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========================================
-   АДАПТИВНЫЙ ДИЗАЙН ДЛЯ ТЕЛЕФОНОВ
-   ======================================== */
+/* ---------- Бургер-кнопка (скрыта на ПК) ---------- */
+.burger-btn {
+    display: none;
+}
 
+.sidebar-overlay {
+    display: none;
+}
+
+/* ============================================
+   МОБИЛЬНЫЙ ДИЗАЙН (телефоны)
+   ============================================ */
 @media screen and (max-width: 768px) {
 
-    /* Основные стили */
-    body {
-        font-size: 14px;
-        overflow-x: hidden;
+    body.menu-open {
+        overflow: hidden;
     }
 
-    .app-container {
+    .quick-start,
+    .help-btn {
+        display: none !important;
+    }
+
+    .burger-btn {
+        display: flex;
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 1100;
+        width: 44px;
+        height: 44px;
+        background: var(--primary-blue);
+        border: none;
+        border-radius: 12px;
         flex-direction: column;
-        min-height: 100vh;
-        padding-bottom: 70px;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: background 0.2s;
     }
 
-    /* Сайдбар → нижнее меню */
+    .burger-btn:active {
+        background: var(--primary-blue-light);
+    }
+
+    .burger-btn span {
+        display: block;
+        width: 22px;
+        height: 3px;
+        background: white;
+        border-radius: 3px;
+        transition: all 0.3s ease;
+    }
+
+    .burger-btn.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+    .burger-btn.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .burger-btn.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+
     .sidebar {
         position: fixed;
-        bottom: 0;
+        top: 0;
+        left: -280px;
+        width: 260px;
+        height: 100vh;
+        transition: left 0.3s ease;
+        z-index: 1050;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+        border-radius: 0 20px 20px 0;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
         left: 0;
         width: 100%;
-        height: 65px;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-        background: #003087;
-        z-index: 999;
-        border-radius: 0;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-        padding: 5px 0;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1040;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
     }
 
-    .sidebar-header {
-        display: none;
+    .sidebar-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
     }
 
-    .nav-menu {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        justify-content: space-around;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        gap: 0;
-        flex-wrap: nowrap;
-    }
-
-    .nav-menu li {
-        flex: 1;
-        text-align: center;
-    }
-
-    .nav-menu li a {
-        color: white !important;
-        font-size: 10px !important;
-        text-decoration: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 5px 2px;
-        white-space: nowrap;
-        gap: 3px;
-    }
-
-    .nav-menu li a::before {
-        content: attr(data-icon);
-        font-size: 20px;
-        display: block;
-    }
-
-    .nav-menu li a.active {
-        color: #ffd700 !important;
-        font-weight: bold;
-    }
-
-    /* Иконки для пунктов меню (можно заменить на свои) */
-    .nav-menu li:nth-child(1) a::before { content: "📊"; }
-    .nav-menu li:nth-child(2) a::before { content: "📋"; }
-    .nav-menu li:nth-child(3) a::before { content: "📦"; }
-    .nav-menu li:nth-child(4) a::before { content: "👥"; }
-    .nav-menu li:nth-child(5) a::before { content: "📁"; }
-    .nav-menu li:nth-child(6) a::before { content: "📑"; }
-    .nav-menu li:nth-child(7) a::before { content: "🗑️"; }
-
-    /* Основной контент */
     .main-content {
-        padding: 10px;
         margin-left: 0;
+        padding: 12px;
         width: 100%;
     }
 
     .top-bar {
+        padding: 12px 12px 12px 60px;
         flex-direction: column;
         gap: 10px;
         align-items: flex-start;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 40;
     }
 
     .top-bar h1 {
@@ -671,265 +589,105 @@ body {
     .top-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 5px;
+        gap: 6px;
         width: 100%;
     }
 
     .top-actions .btn {
         font-size: 12px;
-        padding: 8px 10px;
+        padding: 8px 12px;
         white-space: nowrap;
     }
 
-    /* Дашборд */
-    .dashboard {
-        gap: 12px;
-    }
-
+    .dashboard-grid,
     .stats-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 8px;
+        padding: 0;
     }
 
     .stat-card {
-        padding: 10px 6px;
-    }
-
-    .stat-icon {
-        font-size: 22px;
-    }
-
-    .stat-number {
-        font-size: 20px;
-    }
-
-    .stat-info h3 {
-        font-size: 10px;
-    }
-
-    .stat-label {
-        font-size: 9px;
-    }
-
-    .summary-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-
-    .summary-card {
-        padding: 12px;
-    }
-
-    .summary-amount {
-        font-size: 20px;
-    }
-
-    .two-cols {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .quick-start {
+        padding: 12px 8px;
         flex-direction: column;
-        align-items: flex-start;
+        gap: 6px;
+        text-align: center;
     }
 
-    .steps {
-        flex-wrap: wrap;
-        gap: 4px;
-    }
+    .stat-icon { font-size: 24px; }
+    .stat-number { font-size: 22px; }
+    .stat-info h3 { font-size: 10px; }
 
-    .step {
-        font-size: 11px;
-        padding: 5px 10px;
-    }
+    .summary-row { grid-template-columns: 1fr; gap: 8px; }
+    .two-cols { grid-template-columns: 1fr; gap: 12px; }
 
-    .step-number {
-        width: 18px;
-        height: 18px;
-        font-size: 10px;
-    }
-
-    .arrow {
-        display: none;
-    }
-
-    /* Таблицы с горизонтальным скроллом */
     .content-section {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
 
-    .data-table,
-    .items-table,
-    .balance-table {
+    .data-table, .items-table {
         font-size: 12px;
         min-width: 600px;
     }
 
-    .data-table th,
-    .data-table td {
-        padding: 6px 4px;
+    .data-table th, .data-table td {
+        padding: 8px 6px;
         font-size: 11px;
     }
 
-    .items-table th,
-    .items-table td {
-        padding: 4px 3px;
-        font-size: 10px;
-    }
+    .form-row { grid-template-columns: 1fr; gap: 10px; }
 
-    /* Формы */
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-
-    .form-group label {
-        font-size: 12px;
-    }
-
-    .form-group input,
-    .form-group select {
-        font-size: 14px;
+    .form-group label { font-size: 12px; }
+    .form-group input, .form-group select {
+        font-size: 16px;
         padding: 10px 8px;
     }
 
     .btn {
-        font-size: 13px;
-        padding: 10px 14px;
-        min-height: 40px;
+        font-size: 14px;
+        padding: 12px 16px;
+        min-height: 44px;
+        border-radius: 12px;
     }
 
     .btn-sm {
-        font-size: 11px;
-        padding: 5px 8px;
+        font-size: 12px;
+        padding: 6px 10px;
         min-height: auto;
     }
 
-    /* Модальные окна */
+    .modal-overlay { padding: 10px; }
+
     .modal-content {
-        width: 95%;
-        max-width: 95%;
-        margin: 10px;
-        max-height: 85vh;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 20px 20px 0 0;
+        max-height: 90vh;
+        margin: 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
     }
 
-    .modal-large {
-        max-width: 95%;
-    }
+    .modal-large { max-width: 100%; }
+    .modal-header { padding: 14px 18px; }
+    .modal-header h2 { font-size: 18px; }
+    .modal-body { padding: 14px 18px; }
+    .modal-footer { padding: 12px 18px; flex-direction: column; }
+    .modal-footer .btn { width: 100%; }
 
-    .modal-header {
-        padding: 12px 15px;
-    }
-
-    .modal-header h2 {
-        font-size: 16px;
-    }
-
-    .modal-body {
-        padding: 12px 15px;
-    }
-
-    .modal-footer {
-        padding: 10px 15px;
-        flex-wrap: wrap;
-    }
-
-    .modal-footer .btn {
-        flex: 1;
-        min-width: 80px;
-        font-size: 13px;
-    }
-
-    /* Быстрый старт */
-    .quick-start h3 {
-        font-size: 14px;
-    }
-
-    /* Поиск */
-    .search-bar input {
-        font-size: 14px;
-        padding: 10px;
-    }
-
-    /* Акт сверки */
     .recon-input {
-        font-size: 12px !important;
-        min-width: 60px;
+        font-size: 14px !important;
+        padding: 8px 4px !important;
     }
 
-    #recon-total-row td {
-        padding: 4px 3px;
-    }
-
-    /* Корзина */
-    .btn-details {
-        font-size: 14px;
-        padding: 5px 8px;
-    }
-
-    /* Справка */
-    .modal-body ol {
-        padding-left: 18px;
-    }
-
-    .modal-body ol li {
-        font-size: 13px;
-        margin-bottom: 8px;
-    }
-
-    /* Интерактивные элементы */
-    .summary-card.clickable {
-        cursor: pointer;
-    }
-
-    .btn:active,
-    .step:active,
-    .stat-card:active {
-        transform: scale(0.97);
-        transition: transform 0.1s;
-    }
-
-    /* Секции */
-    .dashboard-section {
-        padding: 12px;
-    }
-
-    .dashboard-section h2 {
-        font-size: 14px;
-        margin-bottom: 8px;
-    }
-
-    .data-table .btn-sm {
-        padding: 4px 6px;
-        font-size: 10px;
-    }
+    .btn-details { font-size: 16px; padding: 6px 10px; }
 }
 
-/* Очень маленькие экраны (до 400px) */
 @media screen and (max-width: 400px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .nav-menu li a {
-        font-size: 9px !important;
-    }
-
-    .nav-menu li a::before {
-        font-size: 18px;
-    }
-
-    .top-bar h1 {
-        font-size: 18px;
-    }
-
-    .summary-amount {
-        font-size: 18px;
-    }
-
-    .stat-number {
-        font-size: 18px;
-    }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat-number { font-size: 20px; }
+    .top-bar h1 { font-size: 18px; }
+    .sidebar { width: 240px; }
 }

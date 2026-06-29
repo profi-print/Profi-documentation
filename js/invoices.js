@@ -56,11 +56,14 @@ function loadFromOrder() {
     calculateInvoiceTotal();
 }
 
+let invoiceRowCounter = 1;
+
 function addInvoiceItemRow(productId = '', name = '', quantity = 0, price = 0) {
     const tbody = document.getElementById('invoice-items-body');
     const row = document.createElement('tr');
+    const autoSku = productId ? '' : invoiceRowCounter;
     row.innerHTML = `
-        <td><input type="text" class="item-sku" value="" placeholder="Артикул"></td>
+        <td><input type="text" class="item-sku" value="${autoSku}" placeholder="Артикул"></td>
         <td>
             <select class="product-select-inv" onchange="onInvoiceProductChange(this)">
                 <option value="">— Продукт —</option>
@@ -79,9 +82,11 @@ function addInvoiceItemRow(productId = '', name = '', quantity = 0, price = 0) {
         const product = Storage.getProduct(productId);
         if (product) {
             row.querySelector('.item-sku').value = product.sku;
-            // Подставляем количество из карточки продукта
             row.querySelector('.item-qty').value = product.quantity || 0;
         }
+    }
+    if (!productId) {
+        invoiceRowCounter++;
     }
 }
 
@@ -97,7 +102,6 @@ function onInvoiceProductChange(selectEl) {
     const option = selectEl.options[selectEl.selectedIndex];
     if (option && option.dataset.price) {
         priceInput.value = option.dataset.price;
-        // Заполняем количество из dataset
         qtyInput.value = option.dataset.quantity || 0;
     }
     const productId = selectEl.value;
@@ -105,8 +109,11 @@ function onInvoiceProductChange(selectEl) {
         const product = Storage.getProduct(productId);
         if (product) {
             skuInput.value = product.sku;
-            // Наименование подставляется автоматически текстом опции, но мы его не трогаем (оно уже чистое)
         }
+    } else {
+        const currentRows = document.querySelectorAll('#invoice-items-body tr');
+        const index = Array.from(currentRows).indexOf(row) + 1;
+        skuInput.value = index;
     }
     updateInvoiceItemCost(priceInput);
 }
@@ -121,12 +128,12 @@ function updateInvoiceItemCost(inputEl) {
 
 function calculateInvoiceTotal() {
     let total = 0;
-    document.querySelectorAll('#invoice-items-body tr').forEach(row => {
+    const rows = document.querySelectorAll('#invoice-items-body tr');
+    rows.forEach(row => {
         total += parseFloat(row.querySelector('.item-cost').textContent) || 0;
     });
     const totalBlock = document.getElementById('invoice-total-amount');
-    const rowsCount = document.querySelectorAll('#invoice-items-body tr').length;
-    if (rowsCount < 2 && total === 0) {
+    if (rows.length < 2) {
         totalBlock.parentElement.style.display = 'none';
     } else {
         totalBlock.parentElement.style.display = '';
@@ -144,7 +151,6 @@ function collectInvoiceData() {
     document.querySelectorAll('#invoice-items-body tr').forEach(row => {
         const select = row.querySelector('.product-select-inv');
         const productId = select.value;
-        // Извлекаем чистое наименование из текста опции (после " - ")
         let rawName = select.options[select.selectedIndex]?.text || '';
         let displayName = rawName;
         if (rawName.includes(' - ')) {
@@ -154,7 +160,7 @@ function collectInvoiceData() {
         const quantity = parseFloat(row.querySelector('.item-qty').value) || 0;
         const price = parseFloat(row.querySelector('.item-price').value) || 0;
         const cost = parseFloat(row.querySelector('.item-cost').textContent) || 0;
-        if (productId || displayName) {
+        if (productId || displayName || sku) {
             items.push({ productId, sku, name: displayName, quantity, price, cost });
         }
     });
@@ -186,6 +192,7 @@ function showNewInvoiceForm() {
     const totalBlock = document.getElementById('invoice-total-amount');
     totalBlock.parentElement.style.display = '';
     totalBlock.textContent = '0 UZS';
+    invoiceRowCounter = 1;
     const dateField = document.getElementById('invoice-date');
     if (dateField.setISODate) dateField.setISODate(getCurrentDate());
     else dateField.value = getCurrentDate();
@@ -208,6 +215,10 @@ function editInvoice(id) {
     tbody.innerHTML = '';
     invoice.items.forEach(item => {
         addInvoiceItemRow(item.productId, item.name, item.quantity, item.price);
+        if (item.sku) {
+            const lastRow = tbody.lastElementChild;
+            lastRow.querySelector('.item-sku').value = item.sku;
+        }
     });
     calculateInvoiceTotal();
     document.getElementById('invoice-modal').classList.add('show');

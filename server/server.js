@@ -20,52 +20,16 @@ mongoose.connect(process.env.MONGODB_URI)
 
 function createRoutes(Model) {
   const router = express.Router();
-
-  router.get('/', async (req, res) => {
-    try {
-      const docs = await Model.find().lean();
-      res.json(docs);
-    } catch (err) {
-      console.error(`GET ${Model.modelName} error:`, err);
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  router.post('/', async (req, res) => {
-    try {
-      const doc = new Model(req.body);
-      await doc.save();
-      res.json(doc);
-    } catch (err) {
-      console.error(`POST ${Model.modelName} error:`, err);
-      res.status(500).json({ error: err.message });
-    }
-  });
-
+  router.get('/', async (req, res) => { try { res.json(await Model.find().lean()); } catch (err) { res.status(500).json({ error: err.message }); } });
+  router.post('/', async (req, res) => { try { const doc = new Model(req.body); await doc.save(); res.json(doc); } catch (err) { res.status(500).json({ error: err.message }); } });
   router.put('/:id', async (req, res) => {
     try {
-      const updated = await Model.findOneAndUpdate(
-        { id: req.params.id },
-        req.body,
-        { new: true, upsert: true, runValidators: true }
-      );
+      const body = { ...req.body }; delete body._id; delete body.__v;
+      const updated = await Model.findOneAndUpdate({ id: req.params.id }, body, { new: true, upsert: true, runValidators: true });
       res.json(updated);
-    } catch (err) {
-      console.error(`PUT ${Model.modelName}/${req.params.id} error:`, err);
-      res.status(500).json({ error: err.message });
-    }
+    } catch (err) { res.status(500).json({ error: err.message }); }
   });
-
-  router.delete('/:id', async (req, res) => {
-    try {
-      await Model.findOneAndDelete({ id: req.params.id });
-      res.json({ success: true });
-    } catch (err) {
-      console.error(`DELETE ${Model.modelName}/${req.params.id} error:`, err);
-      res.status(500).json({ error: err.message });
-    }
-  });
-
+  router.delete('/:id', async (req, res) => { try { await Model.findOneAndDelete({ id: req.params.id }); res.json({ success: true }); } catch (err) { res.status(500).json({ error: err.message }); } });
   return router;
 }
 
@@ -79,20 +43,11 @@ app.use('/api/reconciliations', createRoutes(Reconciliation));
 app.get('/api/data', async (req, res) => {
   try {
     const [clients, products, orders, invoices, payments, reconciliations] = await Promise.all([
-      Client.find().lean(),
-      Product.find().lean(),
-      Order.find().lean(),
-      Invoice.find().lean(),
-      Payment.find().lean(),
-      Reconciliation.find().lean()
+      Client.find().lean(), Product.find().lean(), Order.find().lean(), Invoice.find().lean(), Payment.find().lean(), Reconciliation.find().lean()
     ]);
     res.json({ clients, products, orders, invoices, payments, reconciliations });
-  } catch (err) {
-    console.error('GET /api/data error:', err);
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
-
 app.post('/api/data', async (req, res) => {
   try {
     const { clients, products, orders, invoices, payments, reconciliations } = req.body;
@@ -103,10 +58,7 @@ app.post('/api/data', async (req, res) => {
     if (payments) { await Payment.deleteMany({}); await Payment.insertMany(payments); }
     if (reconciliations) { await Reconciliation.deleteMany({}); await Reconciliation.insertMany(reconciliations); }
     res.json({ success: true });
-  } catch (err) {
-    console.error('POST /api/data error:', err);
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 const PORT = process.env.PORT || 3000;

@@ -1,12 +1,18 @@
 // ====== Обновление дашборда ======
 function updateDashboardStats() {
+    const rates = JSON.parse(localStorage.getItem('pp_currency_rates') || '{"CNY":12.5,"KZT":0.024,"EUR":12000}');
     const clients = Storage.getClients();
     const products = Storage.getProducts();
     const orders = Storage.getOrders();
     const invoices = Storage.getInvoices();
     const payments = Storage.getPayments();
     const recons = Storage.getReconciliations();
+    const userName = localStorage.getItem('pp_user_name') || 'Пользователь';
 
+    document.getElementById('rate-cny').textContent = rates.CNY;
+    document.getElementById('rate-kzt').textContent = rates.KZT;
+    document.getElementById('rate-eur').textContent = rates.EUR;
+    document.getElementById('current-user-name').textContent = userName;
     document.getElementById('stat-orders').textContent = orders.length;
     document.getElementById('stat-invoices').textContent = invoices.length;
     document.getElementById('stat-reconciliations').textContent = recons.length;
@@ -22,7 +28,6 @@ function updateDashboardStats() {
     document.getElementById('total-payments').textContent = formatCurrency(totalPay);
     document.getElementById('total-debt').textContent = formatCurrency(totalDebt);
 
-    // Последние заказы
     const recentOrders = orders.slice(-5).reverse();
     document.getElementById('recent-orders-body').innerHTML = recentOrders.map(o => {
         const client = clients.find(c => c.id === o.clientId);
@@ -38,7 +43,6 @@ function updateDashboardStats() {
         </tr>`;
     }).join('');
 
-    // Последние накладные
     const recentInvoices = invoices.slice(-5).reverse();
     document.getElementById('recent-invoices-body').innerHTML = recentInvoices.map(inv => {
         const client = clients.find(c => c.id === inv.clientId);
@@ -70,7 +74,6 @@ function deleteInvoiceAndRefresh(id) {
     }
 }
 
-// ====== Детализация документов ======
 function showOrderDetail(orderId) {
     const order = Storage.getOrder(orderId);
     if (!order) return;
@@ -113,7 +116,6 @@ function closeDetailModal() {
     document.getElementById('detail-modal').classList.remove('show');
 }
 
-// ====== Быстрые модалки ======
 function openQuickClient() {
     document.getElementById('quick-client-form').reset();
     document.getElementById('quick-client-modal').classList.add('show');
@@ -153,7 +155,6 @@ function saveQuickProduct() {
     updateDashboardStats();
 }
 
-// ====== Детализация задолженности ======
 function showDebtDetails() {
     const clients = Storage.getClients();
     const invoices = Storage.getInvoices();
@@ -178,7 +179,6 @@ function showDebtDetails() {
 }
 function closeDebtModal() { document.getElementById('debt-modal').classList.remove('show'); }
 
-// Генерация акта сверки для клиента (по всем операциям) и вывод PDF
 async function generateReconciliationForClient(clientId) {
     const client = Storage.getClient(clientId);
     if (!client) return alert('Клиент не найден');
@@ -219,7 +219,7 @@ async function generateReconciliationForClient(clientId) {
     });
     operations.sort((a, b) => a.date.localeCompare(b.date));
 
-    const startingBalance = 0; // считаем с нуля
+    const startingBalance = 0;
     let runningBalance = startingBalance;
     const items = [{
         date: fromDate,
@@ -251,25 +251,21 @@ async function generateReconciliationForClient(clientId) {
         items: items
     };
 
-    // Временно сохраняем в localStorage, чтобы сгенерировать PDF
     const recons = Storage.getReconciliations();
     recons.push(recon);
     localStorage.setItem('pp_reconciliations', JSON.stringify(recons));
 
     generateReconciliationPDF(recon.id);
 
-    // Удаляем временный акт через 1 секунду
     setTimeout(() => {
         const updatedRecons = Storage.getReconciliations().filter(r => r.id !== recon.id);
         localStorage.setItem('pp_reconciliations', JSON.stringify(updatedRecons));
     }, 1500);
 }
 
-// ====== Справка ======
 function showHelp() { document.getElementById('help-modal').classList.add('show'); }
 function closeHelp() { document.getElementById('help-modal').classList.remove('show'); }
 
-// ====== Экспорт / Импорт ======
 function exportData() {
     const data = {
         clients: Storage.getClients(),
@@ -307,7 +303,29 @@ function importData(event) {
     reader.readAsText(file);
 }
 
-// ====== Инициализация ======
+async function syncWithServer() {
+    await Storage.init();
+    updateDashboardStats();
+    alert('✅ Данные синхронизированы с сервером');
+}
+
+function autoBackup() {
+    const lastBackup = localStorage.getItem('pp_last_backup_date');
+    const today = new Date().toISOString().split('T')[0];
+    if (lastBackup !== today) {
+        const data = {
+            clients: Storage.getClients(), products: Storage.getProducts(), orders: Storage.getOrders(),
+            invoices: Storage.getInvoices(), payments: Storage.getPayments(), reconciliations: Storage.getReconciliations(),
+            production: Storage.getProductionOrders ? Storage.getProductionOrders() : [], trash: Storage.getTrash()
+        };
+        localStorage.setItem('pp_backup_' + today, JSON.stringify(data));
+        localStorage.setItem('pp_last_backup_date', today);
+        const allKeys = Object.keys(localStorage).filter(k => k.startsWith('pp_backup_'));
+        if (allKeys.length > 7) { allKeys.sort(); localStorage.removeItem(allKeys[0]); }
+        console.log('Резервная копия создана: ' + today);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await Storage.init();
     updateDashboardStats();
@@ -316,4 +334,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (e.target === this) this.classList.remove('show');
         });
     });
+
+    const burgerBtn = document.getElementById('burgerBtn');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (burgerBtn && sidebar && overlay) {
+        burgerBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+            burgerBtn.classList.toggle('active');
+            document.body.classList.toggle('menu-open');
+        });
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+            burgerBtn.classList.remove('active');
+            document.body.classList.remove('menu-open');
+        });
+    }
+
+    autoBackup();
 });

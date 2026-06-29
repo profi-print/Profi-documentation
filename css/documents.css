@@ -336,3 +336,69 @@
     padding: 20mm 15mm 20mm 20mm; /* Верх, Право, Низ, Лево */
     box-sizing: border-box;
 }
+
+/* ============================================
+   ProfitPrint — Стили для таблиц документов
+   ============================================ */
+
+/* Таблицы в модальных окнах и на страницах документов */
+.doc-recon-table,
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+}
+
+.doc-recon-table th,
+.items-table th {
+    background: var(--primary-blue);
+    color: white;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+.doc-recon-table td,
+.items-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 13px;
+}
+
+.doc-recon-table input,
+.items-table input,
+.doc-recon-table select,
+.items-table select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: var(--font-main);
+}
+
+.doc-recon-table input:focus,
+.items-table input:focus,
+.doc-recon-table select:focus,
+.items-table select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 2px rgba(0, 48, 135, 0.1);
+}
+
+/* Итоговая строка в акте сверки */
+#recon-total-row td {
+    font-weight: bold;
+    background: rgba(0, 48, 135, 0.05);
+}
+
+/* Специфичные стили для акта сверки */
+.recon-input {
+    border: none !important;
+    background: transparent !important;
+    text-align: right;
+    font-weight: 500;
+}

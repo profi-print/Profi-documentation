@@ -6,6 +6,7 @@ function generateId() {
 // Форматирование суммы в UZS
 function formatCurrency(amount) {
     const num = parseFloat(amount) || 0;
+    if (num === 0) return '-';
     return num.toLocaleString('ru-RU') + ' UZS';
 }
 
@@ -41,61 +42,46 @@ function formatDate(dateStr) {
     return d.toLocaleDateString('ru-RU');
 }
 
-// ===== НОВОЕ: превращает все <input type="date"> в текстовые с маской ДД.ММ.ГГГГ =====
+// Превращает все <input type="date"> в текстовые с маской ДД.ММ.ГГГГ
 function initDateFields() {
     document.querySelectorAll('input[type="date"]').forEach(input => {
-        // Меняем тип на текст
         input.type = 'text';
         input.placeholder = 'ДД.ММ.ГГГГ';
         input.style.textAlign = 'center';
-
-        // Если уже есть значение в формате ISO, конвертируем
         if (input.value && /^\d{4}-\d{2}-\d{2}$/.test(input.value)) {
             const parts = input.value.split('-');
             input.value = `${parts[2]}.${parts[1]}.${parts[0]}`;
             input.setAttribute('data-date-iso', input.value);
         }
 
-        // Улучшенная маска – точки появляются сразу
         input.addEventListener('input', function(e) {
-            let val = this.value.replace(/\D/g, ''); // только цифры
+            let val = this.value.replace(/\D/g, '');
             if (val.length > 8) val = val.substring(0, 8);
             let formatted = '';
-            if (val.length >= 1) {
-                formatted += val.substring(0, 2);
-            }
-            if (val.length >= 3) {
-                formatted += '.' + val.substring(2, 4);
-            }
-            if (val.length >= 5) {
-                formatted += '.' + val.substring(4, 8);
-            }
+            if (val.length >= 1) formatted += val.substring(0, 2);
+            if (val.length >= 3) formatted += '.' + val.substring(2, 4);
+            if (val.length >= 5) formatted += '.' + val.substring(4, 8);
             this.value = formatted;
         });
 
-        // Проверка при уходе из поля
         input.addEventListener('blur', function() {
             const val = this.value.trim();
             if (/^\d{2}\.\d{2}\.\d{4}$/.test(val)) {
                 const [d, m, y] = val.split('.');
                 const day = parseInt(d, 10), month = parseInt(m, 10), year = parseInt(y, 10);
                 if (day > 0 && day <= 31 && month > 0 && month <= 12 && year >= 2020 && year <= 2100) {
-                    this.setAttribute('data-date-iso', `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`);
+                    this.setAttribute('data-date-iso', `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`);
                     this.style.borderColor = '';
                 } else {
                     this.setAttribute('data-date-iso', '');
                     this.style.borderColor = 'red';
                 }
-            } else if (val.length > 0) {
-                this.setAttribute('data-date-iso', '');
-                this.style.borderColor = 'red';
             } else {
                 this.setAttribute('data-date-iso', '');
-                this.style.borderColor = '';
+                if (val.length > 0) this.style.borderColor = 'red';
             }
         });
 
-        // Дополнительные методы для кода
         input.getISODate = function() {
             return this.getAttribute('data-date-iso') || '';
         };
