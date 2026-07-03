@@ -1,20 +1,14 @@
 {
-  "name": "profi-print",
+  "name": "profitprint-server",
   "version": "1.0.0",
-  "description": "ProfitPrint - Система управления печатным производством",
-  "main": "index.html",
+  "main": "server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "dev": "node server/server.js"
+    "start": "node server.js"
   },
-  "keywords": [
-    "print",
-    "production",
-    "management"
-  ],
-  "author": "",
-  "license": "MIT",
-  "engines": {
-    "node": "18.x"
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.4.4"
   }
 }
