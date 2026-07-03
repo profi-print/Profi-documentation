@@ -15,6 +15,43 @@ document.addEventListener('DOMContentLoaded', async function() {
     initDateFields();
     loadResponsiblesFilter();
     renderOrders();
+    
+    // Event delegation for orders table
+    document.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        const id = e.target.dataset.id;
+        const dropdownId = e.target.dataset.dropdownId;
+        
+        if (action === 'toggle-order-status' && id) {
+            e.stopPropagation();
+            toggleOrderStatus(id);
+        } else if (action === 'generate-order-pdf' && id) {
+            e.stopPropagation();
+            generateOrderPDF(id);
+        } else if (action === 'edit-order' && id) {
+            e.stopPropagation();
+            editOrder(id);
+        } else if (action === 'delete-order' && id) {
+            e.stopPropagation();
+            deleteOrder(id);
+        } else if (action === 'create-invoice-from-order' && id) {
+            e.stopPropagation();
+            createInvoiceFromOrder(id);
+        } else if (action === 'show-invoice-placeholder') {
+            e.stopPropagation();
+            alert('Счёт — в разработке');
+        } else if (action === 'toggle-dropdown' && dropdownId) {
+            e.stopPropagation();
+            toggleDropdown(dropdownId);
+        } else if (action === 'select-order') {
+            const tr = e.target.closest('tr[data-order-id]');
+            if (tr && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+                selectedOrderId = tr.dataset.orderId;
+                renderOrders();
+            }
+        }
+    });
+    
     document.getElementById('order-modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
     document.getElementById('order-number')?.removeAttribute('readonly');
 });
@@ -77,14 +114,21 @@ function loadResponsiblesForOrder() {
 function generateNextNumber() {
     const orders = Storage.getOrders();
     let maxNum = 0;
+    let fallbackNum = 0;
+    
+    // Экранирование спецсимволов для безопасного regex
+    const escapedPrefix = orderPrefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
     orders.forEach(o => {
-        const match = o.number?.match(new RegExp(`^${orderPrefix}(\\d+)$`));
+        if (!o.number) return;
+        fallbackNum++;
+        const match = o.number.match(new RegExp(`^${escapedPrefix}(\\d+)$`));
         if (match) {
-            const num = parseInt(match[1]);
-            if (num > maxNum) maxNum = num;
+            const num = parseInt(match[1], 10);
+            if (!isNaN(num) && num > maxNum) maxNum = num;
         }
     });
-    lastOrderNumber = maxNum + 1;
+    lastOrderNumber = maxNum > 0 ? maxNum + 1 : Math.max(fallbackNum + 1, 1);
     return orderPrefix + String(lastOrderNumber).padStart(6, '0');
 }
 
@@ -295,7 +339,7 @@ function renderOrders() {
         if (o.status === 'Проведён') statusClass = 'status-posted';
         else if (o.status === 'Завершён') statusClass = 'status-closed';
         const cells = [];
-        if (visibleColumns.includes('status')) cells.push(`<td><span class="status-dot ${statusClass}" onclick="event.stopPropagation(); toggleOrderStatus('${o.id}')"></span></td>`);
+        if (visibleColumns.includes('status')) cells.push(`<td><span class="status-dot ${statusClass}" data-action="toggle-order-status" data-id="${escapeHtml(o.id)}"></span></td>`);
         if (visibleColumns.includes('date')) cells.push(`<td>${formatDate(o.date)}</td>`);
         if (visibleColumns.includes('number')) cells.push(`<td><strong>${escapeHtml(o.number)}</strong></td>`);
         if (visibleColumns.includes('state')) cells.push(`<td>${escapeHtml(o.status || 'В работе')}</td>`);
@@ -305,19 +349,20 @@ function renderOrders() {
         if (visibleColumns.includes('operation')) cells.push(`<td>${escapeHtml(o.operation || 'Заказ на продажу')}</td>`);
         if (visibleColumns.includes('actions')) cells.push(`<td style="white-space:nowrap;">
             <div class="dropdown">
-                <button class="btn btn-sm" onclick="event.stopPropagation(); toggleDropdown('rowBasedOn_${o.id}')">📄▾</button>
-                <div id="rowBasedOn_${o.id}" class="dropdown-menu" style="right:0; left:auto;">
-                    <a onclick="event.stopPropagation(); createInvoiceFromOrder('${o.id}')">📦 Накладная</a>
-                    <a onclick="event.stopPropagation(); alert('Счёт — в разработке')">🧾 Счёт</a>
+                <button class="btn btn-sm" data-action="toggle-dropdown" data-dropdown-id="rowBasedOn_${escapeHtml(o.id)}">📄▾</button>
+                <div id="rowBasedOn_${escapeHtml(o.id)}" class="dropdown-menu" style="right:0; left:auto;">
+                    <a data-action="create-invoice-from-order" data-id="${escapeHtml(o.id)}">📦 Накладная</a>
+                    <a data-action="show-invoice-placeholder">🧾 Счёт</a>
                 </div>
             </div>
-            <button class="btn btn-sm" onclick="event.stopPropagation(); generateOrderPDF('${o.id}')">📄</button>
-            <button class="btn btn-sm" onclick="event.stopPropagation(); editOrder('${o.id}')">✏️</button>
-            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteOrder('${o.id}')">🗑️</button>
+            <button class="btn btn-sm" data-action="generate-order-pdf" data-id="${escapeHtml(o.id)}">📄</button>
+            <button class="btn btn-sm" data-action="edit-order" data-id="${escapeHtml(o.id)}">✏️</button>
+            <button class="btn btn-sm btn-danger" data-action="delete-order" data-id="${escapeHtml(o.id)}">🗑️</button>
         </td>`);
-        return `<tr class="${selectedOrderId === o.id ? 'selected-row' : ''}" onclick="selectOrder('${o.id}')" ondblclick="showOrderDetail('${o.id}')">${cells.join('')}</tr>`;
+        return `<tr class="${selectedOrderId === o.id ? 'selected-row' : ''}" data-order-id="${escapeHtml(o.id)}" data-action="select-order">${cells.join('')}</tr>`;
     }).join('');
 }
+
 
 function selectOrder(id) { selectedOrderId = id; renderOrders(); }
 
@@ -523,22 +568,58 @@ function collectOrderData() {
     };
 }
 
+function validateOrder(order) {
+    const errors = [];
+    if (!order.number?.trim()) {
+        errors.push('Номер заказа обязателен');
+    }
+    if (!order.clientId) {
+        errors.push('Необходимо выбрать покупателя');
+    }
+    if (!Array.isArray(order.items) || order.items.length === 0) {
+        errors.push('Добавьте минимум одну позицию');
+    } else {
+        order.items.forEach((item, i) => {
+            if (!item.name?.trim()) {
+                errors.push(`Позиция ${i+1}: введите наименование`);
+            }
+            if (item.quantity <= 0) {
+                errors.push(`Позиция ${i+1}: количество должно быть > 0`);
+            }
+            if (item.price < 0) {
+                errors.push(`Позиция ${i+1}: цена не может быть отрицательной`);
+            }
+            if (!Number.isFinite(item.total) || item.total < 0) {
+                errors.push(`Позиция ${i+1}: ошибка в расчётах суммы`);
+            }
+        });
+    }
+    if (order.manualDiscountPercent < 0 || order.manualDiscountPercent > 100) {
+        errors.push('Скидка должна быть от 0 до 100%');
+    }
+    return errors;
+}
+
 function saveOrder() {
     const order = collectOrderData();
-    if (!order.number || !order.clientId || order.items.length === 0) {
-        alert('Заполните обязательные поля: номер, покупатель, хотя бы одну позицию.');
+    const validationErrors = validateOrder(order);
+    
+    if (validationErrors.length > 0) {
+        alert('❌ Ошибки при сохранении:\n' + validationErrors.join('\n'));
         return;
     }
     Storage.saveOrder(order);
     closeModal();
     renderOrders();
-    alert('Заказ записан.');
+    alert('✅ Заказ записан.');
 }
 
 function saveAndCloseOrder() {
     const order = collectOrderData();
-    if (!order.number || !order.clientId || order.items.length === 0) {
-        alert('Заполните обязательные поля.');
+    const validationErrors = validateOrder(order);
+    
+    if (validationErrors.length > 0) {
+        alert('❌ Ошибки при сохранении:\n' + validationErrors.join('\n'));
         return;
     }
     order.status = 'Проведён';
@@ -547,13 +628,15 @@ function saveAndCloseOrder() {
     Storage.saveOrder(order);
     closeModal();
     renderOrders();
-    alert('Заказ проведён и закрыт.');
+    alert('✅ Заказ проведён и закрыт.');
 }
 
 function conductOrder() {
     const order = collectOrderData();
-    if (!order.number || !order.clientId || order.items.length === 0) {
-        alert('Заполните обязательные поля.');
+    const validationErrors = validateOrder(order);
+    
+    if (validationErrors.length > 0) {
+        alert('❌ Ошибки при сохранении:\n' + validationErrors.join('\n'));
         return;
     }
     order.status = 'Проведён';

@@ -3,8 +3,8 @@
 // ============================================
 
 let selectedProductionId = null;
-let sortColumn = 'date';
-let sortDirection = 'desc';
+let productionSortColumn = 'date';
+let productionSortDirection = 'desc';
 
 document.addEventListener('DOMContentLoaded', async function() {
     await Storage.init();
@@ -94,9 +94,9 @@ function renderProductionOrders() {
     if (responsible) orders = orders.filter(o => o.responsible === responsible);
 
     orders.sort((a, b) => {
-        let valA = a[sortColumn] || '';
-        let valB = b[sortColumn] || '';
-        return sortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        let valA = a[productionSortColumn] || '';
+        let valB = b[productionSortColumn] || '';
+        return productionSortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
     });
 
     const tbody = document.getElementById('production-table-body');

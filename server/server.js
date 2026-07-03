@@ -2,10 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+
+// Обслуживание статических файлов из корня проекта
+app.use(express.static(path.join(__dirname, '../')));
 
 const Client = require('./models/Client');
 const Product = require('./models/Product');
@@ -59,6 +63,11 @@ app.post('/api/data', async (req, res) => {
     if (reconciliations) { await Reconciliation.deleteMany({}); await Reconciliation.insertMany(reconciliations); }
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Обработка 404 - редирект на index.html для SPA
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 const PORT = process.env.PORT || 3000;

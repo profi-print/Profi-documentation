@@ -42,6 +42,14 @@ function formatDate(dateStr) {
     return d.toLocaleDateString('ru-RU');
 }
 
+// Проверка валидности даты (включает дни в месяце)
+function isValidDate(day, month, year) {
+    if (month < 1 || month > 12 || year < 2020 || year > 2100) return false;
+    if (day < 1) return false;
+    const daysInMonth = [31, (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return day <= daysInMonth[month - 1];
+}
+
 // Превращает все <input type="date"> в текстовые с маской ДД.ММ.ГГГГ
 function initDateFields() {
     document.querySelectorAll('input[type="date"]').forEach(input => {
@@ -69,7 +77,7 @@ function initDateFields() {
             if (/^\d{2}\.\d{2}\.\d{4}$/.test(val)) {
                 const [d, m, y] = val.split('.');
                 const day = parseInt(d, 10), month = parseInt(m, 10), year = parseInt(y, 10);
-                if (day > 0 && day <= 31 && month > 0 && month <= 12 && year >= 2020 && year <= 2100) {
+                if (isValidDate(day, month, year)) {
                     this.setAttribute('data-date-iso', `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`);
                     this.style.borderColor = '';
                 } else {

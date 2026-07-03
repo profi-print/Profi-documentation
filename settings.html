@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки интерфейса — ProfitPrint</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .settings-container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 30px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            display: block;
+        }
+        .form-group select,
+        .form-group input[type="range"],
+        .form-group input[type="color"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            background: var(--bg-white);
+            color: var(--text-primary);
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        .preview-box {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin: 20px 0;
+            background: var(--bg-main);
+        }
+        .btn {
+            margin-top: 10px;
+        }
+        .note {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <h1>⚙️ Настройки интерфейса</h1>
+        <p>Изменяйте внешний вид ProfitPrint под себя. Все настройки сохраняются и применяются на всех страницах.</p>
+
+        <div class="preview-box" id="preview">
+            <!-- Мини-предпросмотр: несколько элементов для демонстрации -->
+            <div style="background:var(--bg-white); border-radius:var(--radius-sm); padding:12px; margin-bottom:8px; border:1px solid var(--border-color);">
+                <span style="font-weight:600;">Пример карточки</span><br>
+                <span style="font-size:12px; color:var(--text-secondary);">Второстепенный текст</span>
+            </div>
+            <button class="btn btn-primary" disabled>Кнопка</button>
+            <button class="btn btn-secondary" disabled>Вторая</button>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Тема</label>
+                <select id="theme-select">
+                    <option value="light">Светлая</option>
+                    <option value="dark">Тёмная</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Ширина контента</label>
+                <input type="range" id="content-width" min="800" max="1600" value="1200" step="50">
+                <span id="width-value">1200px</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Размер шрифта</label>
+                <input type="range" id="font-size" min="12" max="20" value="14" step="1">
+                <span id="font-size-value">14px</span>
+            </div>
+            <div class="form-group">
+                <label>Основной цвет (primary)</label>
+                <input type="color" id="primary-color" value="#2563eb">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Фон страницы</label>
+                <input type="color" id="bg-color" value="#f4f6f9">
+            </div>
+            <div class="form-group">
+                <label>Фон боковой панели</label>
+                <input type="color" id="sidebar-bg" value="#111827">
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Сохранить настройки</button>
+        <button class="btn btn-secondary" onclick="resetToDefaults()">↩ Сбросить на стандартные</button>
+        <p class="note">Изменения вступают в силу сразу. Чтобы они применились на других страницах, обновите их.</p>
+    </div>
+
+    <script>
+        // Загружаем сохранённые настройки при открытии
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = JSON.parse(localStorage.getItem('profitprint-settings') || '{}');
+            applySettings(saved);
+            updatePreview();
+        });
+
+        // Функция применения настроек к CSS-переменным
+        function applySettings(settings) {
+            const root = document.documentElement;
+            if (settings.theme === 'dark') {
+                // тёмная тема
+                root.style.setProperty('--bg-main', '#1e293b');
+                root.style.setProperty('--bg-white', '#0f172a');
+                root.style.setProperty('--text-primary', '#f1f5f9');
+                root.style.setProperty('--text-secondary', '#94a3b8');
+                root.style.setProperty('--border-color', '#334155');
+                root.style.setProperty('--bg-sidebar', '#020617');
+                root.style.setProperty('--total-bg', '#7f1d1d');
+                root.style.setProperty('--total-pink', '#991b1b');
+            } else {
+                // светлая тема (стандартные значения уже в :root, просто удаляем переопределения)
+                root.style.setProperty('--bg-main', '#f4f6f9');
+                root.style.setProperty('--bg-white', '#ffffff');
+                root.style.setProperty('--text-primary', '#0f172a');
+                root.style.setProperty('--text-secondary', '#64748b');
+                root.style.setProperty('--border-color', '#e5e7eb');
+                root.style.setProperty('--bg-sidebar', '#111827');
+                root.style.setProperty('--total-bg', '#fef2f2');
+                root.style.setProperty('--total-pink', '#fecaca');
+            }
+
+            if (settings.contentWidth) {
+                root.style.setProperty('--content-max-width', settings.contentWidth + 'px');
+                document.getElementById('content-width').value = settings.contentWidth;
+                document.getElementById('width-value').textContent = settings.contentWidth + 'px';
+            }
+            if (settings.fontSize) {
+                root.style.setProperty('--font-size-base', settings.fontSize + 'px');
+                document.getElementById('font-size').value = settings.fontSize;
+                document.getElementById('font-size-value').textContent = settings.fontSize + 'px';
+            }
+            if (settings.primaryColor) {
+                root.style.setProperty('--primary-blue', settings.primaryColor);
+                root.style.setProperty('--primary-blue-light', adjustColor(settings.primaryColor, 20));
+                document.getElementById('primary-color').value = settings.primaryColor;
+            }
+            if (settings.bgColor) {
+                root.style.setProperty('--bg-main', settings.bgColor);
+                document.getElementById('bg-color').value = settings.bgColor;
+            }
+            if (settings.sidebarBg) {
+                root.style.setProperty('--bg-sidebar', settings.sidebarBg);
+                document.getElementById('sidebar-bg').value = settings.sidebarBg;
+            }
+
+            // обновим значения в элементах управления
+            if (!settings.contentWidth) {
+                document.getElementById('content-width').value = 1200;
+                document.getElementById('width-value').textContent = '1200px';
+            }
+            if (!settings.fontSize) {
+                document.getElementById('font-size').value = 14;
+                document.getElementById('font-size-value').textContent = '14px';
+            }
+            if (!settings.primaryColor) document.getElementById('primary-color').value = '#2563eb';
+            if (!settings.bgColor) document.getElementById('bg-color').value = '#f4f6f9';
+            if (!settings.sidebarBg) document.getElementById('sidebar-bg').value = '#111827';
+            if (!settings.theme) document.getElementById('theme-select').value = 'light';
+        }
+
+        // Простая функция для осветления цвета (для hover)
+        function adjustColor(hex, percent) {
+            // утилита, не обязательна, но для красоты primary-blue-light
+            // для простоты вернём исходный
+            return hex;
+        }
+
+        // Обработчики изменений ползунков (живой предпросмотр)
+        document.getElementById('content-width').addEventListener('input', function(e) {
+            document.getElementById('width-value').textContent = e.target.value + 'px';
+            document.documentElement.style.setProperty('--content-max-width', e.target.value + 'px');
+        });
+
+        document.getElementById('font-size').addEventListener('input', function(e) {
+            document.getElementById('font-size-value').textContent = e.target.value + 'px';
+            document.documentElement.style.setProperty('--font-size-base', e.target.value + 'px');
+        });
+
+        document.getElementById('theme-select').addEventListener('change', function(e) {
+            applySettings({ theme: e.target.value });
+        });
+
+        document.getElementById('primary-color').addEventListener('input', function(e) {
+            document.documentElement.style.setProperty('--primary-blue', e.target.value);
+            document.documentElement.style.setProperty('--primary-blue-light', e.target.value);
+        });
+
+        document.getElementById('bg-color').addEventListener('input', function(e) {
+            document.documentElement.style.setProperty('--bg-main', e.target.value);
+        });
+
+        document.getElementById('sidebar-bg').addEventListener('input', function(e) {
+            document.documentElement.style.setProperty('--bg-sidebar', e.target.value);
+        });
+
+        function saveSettings() {
+            const settings = {
+                theme: document.getElementById('theme-select').value,
+                contentWidth: document.getElementById('content-width').value,
+                fontSize: document.getElementById('font-size').value,
+                primaryColor: document.getElementById('primary-color').value,
+                bgColor: document.getElementById('bg-color').value,
+                sidebarBg: document.getElementById('sidebar-bg').value
+            };
+            localStorage.setItem('profitprint-settings', JSON.stringify(settings));
+            alert('Настройки сохранены!');
+        }
+
+        function resetToDefaults() {
+            localStorage.removeItem('profitprint-settings');
+            applySettings({});
+            alert('Сброшено до стандартных. Обновите страницу для полного применения.');
+            location.reload();
+        }
+
+        function updatePreview() {
+            // можно добавить динамическое обновление мини-превью, но не обязательно
+        }
+    </script>
+</body>
+</html>

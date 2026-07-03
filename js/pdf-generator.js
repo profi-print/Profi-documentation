@@ -29,7 +29,19 @@ function formatNumber(num) {
 }
 
 function generatePDF(htmlContent, filename) {
+    if (!Number.isFinite(htmlContent?.length) && typeof htmlContent !== 'string') {
+        console.error('Invalid HTML content');
+        alert('❌ Ошибка: некорректное содержимое документа');
+        return;
+    }
+    
     const preview = document.getElementById('pdf-preview');
+    if (!preview) {
+        console.error('PDF preview element not found');
+        alert('❌ Ошибка: элемент предпросмотра не найден');
+        return;
+    }
+    
     preview.innerHTML = htmlContent;
     preview.style.display = 'block';
     const opt = {
@@ -39,9 +51,24 @@ function generatePDF(htmlContent, filename) {
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    html2pdf().set(opt).from(preview).save().then(() => {
+    
+    try {
+        html2pdf().set(opt).from(preview).save().then(() => {
+            preview.style.display = 'none';
+            // Очистка памяти после использования
+            preview.innerHTML = '';
+        }).catch(err => {
+            console.error('PDF generation error:', err);
+            alert('❌ Ошибка при генерации PDF: ' + err.message);
+            preview.style.display = 'none';
+            preview.innerHTML = '';
+        });
+    } catch (err) {
+        console.error('PDF error:', err);
+        alert('❌ Ошибка при сохранении PDF: ' + err.message);
         preview.style.display = 'none';
-    });
+        preview.innerHTML = '';
+    }
 }
 
 // ====== ЗАКАЗ НА ПРОИЗВОДСТВО ======
@@ -53,7 +80,7 @@ function generateOrderPDF(orderIdParam) {
     if (!order) return alert('Заказ не найден');
     const client = Storage.getClient(order.clientId);
 
-    // Функция суммы прописью
+    // Функция суммы прописью (обработка до миллиардов)
     function numberToWordsRus(n) {
         const ones = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
         const teens = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
@@ -61,7 +88,9 @@ function generateOrderPDF(orderIdParam) {
         const hundreds = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
         if (n === 0) return 'ноль';
         let w = '';
-        if (n >= 1000) { w += ones[Math.floor(n/1000)] + ' тысяча '; n %= 1000; }
+        if (n >= 1000000000) { w += numberToWordsRus(Math.floor(n/1000000000)) + ' миллиард '; n %= 1000000000; }
+        if (n >= 1000000) { w += numberToWordsRus(Math.floor(n/1000000)) + ' миллион '; n %= 1000000; }
+        if (n >= 1000) { w += numberToWordsRus(Math.floor(n/1000)) + ' тысяча '; n %= 1000; }
         if (n >= 100) { w += hundreds[Math.floor(n/100)] + ' '; n %= 100; }
         if (n >= 20) { w += tens[Math.floor(n/10)] + ' '; n %= 10; }
         if (n >= 10) { w += teens[n-10]; return w.trim(); }

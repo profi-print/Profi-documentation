@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Техкарта — ProfitPrint</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/texKarta.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-small"><div class="logo-icon">PP</div><span>ProfitPrint</span></div>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="index.html">📊 Главная</a></li>
+        <li><a href="orders.html">📋 Заказы контрагентов</a></li>
+        <li><a href="production.html">🏭 Заказы на производство</a></li>
+        <li><a href="invoices.html">📦 Накладные</a></li>
+        <li><a href="clients.html">👥 Контрагенты</a></li>
+        <li><a href="products.html">📁 Продукты</a></li>
+        <li><a href="reconciliations.html">📑 Акты сверки</a></li>
+        <li><a href="backups.html">🗑️ Резервные копии</a></li>
+        <li><a href="otpCex.html">⚙️ На производство</a></li>
+        <li><a href="texKarta.html" class="active">⚙️ Техкарта</a></li>
+      </ul>
+      <div class="theme-switch-wrapper">
+        <button id="themeToggle" class="btn btn-secondary">
+          <span id="themeIcon">🌙</span> <span id="themeLabel">Тёмная тема</span>
+        </button>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="top-bar">
+        <h1>Технологическая карта</h1>
+      </div>
+      <div class="content-section">
+        <div id="content">Загрузка...</div>
+        <div id="actionBar" class="action-bar" style="display:none;">
+          <button id="toggleInfoBtn" class="btn btn-secondary">📋 Дополнительная информация</button>
+          <button id="downloadPdfBtn" class="btn btn-primary">📥 Скачать PDF техкарты</button>
+          <button id="viewOfficePdfBtn" class="btn btn-secondary" style="display:none;">👁️ Посмотреть PDF</button>
+          <button id="uploadLocalPdfBtn" class="btn btn-secondary">📤 Загрузить PDF</button>
+        </div>
+        <div id="additionalInfo" class="additional-info"></div>
+        <input type="file" id="localPdfInput" accept=".pdf" class="hidden-input">
+      </div>
+    </main>
+  </div>
+  <script src="js/texKarta.js"></script>
+</body>
+</html>

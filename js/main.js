@@ -20,7 +20,7 @@ function updateDashboardStats() {
     document.getElementById('stat-products').textContent = products.length;
 
     const totalReal = invoices.reduce((sum, inv) =>
-        sum + inv.items.reduce((s, i) => s + (i.cost || 0), 0), 0);
+        sum + (Array.isArray(inv.items) ? inv.items.reduce((s, i) => s + (i.cost || 0), 0) : 0), 0);
     const totalPay = payments.reduce((sum, p) => sum + p.amount, 0);
     const totalDebt = totalReal - totalPay;
 
@@ -31,30 +31,30 @@ function updateDashboardStats() {
     const recentOrders = orders.slice(-5).reverse();
     document.getElementById('recent-orders-body').innerHTML = recentOrders.map(o => {
         const client = clients.find(c => c.id === o.clientId);
-        const total = o.items.reduce((s, i) => s + (i.cost || 0), 0);
-        return `<tr onclick="showOrderDetail('${o.id}')" style="cursor:pointer;">
+        const total = (Array.isArray(o.items) ? o.items.reduce((s, i) => s + (i.cost || 0), 0) : 0);
+        return `<tr data-order-id="${escapeHtml(o.id)}" data-action="select-order" style="cursor:pointer;">
             <td><strong>${escapeHtml(o.number)}</strong></td>
             <td>${formatDate(o.date)}</td>
             <td>${escapeHtml(client?.name || '')}</td>
             <td>${formatCurrency(total)}</td>
-            <td><button class="btn btn-sm btn-success" onclick="event.stopPropagation(); generateOrderPDF('${o.id}')">📄</button></td>
-            <td><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteOrderAndRefresh('${o.id}')">🗑️</button></td>
-            <td><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); showOrderDetail('${o.id}')">📋</button></td>
+            <td><button class="btn btn-sm btn-success" data-action="generate-order-pdf" data-id="${escapeHtml(o.id)}">📄</button></td>
+            <td><button class="btn btn-sm btn-danger" data-action="delete-order" data-id="${escapeHtml(o.id)}">🗑️</button></td>
+            <td><button class="btn btn-sm btn-secondary" data-action="show-order-detail" data-id="${escapeHtml(o.id)}">📋</button></td>
         </tr>`;
     }).join('');
 
     const recentInvoices = invoices.slice(-5).reverse();
     document.getElementById('recent-invoices-body').innerHTML = recentInvoices.map(inv => {
         const client = clients.find(c => c.id === inv.clientId);
-        const total = inv.items.reduce((s, i) => s + (i.cost || 0), 0);
-        return `<tr onclick="showInvoiceDetail('${inv.id}')" style="cursor:pointer;">
+        const total = (Array.isArray(inv.items) ? inv.items.reduce((s, i) => s + (i.cost || 0), 0) : 0);
+        return `<tr data-invoice-id="${escapeHtml(inv.id)}" data-action="select-invoice" style="cursor:pointer;">
             <td><strong>${escapeHtml(inv.number)}</strong></td>
             <td>${formatDate(inv.date)}</td>
             <td>${escapeHtml(client?.name || '')}</td>
             <td>${formatCurrency(total)}</td>
-            <td><button class="btn btn-sm btn-success" onclick="event.stopPropagation(); generateInvoicePDF('${inv.id}')">📄</button></td>
-            <td><button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteInvoiceAndRefresh('${inv.id}')">🗑️</button></td>
-            <td><button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); showInvoiceDetail('${inv.id}')">📋</button></td>
+            <td><button class="btn btn-sm btn-success" data-action="generate-invoice-pdf" data-id="${escapeHtml(inv.id)}">📄</button></td>
+            <td><button class="btn btn-sm btn-danger" data-action="delete-invoice" data-id="${escapeHtml(inv.id)}">🗑️</button></td>
+            <td><button class="btn btn-sm btn-secondary" data-action="show-invoice-detail" data-id="${escapeHtml(inv.id)}">📋</button></td>
         </tr>`;
     }).join('');
 }
@@ -78,13 +78,13 @@ function showOrderDetail(orderId) {
     const order = Storage.getOrder(orderId);
     if (!order) return;
     const client = Storage.getClient(order.clientId);
-    const total = order.items.reduce((s, i) => s + (i.cost || 0), 0);
+    const total = (Array.isArray(order.items) ? order.items.reduce((s, i) => s + (i.cost || 0), 0) : 0);
     let html = `<div class="detail-section"><h3>Заказ №${escapeHtml(order.number)}</h3>`;
     html += `<p><strong>Дата:</strong> ${formatDate(order.date)} | <strong>Завершение:</strong> ${formatDate(order.completionDate)}</p>`;
     html += `<p><strong>Клиент:</strong> ${escapeHtml(client?.name || '')} (${escapeHtml(client?.contact || '')})</p>`;
-    html += `<h4>Позиции (${order.items.length})</h4>`;
+    html += `<h4>Позиции (${(order.items || []).length})</h4>`;
     html += `<table class="items-table"><thead><tr><th>Наименование</th><th>Кол-во произв</th><th>Цена</th><th>Стоимость</th><th>Заказано</th></tr></thead><tbody>`;
-    order.items.forEach(item => {
+    (order.items || []).forEach(item => {
         html += `<tr><td>${escapeHtml(item.name)}</td><td>${item.quantityProduced}</td><td>${formatCurrency(item.price)}</td><td>${formatCurrency(item.cost)}</td><td>${item.quantityOrdered}</td></tr>`;
     });
     html += `</tbody></table><p><strong>Итого:</strong> ${formatCurrency(total)}</p></div>`;
@@ -97,13 +97,13 @@ function showInvoiceDetail(invoiceId) {
     const invoice = Storage.getInvoice(invoiceId);
     if (!invoice) return;
     const client = Storage.getClient(invoice.clientId);
-    const total = invoice.items.reduce((s, i) => s + (i.cost || 0), 0);
+    const total = (Array.isArray(invoice.items) ? invoice.items.reduce((s, i) => s + (i.cost || 0), 0) : 0);
     let html = `<div class="detail-section"><h3>Накладная №${escapeHtml(invoice.number)}</h3>`;
     html += `<p><strong>Дата отгрузки:</strong> ${formatDate(invoice.date)}</p>`;
     html += `<p><strong>Клиент:</strong> ${escapeHtml(client?.name || '')}</p>`;
-    html += `<h4>Позиции (${invoice.items.length})</h4>`;
+    html += `<h4>Позиции (${(invoice.items || []).length})</h4>`;
     html += `<table class="items-table"><thead><tr><th>Артикул</th><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Стоимость</th></tr></thead><tbody>`;
-    invoice.items.forEach(item => {
+    (invoice.items || []).forEach(item => {
         html += `<tr><td>${escapeHtml(item.sku)}</td><td>${escapeHtml(item.name)}</td><td>${item.quantity}</td><td>${formatCurrency(item.price)}</td><td>${formatCurrency(item.cost)}</td></tr>`;
     });
     html += `</tbody></table><p><strong>Итого:</strong> ${formatCurrency(total)}</p></div>`;
@@ -281,23 +281,67 @@ function exportData() {
     a.download = 'profitprint_data.json';
     a.click();
 }
+function validateImportData(data) {
+    const errors = [];
+    if (!data || typeof data !== 'object') {
+        errors.push('Данные должны быть объектом JSON');
+    }
+    if (data.clients && !Array.isArray(data.clients)) {
+        errors.push('clients должен быть массивом');
+    }
+    if (data.products && !Array.isArray(data.products)) {
+        errors.push('products должен быть массивом');
+    }
+    if (data.orders && !Array.isArray(data.orders)) {
+        errors.push('orders должен быть массивом');
+    }
+    if (data.invoices && !Array.isArray(data.invoices)) {
+        errors.push('invoices должен быть массивом');
+    }
+    if (data.payments && !Array.isArray(data.payments)) {
+        errors.push('payments должен быть массивом');
+    }
+    if (data.reconciliations && !Array.isArray(data.reconciliations)) {
+        errors.push('reconciliations должен быть массивом');
+    }
+    return errors;
+}
+
 function importData(event) {
     const file = event.target.files[0];
     if (!file) return;
+    
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+        alert('Файл слишком большой (макс. 10MB)');
+        return;
+    }
+    
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
             const data = JSON.parse(e.target.result);
+            
+            const validationErrors = validateImportData(data);
+            if (validationErrors.length > 0) {
+                alert('Ошибка структуры файла:\n' + validationErrors.join('\n'));
+                return;
+            }
+            
             if (data.clients) localStorage.setItem('pp_clients', JSON.stringify(data.clients));
             if (data.products) localStorage.setItem('pp_products', JSON.stringify(data.products));
             if (data.orders) localStorage.setItem('pp_orders', JSON.stringify(data.orders));
             if (data.invoices) localStorage.setItem('pp_invoices', JSON.stringify(data.invoices));
             if (data.payments) localStorage.setItem('pp_payments', JSON.stringify(data.payments));
             if (data.reconciliations) localStorage.setItem('pp_reconciliations', JSON.stringify(data.reconciliations));
-            alert('Данные импортированы!');
+            alert('✅ Данные импортированы успешно!');
             updateDashboardStats();
         } catch (err) {
-            alert('Ошибка чтения файла');
+            if (err instanceof SyntaxError) {
+                alert('❌ Ошибка: Некорректный JSON формат');
+            } else {
+                alert('❌ Ошибка чтения файла: ' + err.message);
+            }
         }
     };
     reader.readAsText(file);
@@ -329,6 +373,39 @@ function autoBackup() {
 document.addEventListener('DOMContentLoaded', async () => {
     await Storage.init();
     updateDashboardStats();
+    
+    // Event delegation for table actions
+    document.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        const id = e.target.dataset.id;
+        
+        if (action === 'show-order-detail' && id) {
+            e.stopPropagation();
+            showOrderDetail(id);
+        } else if (action === 'show-invoice-detail' && id) {
+            e.stopPropagation();
+            showInvoiceDetail(id);
+        } else if (action === 'generate-order-pdf' && id) {
+            e.stopPropagation();
+            generateOrderPDF(id);
+        } else if (action === 'generate-invoice-pdf' && id) {
+            e.stopPropagation();
+            generateInvoicePDF(id);
+        } else if (action === 'delete-order' && id) {
+            e.stopPropagation();
+            deleteOrderAndRefresh(id);
+        } else if (action === 'delete-invoice' && id) {
+            e.stopPropagation();
+            deleteInvoiceAndRefresh(id);
+        } else if (action === 'select-order') {
+            const tr = e.target.closest('tr[data-order-id]');
+            if (tr) showOrderDetail(tr.dataset.orderId);
+        } else if (action === 'select-invoice') {
+            const tr = e.target.closest('tr[data-invoice-id]');
+            if (tr) showInvoiceDetail(tr.dataset.invoiceId);
+        }
+    });
+    
     document.querySelectorAll('.modal-overlay').forEach(ov => {
         ov.addEventListener('click', function(e) {
             if (e.target === this) this.classList.remove('show');

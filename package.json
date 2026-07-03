@@ -1,0 +1,20 @@
+{
+  "name": "profi-print",
+  "version": "1.0.0",
+  "description": "ProfitPrint - Система управления печатным производством",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "keywords": [
+    "print",
+    "production",
+    "management"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": "18.x"
+  }
+}

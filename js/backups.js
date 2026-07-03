@@ -14,7 +14,8 @@ function renderTrash() {
         reconciliation: 'Акт сверки',
         payment: 'Платёж',
         client: 'Клиент',
-        product: 'Продукт'
+        product: 'Продукт',
+        techcard: 'Техкарта'
     };
 
     tbody.innerHTML = trash.map((entry, index) => {
@@ -51,7 +52,8 @@ function openDetail(index) {
         reconciliation: 'Акт сверки',
         payment: 'Платёж',
         client: 'Клиент',
-        product: 'Продукт'
+        product: 'Продукт',
+        techcard: 'Техкарта'
     };
 
     document.getElementById('detail-title').textContent = `Детали: ${typeNames[entry.type] || entry.type}`;
@@ -160,9 +162,9 @@ function exportSingleItem() {
     a.click();
 }
 
-function restoreFromDetail() {
+async function restoreFromDetail() {
     if (currentTrashIndex < 0) return;
-    if (Storage.restoreFromTrash(currentTrashIndex)) {
+    if (await Storage.restoreFromTrash(currentTrashIndex)) {
         closeDetailModal();
         renderTrash();
         alert('Элемент восстановлен.');
@@ -182,8 +184,8 @@ function exportAllTrash() {
     a.click();
 }
 
-function restoreItem(index) {
-    if (Storage.restoreFromTrash(index)) {
+async function restoreItem(index) {
+    if (await Storage.restoreFromTrash(index)) {
         renderTrash();
     }
 }

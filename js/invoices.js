@@ -167,14 +167,55 @@ function collectInvoiceData() {
     return { id: id || generateId(), number, date, clientId, items };
 }
 
+function validateInvoice(invoice) {
+    const errors = [];
+    if (!invoice.number?.trim()) {
+        errors.push('Номер накладной обязателен');
+    }
+    if (!invoice.clientId) {
+        errors.push('Необходимо выбрать клиента');
+    }
+    if (!Array.isArray(invoice.items) || invoice.items.length === 0) {
+        errors.push('Добавьте минимум одну позицию');
+    } else {
+        invoice.items.forEach((item, i) => {
+            if (!item.name?.trim()) {
+                errors.push(`Позиция ${i+1}: введите наименование`);
+            }
+            if (item.quantity <= 0) {
+                errors.push(`Позиция ${i+1}: количество должно быть > 0`);
+            }
+            if (item.price < 0) {
+                errors.push(`Позиция ${i+1}: цена не может быть отрицательной`);
+            }
+            if (!Number.isFinite(item.cost) || item.cost < 0) {
+                errors.push(`Позиция ${i+1}: ошибка в расчётах стоимости`);
+            }
+        });
+    }
+    return errors;
+}
+
 function saveInvoice() {
     const invoice = collectInvoiceData();
-    if (!invoice.number) { alert('Введите номер накладной'); return; }
-    if (!invoice.clientId) { alert('Выберите клиента'); return; }
-    if (invoice.items.length === 0) { alert('Добавьте позиции'); return; }
-    Storage.saveInvoice(invoice);
-    closeInvoiceModal();
-    renderInvoices();
+    const validationErrors = validateInvoice(invoice);
+    
+    if (validationErrors.length > 0) {
+        alert('❌ Ошибки при сохранении:\n' + validationErrors.join('\n'));
+        return;
+    }
+    
+    (async () => {
+        try {
+            await Storage.saveInvoice(invoice);
+            closeInvoiceModal();
+            await renderInvoices();
+            alert('✅ Накладная сохранена');
+        } catch (err) {
+            console.error('Ошибка сохранения:', err);
+            alert('❌ Ошибка при сохранении: ' + err.message);
+        }
+    })();
 }
 
 function closeInvoiceModal() {
@@ -237,15 +278,15 @@ function renderInvoices() {
     tbody.innerHTML = invoices.map(inv => {
         const client = Storage.getClient(inv.clientId);
         const total = inv.items.reduce((s, i) => s + (i.cost || 0), 0);
-        return `<tr onclick="showInvoiceDetail('${inv.id}')" style="cursor:pointer;">
+        return `<tr data-invoice-id="${escapeHtml(inv.id)}" data-action="select-invoice" style="cursor:pointer;">
             <td><strong>${escapeHtml(inv.number)}</strong></td>
             <td>${formatDate(inv.date)}</td>
             <td>${escapeHtml(client ? client.name : '')}</td>
             <td>${formatCurrency(total)}</td>
             <td>
-                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); generateInvoicePDF('${inv.id}')">📄</button>
-                <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); editInvoice('${inv.id}')">✏️</button>
-                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteInvoice('${inv.id}')">🗑️</button>
+                <button class="btn btn-sm btn-success" data-action="generate-invoice-pdf" data-id="${escapeHtml(inv.id)}">📄</button>
+                <button class="btn btn-sm btn-secondary" data-action="edit-invoice" data-id="${escapeHtml(inv.id)}">✏️</button>
+                <button class="btn btn-sm btn-danger" data-action="delete-invoice" data-id="${escapeHtml(inv.id)}">🗑️</button>
             </td>
         </tr>`;
     }).join('');
@@ -278,6 +319,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     await Storage.init();
     initDateFields();
     renderInvoices();
+    
+    // Event delegation for invoice table actions
+    document.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        const id = e.target.dataset.id;
+        
+        if (action === 'generate-invoice-pdf' && id) {
+            e.stopPropagation();
+            generateInvoicePDF(id);
+        } else if (action === 'edit-invoice' && id) {
+            e.stopPropagation();
+            editInvoice(id);
+        } else if (action === 'delete-invoice' && id) {
+            e.stopPropagation();
+            deleteInvoice(id);
+        } else if (action === 'select-invoice') {
+            const tr = e.target.closest('tr[data-invoice-id]');
+            if (tr) showInvoiceDetail(tr.dataset.invoiceId);
+        }
+    });
+    
     document.getElementById('invoice-modal').addEventListener('click', function(e) {
         if (e.target === this) closeInvoiceModal();
     });

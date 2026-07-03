@@ -66,13 +66,18 @@ function addReconRow() {
     updateTotalRow();
 }
 
-// Пересчёт конечного остатка в строке
+// Пересчёт конечного остатка в строке (защита от NaN)
 function updateRowCalc(input) {
     const row = input.closest('tr');
+    if (!row) return;
     const start = getInputValue(row.querySelector('[data-field="startingBalance"]'));
     const real = getInputValue(row.querySelector('[data-field="realization"]'));
     const pay = getInputValue(row.querySelector('[data-field="payment"]'));
     const ending = start + real - pay;
+    if (!isFinite(ending)) {
+        console.warn('Invalid calculation in reconciliation row');
+        return;
+    }
     const endingInput = row.querySelector('[data-field="endingBalance"]');
     setInputValue(endingInput, ending);
     updateTotalRow();
@@ -107,13 +112,22 @@ function ensureTotalRow(tbody) {
 
 function updateTotalRow() {
     const tbody = document.getElementById('reconciliation-items-body');
+    if (!tbody) return;
     let sumStart = 0, sumReal = 0, sumPay = 0, sumEnd = 0;
-    tbody.querySelectorAll('tr').forEach(row => {
-        sumStart += getInputValue(row.querySelector('[data-field="startingBalance"]'));
-        sumReal += getInputValue(row.querySelector('[data-field="realization"]'));
-        sumPay += getInputValue(row.querySelector('[data-field="payment"]'));
-        sumEnd += getInputValue(row.querySelector('[data-field="endingBalance"]'));
-    });
+    try {
+        tbody.querySelectorAll('tr').forEach(row => {
+            const start = getInputValue(row.querySelector('[data-field="startingBalance"]'));
+            const real = getInputValue(row.querySelector('[data-field="realization"]'));
+            const pay = getInputValue(row.querySelector('[data-field="payment"]'));
+            const end = getInputValue(row.querySelector('[data-field="endingBalance"]'));
+            if (isFinite(start)) sumStart += start;
+            if (isFinite(real)) sumReal += real;
+            if (isFinite(pay)) sumPay += pay;
+            if (isFinite(end)) sumEnd += end;
+        });
+    } catch (err) {
+        console.warn('Error calculating reconciliation totals:', err);
+    }
     setInputValue(document.getElementById('total-starting'), sumStart);
     setInputValue(document.getElementById('total-realization'), sumReal);
     setInputValue(document.getElementById('total-payment'), sumPay);
@@ -121,13 +135,42 @@ function updateTotalRow() {
 }
 
 // Сохранение
+function validateReconciliation(recon) {
+    const errors = [];
+    if (!recon.number?.trim()) {
+        errors.push('Номер акта обязателен');
+    }
+    if (!recon.clientId) {
+        errors.push('Необходимо выбрать контрагента');
+    }
+    if (!Array.isArray(recon.items) || recon.items.length === 0) {
+        errors.push('Добавьте минимум одну строку');
+    } else {
+        recon.items.forEach((item, i) => {
+            if (!Number.isFinite(item.startingBalance) || item.startingBalance < 0) {
+                errors.push(`Строка ${i+1}: начальный остаток некорректен`);
+            }
+            if (!Number.isFinite(item.realization) || item.realization < 0) {
+                errors.push(`Строка ${i+1}: реализация не может быть отрицательной`);
+            }
+            if (!Number.isFinite(item.payment) || item.payment < 0) {
+                errors.push(`Строка ${i+1}: платёж не может быть отрицательным`);
+            }
+            if (!Number.isFinite(item.endingBalance) || item.endingBalance < 0) {
+                errors.push(`Строка ${i+1}: конечный остаток некорректен`);
+            }
+        });
+    }
+    return errors;
+}
+
 function saveReconciliation() {
     const number = document.getElementById('reconciliation-number').value.trim();
-    if (!number) { alert('Введите номер акта'); return; }
+    if (!number) { alert('❌ Введите номер акта'); return; }
 
     const tbody = document.getElementById('reconciliation-items-body');
-    if (tbody.children.length === 0) {
-        alert('Добавьте хотя бы одну строку.');
+    if (!tbody || tbody.children.length === 0) {
+        alert('❌ Добавьте хотя бы одну строку.');
         return;
     }
 
@@ -156,14 +199,14 @@ function saveReconciliation() {
                     realization: real,
                     payment: pay,
                     endingBalance: end,
-                    date: '' // дата не требуется
+                    date: ''
                 });
             }
         }
     });
 
     if (items.length === 0) {
-        alert('Введите данные хотя бы в одну строку.');
+        alert('❌ Введите данные хотя бы в одну строку.');
         return;
     }
 
@@ -176,9 +219,17 @@ function saveReconciliation() {
         periodTo,
         items
     };
+    
+    const validationErrors = validateReconciliation(recon);
+    if (validationErrors.length > 0) {
+        alert('❌ Ошибки при сохранении:\n' + validationErrors.join('\n'));
+        return;
+    }
+    
     Storage.saveReconciliation(recon);
     closeReconciliationModal();
     renderReconciliations();
+    alert('✅ Акт сверки сохранён');
 }
 
 function closeReconciliationModal() {
