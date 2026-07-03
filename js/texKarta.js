@@ -39,6 +39,16 @@ function updateOrder(order) {
   if (idx !== -1) orders[idx] = order;
   else orders.push(order);
   localStorage.setItem('print_orders', JSON.stringify(orders));
+  // Sync to server (best-effort)
+  (async () => {
+    try {
+      await fetch(`/api/otpcex/${encodeURIComponent(String(order.id))}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) });
+      // also save texkarta record if PDF present
+      if (order.pdfData) {
+        await fetch('/api/texkartas', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: String(order.id), techcard_no: order.techcard_no, pdfData: order.pdfData, pdfSource: order.pdfSource || 'local', metadata: { orderId: order.id } }) });
+      }
+    } catch (e) { console.warn('Sync failed', e); }
+  })();
 }
 
 // ---------- ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ (УСЛУГИ) ----------
@@ -268,8 +278,15 @@ function renderTechCard(order) {
 window.addEventListener('DOMContentLoaded', () => {
   const id = new URLSearchParams(window.location.search).get('id');
   if (id) {
-    const order = getOrderById(id);
-    renderTechCard(order);
+    (async () => {
+      let order = null;
+      try {
+        const resp = await fetch(`/api/otpcex/${encodeURIComponent(String(id))}`);
+        if (resp.ok) order = await resp.json();
+      } catch (e) { /* ignore */ }
+      if (!order) order = getOrderById(id);
+      renderTechCard(order);
+    })();
   } else {
     renderOrderList();
   }

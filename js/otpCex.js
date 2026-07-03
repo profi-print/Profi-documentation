@@ -291,8 +291,18 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   orders.push(order);
   localStorage.setItem('print_orders', JSON.stringify(orders));
 
-  document.getElementById('result').innerHTML =
-    `<div class="success-msg">✅ Заказ сохранён. <a href="texKarta.html?id=${order.id}" style="color:#065f46;">Открыть техкарту</a></div>`;
+  // Try saving to server
+  (async () => {
+    try {
+      const resp = await fetch('/api/otpcex', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...order, id: String(order.id) }) });
+      if (!resp.ok) throw new Error('Server save failed');
+      const saved = await resp.json();
+      document.getElementById('result').innerHTML = `<div class="success-msg">✅ Заказ сохранён. <a href="texKarta.html?id=${saved.id}" style="color:#065f46;">Открыть техкарту</a></div>`;
+    } catch (err) {
+      console.warn('Save to server failed, kept local:', err);
+      document.getElementById('result').innerHTML = `<div class="success-msg">✅ Заказ сохранён локально. <a href="texKarta.html?id=${order.id}" style="color:#065f46;">Открыть техкарту</a></div>`;
+    }
+  })();
 
   document.getElementById('techcardNo').value = generateTechCardNo();
 });
