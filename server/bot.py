@@ -15,6 +15,7 @@ from telegram.ext import (
     ContextTypes,
     filters
 )
+import base64
 
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -28,6 +29,9 @@ orders_col = db.orders
 invoices_col = db.invoices
 payments_col = db.payments
 reconciliations_col = db.reconciliations
+otpcex_col = db.otpcex
+texkartas_col = db.texkartas
+otpcex_reserve_col = db.otpcex_reserve
 
 WKHTMLTOPDF_PATH = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
 pdf_config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_PATH) if os.path.exists(WKHTMLTOPDF_PATH) else None
@@ -282,6 +286,24 @@ def send_pdf_by_id(update, doc_type, doc_id):
             html = reconciliation_html(item, client_name, client_contact, client_phone, client_address)
             pdf_bytes = html_to_pdf(html)
             filename = f"АктСверки_{item['number']}.pdf"
+    elif doc_type == 'otpcex':
+        item = otpcex_col.find_one({'id': doc_id})
+        if item and item.get('pdfData'):
+            try:
+                data = item['pdfData'].split(',',1)[1] if ',' in item['pdfData'] else item['pdfData']
+                pdf_bytes = base64.b64decode(data)
+                filename = f"Техкарта_{item.get('techcard_no', doc_id)}.pdf"
+            except Exception:
+                pdf_bytes = None
+    elif doc_type == 'texkarta':
+        item = texkartas_col.find_one({'id': doc_id})
+        if item and item.get('pdfData'):
+            try:
+                data = item['pdfData'].split(',',1)[1] if ',' in item['pdfData'] else item['pdfData']
+                pdf_bytes = base64.b64decode(data)
+                filename = f"Техкарта_{item.get('techcard_no', doc_id)}.pdf"
+            except Exception:
+                pdf_bytes = None
     if pdf_bytes:
         return filename, pdf_bytes
     return None, None
@@ -292,6 +314,8 @@ def main_menu_keyboard():
         [InlineKeyboardButton("📋 Заказы", callback_data="list_orders")],
         [InlineKeyboardButton("📦 Накладные", callback_data="list_invoices")],
         [InlineKeyboardButton("📑 Акты сверки", callback_data="list_reconciliations")],
+        [InlineKeyboardButton("🏭 Отправка в цех", callback_data="list_otpcex")],
+        [InlineKeyboardButton("🧾 Техкарты", callback_data="list_texkartas")],
         [InlineKeyboardButton("➕ Создать", callback_data="create_menu")],
         [InlineKeyboardButton("❓ Справка", callback_data="help")],
     ]
@@ -302,6 +326,7 @@ def create_menu_keyboard():
         [InlineKeyboardButton("👤 Контрагент", callback_data="create_client")],
         [InlineKeyboardButton("📁 Продукт", callback_data="create_product")],
         [InlineKeyboardButton("📋 Заказ", callback_data="create_order")],
+        [InlineKeyboardButton("🏭 Техкарта (Отп. в цех)", callback_data="create_otpcex")],
         [InlineKeyboardButton("📦 Накладная", callback_data="create_invoice")],
         [InlineKeyboardButton("↩️ Назад", callback_data="main")],
     ]
@@ -322,6 +347,9 @@ ORDER_SELECT_CLIENT, ORDER_ADD_ITEMS, ORDER_ITEM_PRODUCT, ORDER_ITEM_QUANTITY, O
 
 # Накладная
 INVOICE_SELECT_CLIENT, INVOICE_ADD_ITEMS, INVOICE_ITEM_PRODUCT, INVOICE_ITEM_QUANTITY, INVOICE_ITEM_PRICE = range(5)
+
+# Техкарта / Отп. в цех
+OTP_TECHNO, OTP_MANAGER, OTP_CUSTOMER, OTP_PRODUCT, OTP_ORDERQ, OTP_CONFIRM = range(5, 11)
 
 # ---------- Команды ----------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -347,12 +375,19 @@ async def list_docs(update: Update, context: ContextTypes.DEFAULT_TYPE, doc_type
     elif doc_type == "reconciliations":
         items = list(reconciliations_col.find().sort("date", -1))
         title = "📑 Акты сверки"
+    elif doc_type == "otpcex":
+        items = list(otpcex_col.find().sort("createdAt", -1))
+        title = "🏭 Отправка в цех"
+    elif doc_type == "texkartas":
+        items = list(texkartas_col.find().sort("createdAt", -1))
+        title = "🧾 Техкарты"
     if not items:
         await query.edit_message_text(f"{title}\n\nНет документов.", reply_markup=back_button())
         return
     keyboard = []
     for item in items:
-        keyboard.append([InlineKeyboardButton(item["number"], callback_data=f"detail|{doc_type[:-1]}|{item['id']}")])
+        label = item.get('techcard_no') or item.get('number') or item.get('id')
+        keyboard.append([InlineKeyboardButton(str(label), callback_data=f"detail|{doc_type[:-1]}|{item['id']}")])
     keyboard.append([InlineKeyboardButton("↩️ Назад", callback_data="main")])
     await query.edit_message_text(f"{title}\nВыберите номер:", reply_markup=InlineKeyboardMarkup(keyboard))
 
@@ -396,6 +431,37 @@ async def show_detail(update: Update, context: ContextTypes.DEFAULT_TYPE, doc_ty
             [InlineKeyboardButton("↩️ Назад к списку", callback_data="list_reconciliations")],
         ]
     await query.edit_message_text(msg, parse_mode="Markdown", reply_markup=InlineKeyboardMarkup(keyboard))
+    elif doc_type == 'otpcex':
+        item = otpcex_col.find_one({'id': doc_id})
+        if not item:
+            await query.edit_message_text('Документ не найден.', reply_markup=back_button())
+            return
+        msg = f"🏭 *Техкарта №{escape_html(str(item.get('techcard_no','')))}*\n"
+        msg += f"Менеджер: {escape_html(item.get('manager',''))}\n"
+        msg += f"Клиент: {escape_html(item.get('customer',''))}\n"
+        msg += f"Продукция: {escape_html(item.get('product_name',''))}\n"
+        msg += f"Кол-во: {item.get('order_qty',0)}\n"
+        kb = [
+            [InlineKeyboardButton("📄 Скачать PDF", callback_data=f"pdf|otpcex|{doc_id}")],
+            [InlineKeyboardButton("⬆️ Загрузить PDF", callback_data=f"upload_pdf|otpcex|{doc_id}")],
+            [InlineKeyboardButton("✏️ Редактировать", callback_data=f"edit|otpcex|{doc_id}")],
+            [InlineKeyboardButton("🗑️ Удалить", callback_data=f"delete|otpcex|{doc_id}")],
+            [InlineKeyboardButton("↩️ Назад к списку", callback_data="list_otpcex")]
+        ]
+        await query.edit_message_text(msg, parse_mode="Markdown", reply_markup=InlineKeyboardMarkup(kb))
+    elif doc_type == 'texkarta':
+        item = texkartas_col.find_one({'id': doc_id})
+        if not item:
+            await query.edit_message_text('Документ не найден.', reply_markup=back_button())
+            return
+        msg = f"🧾 *Техкарта №{escape_html(str(item.get('techcard_no','')))}*\n"
+        msg += f"Источник: {escape_html(item.get('pdfSource',''))}\n"
+        msg += f"Создано: {item.get('createdAt')}\n"
+        kb = [
+            [InlineKeyboardButton("📄 Скачать PDF", callback_data=f"pdf|texkarta|{doc_id}")],
+            [InlineKeyboardButton("↩️ Назад к списку", callback_data="list_texkartas")]
+        ]
+        await query.edit_message_text(msg, parse_mode="Markdown", reply_markup=InlineKeyboardMarkup(kb))
 
 async def detail_text(update: Update, context: ContextTypes.DEFAULT_TYPE, doc_type: str, doc_id: str):
     query = update.callback_query
@@ -470,6 +536,122 @@ async def send_pdf(update: Update, context: ContextTypes.DEFAULT_TYPE, doc_type:
 async def create_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.edit_message_text("Что вы хотите создать?", reply_markup=create_menu_keyboard())
+
+async def create_otpcex_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.callback_query.answer()
+    await update.callback_query.edit_message_text("Введите номер техкарты (или оставьте пустым):")
+    return OTP_TECHNO
+
+async def otp_techno(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data['pending_otpcex'] = {'techcard_no': update.message.text.strip()}
+    await update.message.reply_text('Введите имя менеджера:')
+    return OTP_MANAGER
+
+async def otp_manager(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data['pending_otpcex']['manager'] = update.message.text.strip()
+    await update.message.reply_text('Введите заказчика (клиента):')
+    return OTP_CUSTOMER
+
+async def otp_customer(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data['pending_otpcex']['customer'] = update.message.text.strip()
+    await update.message.reply_text('Введите наименование продукции:')
+    return OTP_PRODUCT
+
+async def otp_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data['pending_otpcex']['product_name'] = update.message.text.strip()
+    await update.message.reply_text('Введите количество (число):')
+    return OTP_ORDERQ
+
+async def otp_orderq(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        q = int(float(update.message.text.strip()))
+    except:
+        q = 0
+    pending = context.user_data.get('pending_otpcex', {})
+    pending['order_qty'] = q
+    pending['id'] = generate_id()
+    pending['createdAt'] = datetime.utcnow()
+    # Confirm
+    await update.message.reply_text(f"Подтвердите создание техкарты №{pending.get('techcard_no','(без номера)')} для {pending.get('customer','')} (Да/Нет)")
+    return OTP_CONFIRM
+
+async def otp_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text.strip().lower()
+    if text not in ('да','yes','y'):
+        context.user_data.pop('pending_otpcex', None)
+        await update.message.reply_text('Создание отменено.')
+        return ConversationHandler.END
+    pending = context.user_data.get('pending_otpcex')
+    if not pending:
+        await update.message.reply_text('Нет данных для сохранения.')
+        return ConversationHandler.END
+    # Check rotation rule
+    cnt = otpcex_col.count_documents({})
+    if cnt >= 100:
+        # ask for explicit confirmation that oldest 100 will be moved
+        context.user_data['pending_otpcex'] = pending
+        keyboard = InlineKeyboardMarkup([[InlineKeyboardButton('✅ Да, продолжить', callback_data='rotate_confirm_yes')],[InlineKeyboardButton('❌ Нет, отменить', callback_data='rotate_confirm_no')]])
+        await update.message.reply_text('При создании новой техкарты первые 100 техкарт будут перемещены в резервную корзину. Продолжить?', reply_markup=keyboard)
+        return ConversationHandler.END
+    # otherwise save immediately
+    otpcex_col.insert_one(pending)
+    await update.message.reply_text('✅ Техкарта создана и сохранена.')
+    context.user_data.pop('pending_otpcex', None)
+    return ConversationHandler.END
+
+def move_oldest_to_reserve(limit=100):
+    # Move oldest `limit` documents to reserve collection
+    docs = list(otpcex_col.find().sort('createdAt', 1).limit(limit))
+    if not docs:
+        return 0
+    # insert into reserve (preserve original)
+    for d in docs:
+        d.pop('_id', None)
+    otpcex_reserve_col.insert_many(docs)
+    ids = [d['id'] for d in docs if 'id' in d]
+    otpcex_col.delete_many({'id': {'$in': ids}})
+    return len(ids)
+
+async def handle_rotate_confirm_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    if query.data == 'rotate_confirm_no':
+        context.user_data.pop('pending_otpcex', None)
+        await query.edit_message_text('Создание отменено.')
+        return
+    # yes
+    pending = context.user_data.get('pending_otpcex')
+    if not pending:
+        await query.edit_message_text('Нет данных для сохранения.')
+        return
+    moved = move_oldest_to_reserve(100)
+    otpcex_col.insert_one(pending)
+    context.user_data.pop('pending_otpcex', None)
+    await query.edit_message_text(f'✅ Создано. Перемещено в резерв: {moved} записей.')
+
+async def handle_upload_pdf_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # This handler expects context.user_data['awaiting_pdf'] = {'type':'otpcex'|'texkarta', 'id': id}
+    info = context.user_data.get('awaiting_pdf')
+    if not info:
+        return
+    doc = update.message.document
+    if not doc:
+        await update.message.reply_text('Пожалуйста, отправьте файл в виде документа (PDF).')
+        return
+    if not doc.file_name.lower().endswith('.pdf'):
+        await update.message.reply_text('Требуется PDF файл.')
+        return
+    f = await doc.get_file()
+    data = await f.download_as_bytearray()
+    b64 = base64.b64encode(bytes(data)).decode('ascii')
+    data_uri = 'data:application/pdf;base64,' + b64
+    if info['type'] == 'otpcex':
+        otpcex_col.update_one({'id': info['id']}, {'$set': {'pdfData': data_uri, 'pdfSource': 'tg', 'updatedAt': datetime.utcnow()}})
+        await update.message.reply_text('PDF загружен и привязан к техкарте.')
+    elif info['type'] == 'texkarta':
+        texkartas_col.update_one({'id': info['id']}, {'$set': {'pdfData': data_uri, 'pdfSource': 'tg', 'updatedAt': datetime.utcnow()}})
+        await update.message.reply_text('PDF сохранён.')
+    context.user_data.pop('awaiting_pdf', None)
 
 # ----- КОНТРАГЕНТ (расширенный) -----
 async def create_client_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -717,6 +899,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await list_docs(update, context, "reconciliations")
     elif data_str == "help":
         await query.edit_message_text("Команды бота:\n/start – главное меню\nИспользуйте кнопки для навигации.", reply_markup=back_button())
+    elif data_str == 'list_otpcex':
+        await list_docs(update, context, 'otpcex')
+    elif data_str == 'list_texkartas':
+        await list_docs(update, context, 'texkartas')
     elif data_str.startswith("detail|"):
         parts = data_str.split("|")
         if len(parts) == 3:
@@ -735,6 +921,15 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             doc_type = parts[1]
             doc_id = parts[2]
             await send_pdf(update, context, doc_type, doc_id)
+    elif data_str.startswith('upload_pdf|'):
+        parts = data_str.split('|')
+        if len(parts) == 3:
+            doc_type = parts[1]
+            doc_id = parts[2]
+            context.user_data['awaiting_pdf'] = {'type': doc_type, 'id': doc_id}
+            await query.edit_message_text('Отправьте PDF файлом (как документ).')
+    elif data_str.startswith('rotate_confirm_'):
+        await handle_rotate_confirm_callback(update, context)
     elif data_str == "create_menu":
         await create_menu(update, context)
 
@@ -781,6 +976,22 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(conv_client)
     app.add_handler(conv_product)
+    # Техкарта / Отправка в цех
+    conv_otpcex = ConversationHandler(
+        entry_points=[CallbackQueryHandler(create_otpcex_start, pattern="^create_otpcex$")],
+        states={
+            OTP_TECHNO: [MessageHandler(filters.TEXT & ~filters.COMMAND, otp_techno)],
+            OTP_MANAGER: [MessageHandler(filters.TEXT & ~filters.COMMAND, otp_manager)],
+            OTP_CUSTOMER: [MessageHandler(filters.TEXT & ~filters.COMMAND, otp_customer)],
+            OTP_PRODUCT: [MessageHandler(filters.TEXT & ~filters.COMMAND, otp_product)],
+            OTP_ORDERQ: [MessageHandler(filters.TEXT & ~filters.COMMAND, otp_orderq)],
+            OTP_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, otp_confirm)],
+        },
+        fallbacks=[CommandHandler("cancel", lambda u,c: ConversationHandler.END)]
+    )
+    app.add_handler(conv_otpcex)
+    # PDF upload handler
+    app.add_handler(MessageHandler(filters.Document.ALL & ~filters.COMMAND, handle_upload_pdf_document))
     app.add_handler(CallbackQueryHandler(button_callback))
     app.add_handler(CommandHandler("cancel", lambda update, context: update.message.reply_text("Действие отменено.")))
 

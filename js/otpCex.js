@@ -35,16 +35,15 @@ const SERVICE_TYPES = {
   vd_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
   lamination: ['Глянцевый','Матовый','Золота','Серебро','Голограмма'],
   embossing: ['Золота','Серебро', 'Голограмма'],
-  cutting: [],          // ← предпоследняя
   gluing: ['1','2','3','4 и более'],
   uv_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
-  die_cut: ['автомат'],  // ← последняя
-
+  cutting: [],
+  die_cut: ['автомат']
 };
 
 const SERVICE_LABELS = {
   vd_lak:'ВД лак', lamination:'Ламинация',
-  embossing:'Тиснение',cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
+  embossing:'Тиснение', cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
   die_cut:'Высечка'
 };
 
@@ -73,7 +72,6 @@ function buildServicesBlock() {
     div.appendChild(mainRow);
 
     if (key === 'cutting') {
-      // Блок резки
       const detailsDiv = document.createElement('div');
       detailsDiv.className = 'cutting-details';
       detailsDiv.id = 'cuttingDetails';
@@ -150,7 +148,6 @@ function buildServicesBlock() {
 
       div.appendChild(detailsDiv);
     } else {
-      // Обычный select
       const sel = document.createElement('select');
       sel.id = 'sel_' + key;
       SERVICE_TYPES[key].forEach(v => {
@@ -181,20 +178,46 @@ function setupMediaTypeToggle() {
   toggle();
 }
 
-// ---------- ТИРАЖ ----------
+// ---------- ТИРАЖ (чистый, без приладки) ----------
 function setupCalc() {
   const qty = document.querySelector('input[name="order_qty"]');
-  const str = document.querySelector('input[name="stripes"]');
-  const mr = document.querySelector('input[name="make_ready"]');
   const res = document.querySelector('input[name="print_sheets"]');
+
+  if (!qty || !res) return;
+
   const calc = () => {
-    res.value = (parseInt(qty.value)||0) + (parseInt(str.value)||0) + (parseInt(mr.value)||0);
+    const orderQty = parseInt(qty.value) || 0;
+    res.value = orderQty;
+    calcWeight(); // автоматически пересчитываем вес при изменении тиража
   };
+
   qty.addEventListener('input', calc);
-  str.addEventListener('input', calc);
-  mr.addEventListener('input', calc);
-  calc();
+
+  // При изменении размеров и плотности вес пересчитывается отдельно
+  ['size_width', 'size_length', 'gsm'].forEach(name => {
+    const el = document.querySelector(`input[name="${name}"]`);
+    if (el) el.addEventListener('input', calcWeight);
+  });
+
+  calc(); // начальный расчёт
 }
+
+// ---------- РАСЧЁТ ВЕСА ----------
+function calcWeight() {
+  const width = parseFloat(document.querySelector('input[name="size_width"]')?.value) || 0;
+  const length = parseFloat(document.querySelector('input[name="size_length"]')?.value) || 0;
+  const gsm = parseFloat(document.querySelector('input[name="gsm"]')?.value) || 0;
+  const sheets = parseInt(document.querySelector('input[name="print_sheets"]')?.value) || 0;
+
+  // вес в кг = (ширина_мм * длина_мм * г/м² * тираж) / 1 000 000 000
+  const weightKg = (width * length * gsm * sheets) / 1_000_000_000;
+  const resultDiv = document.getElementById('weightResult');
+  if (resultDiv) {
+    resultDiv.textContent = weightKg ? weightKg.toFixed(3) + ' кг' : '— кг';
+  }
+}
+
+document.getElementById('calcWeightBtn')?.addEventListener('click', calcWeight);
 
 // ---------- PDF ----------
 let pdfBase64 = null;
@@ -291,7 +314,7 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   orders.push(order);
   localStorage.setItem('print_orders', JSON.stringify(orders));
 
-  // Try saving to server
+  // Попытка сохранения на сервер
   (async () => {
     try {
       const resp = await fetch('/api/otpcex', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...order, id: String(order.id) }) });
@@ -311,3 +334,4 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
 buildServicesBlock();
 setupMediaTypeToggle();
 setupCalc();
+calcWeight();

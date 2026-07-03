@@ -6,17 +6,102 @@
   <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
+    /* ============================================
+       Уникальные стили страницы «Отправка в цех»
+       ============================================ */
+    .form-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-top: 16px;
+    }
+    .form-column {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    }
+    .form-column-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 14px 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* ---------- Квадратные карточки выбора ---------- */
+    .choice-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .choice-card {
+      position: relative;
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 10px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--bg-main);
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .choice-card:hover {
+      border-color: var(--primary-blue);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+    }
+    .choice-card input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .choice-card label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+    .choice-card label::before {
+      content: '';
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--text-secondary);
+      border-radius: 50%;
+      margin-bottom: 2px;
+      transition: 0.15s;
+    }
+    .choice-card input:checked + label::before {
+      border-color: var(--primary-blue);
+      background: var(--primary-blue);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+    }
+    .choice-card:has(input:checked) {
+      border-color: var(--primary-blue);
+      background: rgba(37, 99, 235, 0.04);
+    }
+
+    /* ---------- Сетка услуг ---------- */
     .service-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 10px;
       margin-top: 8px;
-      align-items: start;          /* все карточки прижимаются к началу ряда */
+      align-items: start;
     }
     .service-item {
       display: block;
-      position: relative;          /* чтобы выпадашка позиционировалась относительно карточки */
-      overflow: visible;           /* не обрезаем выпадающий блок */
+      position: relative;
+      overflow: visible;
       background: linear-gradient(135deg, var(--bg-main), var(--bg-white));
       border: 1px solid var(--border-color);
       border-radius: 10px;
@@ -78,65 +163,39 @@
       border-color: var(--primary-blue);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
-    .radio-group {
-      display: flex;
-      gap: 20px;
-      margin-top: 6px;
-    }
-    .radio-group label {
-      font-weight: 500;
+
+    /* ---------- Универсальный стиль для селектов в таблице ---------- */
+    .data-table select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
       font-size: 13px;
+      font-family: var(--font-main);
+      background: linear-gradient(135deg, var(--bg-white), rgba(240, 244, 250, 0.5));
       color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    input[readonly] {
-      background: var(--bg-main);
-      font-weight: 600;
-      color: var(--primary-blue);
-    }
-    .success-msg {
-      margin-top: 12px;
-      padding: 10px;
-      background: #ecfdf5;
-      border-radius: var(--radius-sm);
-      color: #065f46;
-      font-weight: 500;
-      font-size: 13px;
-    }
-    body.dark .success-msg {
-      background: #064e3b;
-      color: #a7f3d0;
-    }
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    input[type="number"] {
-      -moz-appearance: textfield;
-    }
-    input[type="text"],
-    input[type="number"],
-    textarea {
       transition: all 0.2s ease;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 2.5rem;
     }
-    input[type="text"]:hover,
-    input[type="number"]:hover,
-    textarea:hover {
+    .data-table select:hover {
       border-color: var(--primary-blue);
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(59, 130, 246, 0.08);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(59, 130, 246, 0.12);
     }
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    textarea:focus {
+    .data-table select:focus {
       outline: none;
       border-color: var(--primary-blue);
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(59, 130, 246, 0.1);
+      background: linear-gradient(135deg, var(--bg-white), rgba(59, 130, 246, 0.03));
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(59, 130, 246, 0.12);
     }
 
-    /* Выпадающий блок резки – абсолютный */
+    /* ---------- Выпадающий блок резки ---------- */
     .cutting-details {
       position: absolute;
       top: 100%;
@@ -152,51 +211,92 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-top: -1px; /* чтобы перекрыть стык */
+      margin-top: -1px;
     }
-    .cutting-fields {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
+    .cutting-fields { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .cutting-fields.cutting-both { flex-direction: column; gap: 6px; }
+    .cutting-row-inline { display: flex; gap: 8px; align-items: center; }
+    .cutting-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); min-width: 35px; }
+    .cutting-fields input, .cutting-row-inline input {
+      width: 80px; padding: 5px 8px; border: 1.5px solid var(--border-color); border-radius: 5px;
+      font-size: 11px; background: var(--bg-white); color: var(--text-primary);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04); transition: all 0.2s ease;
     }
-    .cutting-fields.cutting-both {
-      flex-direction: column;
-      gap: 6px;
-    }
-    .cutting-row-inline {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .cutting-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      min-width: 35px;
-    }
-    .cutting-fields input,
-    .cutting-row-inline input {
-      width: 80px;
-      padding: 5px 8px;
-      border: 1.5px solid var(--border-color);
-      border-radius: 5px;
-      font-size: 11px;
-      background: var(--bg-white);
-      color: var(--text-primary);
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
-      transition: all 0.2s ease;
-    }
-    .cutting-fields input:hover,
-    .cutting-row-inline input:hover {
+    .cutting-fields input:hover, .cutting-row-inline input:hover {
       border-color: var(--primary-blue);
       box-shadow: inset 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(59,130,246,0.08);
     }
-    .cutting-fields input:focus,
-    .cutting-row-inline input:focus {
+    .cutting-fields input:focus, .cutting-row-inline input:focus {
       outline: none;
       border-color: var(--primary-blue);
       box-shadow: inset 0 1px 2px rgba(0,0,0,0.04), 0 0 0 2px rgba(59,130,246,0.1);
+    }
+
+    /* ---------- Блок расчёта веса ---------- */
+    .weight-calc {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .weight-result {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--primary-blue);
+      background: rgba(37, 99, 235, 0.08);
+      padding: 8px 14px;
+      border-radius: 8px;
+      min-width: 120px;
+      text-align: center;
+    }
+    .pdf-upload-block {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* ---------- Адаптив для телефонов ---------- */
+    @media screen and (max-width: 768px) {
+      .form-columns {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .choice-cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .choice-card label {
+        font-size: 12px;
+      }
+      .service-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      }
+      .data-table input[type="text"],
+      .data-table input[type="number"],
+      .data-table select {
+        font-size: 14px !important;
+        padding: 10px 12px !important;
+      }
+      .data-table select {
+        background-position: right 8px center;
+      }
+      .weight-calc {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .weight-result {
+        width: 100%;
+      }
+    }
+    @media screen and (max-width: 400px) {
+      .choice-cards {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -228,9 +328,7 @@
 
     <!-- Основной контент -->
     <main class="main-content">
-      <div class="top-bar">
-        <h1>Отправка в цех</h1>
-      </div>
+      <div class="top-bar"><h1>Отправка в цех</h1></div>
       <div class="content-section">
         <form id="orderForm">
           <div class="form-row">
@@ -240,7 +338,12 @@
             </div>
             <div class="form-group">
               <label>Менеджер</label>
-              <input type="text" name="manager" required>
+              <select name="manager" required>
+                <option value="">Выберите менеджера</option>
+                <option value="Муниса">Муниса</option>
+                <option value="Расул">Расул</option>
+                <option value="Руслан">Руслан</option>
+              </select>
             </div>
           </div>
           <div class="form-row">
@@ -249,50 +352,77 @@
           </div>
           <div class="form-group"><label>Описание</label><textarea name="description" rows="2"></textarea></div>
 
-          <div class="form-row" style="margin-bottom: 16px;">
-            <div>
-              <label>Тип печати</label>
-              <div class="radio-group">
-                <label><input type="radio" name="print_type" value="A1" checked> Печать А1</label>
-                <label><input type="radio" name="print_type" value="A2"> Печать А2</label>
+          <!-- ДВЕ КОЛОНКИ -->
+          <div class="form-columns">
+            <!-- ЛЕВАЯ: данные заказа -->
+            <div class="form-column">
+              <div class="form-column-title">До печать и печать</div>
+
+              <!-- Квадратные карточки выбора -->
+              <div class="choice-cards">
+                <div class="choice-card">
+                  <input type="radio" name="print_type" value="A1" id="printA1" checked>
+                  <label for="printA1">🖨️ Печать А1</label>
+                </div>
+                <div class="choice-card">
+                  <input type="radio" name="print_type" value="A2" id="printA2">
+                  <label for="printA2">🖨️ Печать А2</label>
+                </div>
+                <div class="choice-card">
+                  <input type="radio" name="media_type" value="roll" id="mediaRoll" checked>
+                  <label for="mediaRoll">📜 Рулон</label>
+                </div>
+                <div class="choice-card">
+                  <input type="radio" name="media_type" value="sheet" id="mediaSheet">
+                  <label for="mediaSheet">📄 Листовой</label>
+                </div>
+              </div>
+
+              <table class="data-table">
+                <tr>
+                  <td>Тип бумаги</td>
+                  <td>
+                    <select name="paper_type" required>
+                      <option value="">Выберите бумагу</option>
+                      <option value="картон">картон</option>
+                      <option value="Меловка">Меловка</option>
+                      <option value="Офсет">Офсет</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr><td>Кол-во заказ</td><td><input type="number" name="order_qty" min="0" required></td></tr>
+                <tr><td>Приладка</td><td><input type="number" name="make_ready" min="0" required></td></tr>
+                <tr id="rollFormatRow"><td>Формат рулона</td><td><input type="number" name="roll_format" step="any"></td></tr>
+                <tr><td>Размер заказа (Длина)</td><td><input type="number" name="size_length" min="0" required></td></tr>
+                <tr><td>Размер заказа (Ширина)</td><td><input type="number" name="size_width" min="0" required></td></tr>
+                <tr><td>Полос</td><td><input type="number" name="stripes" min="0" required></td></tr>
+                <tr><td>гр/м²</td><td><input type="number" name="gsm" min="0" required></td></tr>
+                <tr><td>Цвет</td><td><input type="text" name="color" required></td></tr>
+                <tr><td>Тираж листов (авто)</td><td><input type="number" name="print_sheets" readonly></td></tr>
+              </table>
+
+              <!-- Расчёт веса -->
+              <div class="weight-calc">
+                <div class="weight-result" id="weightResult">— кг</div>
               </div>
             </div>
-            <div>
-              <label>Тип носителя</label>
-              <div class="radio-group">
-                <label><input type="radio" name="media_type" value="roll" checked> Рулон</label>
-                <label><input type="radio" name="media_type" value="sheet"> Листовой</label>
+
+            <!-- ПРАВАЯ: услуги + PDF -->
+            <div class="form-column">
+              <div class="form-column-title">Пост печать</div>
+              <div class="service-grid" id="servicesContainer"></div>
+
+              <div class="pdf-upload-block">
+                <label for="pdfUpload" class="btn btn-secondary" style="cursor:pointer;">📎 Загрузить PDF (офис)</label>
+                <input type="file" id="pdfUpload" accept=".pdf" style="display:none;">
+                <span id="pdfFileName" style="font-size:13px; font-weight:500;"></span>
+                <button type="button" id="clearPdfBtn" class="btn btn-secondary" style="display:none;">✕ Очистить</button>
               </div>
+              <div id="pdfError" style="color:var(--accent-red); font-size:12px; margin-top:4px;"></div>
             </div>
           </div>
 
-          <table class="data-table">
-            <tr><td>Тип бумаги</td><td><input type="text" name="paper_type" required></td></tr>
-            <tr><td>Кол-во заказ</td><td><input type="number" name="order_qty" min="0" required></td></tr>
-            <tr><td>Приладка</td><td><input type="number" name="make_ready" min="0" required></td></tr>
-            <tr id="rollFormatRow"><td>Формат рулона</td><td><input type="number" name="roll_format" step="any"></td></tr>
-            <tr><td>Размер заказа (Длина)</td><td><input type="number" name="size_length" min="0" required></td></tr>
-            <tr><td>Размер заказа (Ширина)</td><td><input type="number" name="size_width" min="0" required></td></tr>
-            <tr><td>Полос</td><td><input type="number" name="stripes" min="0" required></td></tr>
-            <tr><td>гр/м²</td><td><input type="number" name="gsm" min="0" required></td></tr>
-            <tr><td>Цвет</td><td><input type="text" name="color" required></td></tr>
-            <tr><td>Тираж листов (авто)</td><td><input type="number" name="print_sheets" readonly></td></tr>
-          </table>
-
-          <div style="margin-top: 20px;">
-            <label>Дополнительные услуги</label>
-            <div class="service-grid" id="servicesContainer"></div>
-          </div>
-
-          <div style="margin-top: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-            <label for="pdfUpload" class="btn btn-secondary" style="cursor:pointer;">📎 Загрузить PDF (офис)</label>
-            <input type="file" id="pdfUpload" accept=".pdf" style="display:none;">
-            <span id="pdfFileName" style="font-size:13px; font-weight:500;"></span>
-            <button type="button" id="clearPdfBtn" class="btn btn-secondary" style="display:none;">✕ Очистить</button>
-          </div>
-          <div id="pdfError" style="color:var(--accent-red); font-size:12px; margin-top:4px;"></div>
-
-          <button type="submit" class="btn btn-primary" style="width:100%; margin-top:16px;">Передать в производство</button>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top:20px;">Передать в производство</button>
           <div id="result"></div>
         </form>
       </div>
