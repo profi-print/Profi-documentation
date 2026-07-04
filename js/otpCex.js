@@ -34,16 +34,16 @@ document.getElementById('techcardNo').value = generateTechCardNo();
 const SERVICE_TYPES = {
   vd_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
   lamination: ['Глянцевый','Матовый','Золота','Серебро','Голограмма'],
-  embossing: ['Золота','Серебро', 'Голограмма'],
+  embossing: ['Золота','Серебро','Голограмма'],
+  cutting: [],
   gluing: ['1','2','3','4 и более'],
   uv_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
-  cutting: [],
-  die_cut: ['автомат']
+  die_cut: ['автомат'],
 };
 
 const SERVICE_LABELS = {
   vd_lak:'ВД лак', lamination:'Ламинация',
-  embossing:'Тиснение', cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
+  embossing:'Тиснение',cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
   die_cut:'Высечка'
 };
 
@@ -178,46 +178,100 @@ function setupMediaTypeToggle() {
   toggle();
 }
 
-// ---------- ТИРАЖ (чистый, без приладки) ----------
-function setupCalc() {
-  const qty = document.querySelector('input[name="order_qty"]');
-  const res = document.querySelector('input[name="print_sheets"]');
+// ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ РАСЧЁТА ==========
+let currentWeightKg = 0;      // полный вес (кг)
+let currentTotalSheets = 0;   // тираж листов (теперь равен order_qty)
 
-  if (!qty || !res) return;
+// ========== РАСЧЁТ ТИРАЖА И ВЕСА ==========
+function recalc() {
+  // Сбор значений (приладка НЕ участвует)
+  const orderQty   = parseFloat(document.querySelector('input[name="order_qty"]')?.value) || 0;
+  const width      = parseFloat(document.querySelector('input[name="size_width"]')?.value) || 0;
+  const length     = parseFloat(document.querySelector('input[name="size_length"]')?.value) || 0;
+  const gsm        = parseFloat(document.querySelector('input[name="gsm"]')?.value) || 0;
 
-  const calc = () => {
-    const orderQty = parseInt(qty.value) || 0;
-    res.value = orderQty;
-    calcWeight(); // автоматически пересчитываем вес при изменении тиража
-  };
+  // Тираж листов = количество заказа (приладка убрана)
+  const totalSheets = orderQty;
+  currentTotalSheets = totalSheets;
 
-  qty.addEventListener('input', calc);
+  // Расчёт веса
+  let weightKg = 0;
+  if (width > 0 && length > 0 && gsm > 0 && totalSheets > 0) {
+    weightKg = (width * length * gsm * totalSheets) / 1_000_000_000;
+  }
+  currentWeightKg = weightKg;
 
-  // При изменении размеров и плотности вес пересчитывается отдельно
-  ['size_width', 'size_length', 'gsm'].forEach(name => {
-    const el = document.querySelector(`input[name="${name}"]`);
-    if (el) el.addEventListener('input', calcWeight);
+  updateUI(totalSheets, weightKg);
+}
+
+// ========== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ==========
+function updateUI(totalSheets, weightKg) {
+  // Скрытое поле тиража
+  const hidden = document.getElementById('printSheetsHidden');
+  if (hidden) hidden.value = totalSheets;
+
+  // Видимый элемент тиража (авто)
+  const autoSheets = document.getElementById('printSheetsAuto');
+  if (autoSheets) autoSheets.textContent = totalSheets;
+
+  // Отображение веса
+  const weightEl = document.getElementById('weightResult');
+  if (weightEl) {
+    if (weightKg <= 0 || totalSheets <= 0) {
+      weightEl.textContent = '— кг';
+    } else {
+      // Отсекаем лишние знаки без округления: 2123.8525 → 2123.852
+      const truncated = Math.floor(weightKg * 1000) / 1000;
+      weightEl.textContent = truncated.toFixed(3).replace('.', ',') + ' кг';
+    }
+  }
+
+  // Сброс поля делённого результата
+  const dividedInput = document.getElementById('dividedResult');
+  if (dividedInput) dividedInput.value = '';
+}
+
+// ---------- ПРИВЯЗКА СОБЫТИЙ НА ПОЛЯ ВВОДА ----------
+function setupCalcListeners() {
+  // Приладка не влияет на расчёт, поэтому не включена в этот список
+  const selectors = [
+    'input[name="order_qty"]',
+    'input[name="size_width"]',
+    'input[name="size_length"]',
+    'input[name="gsm"]'
+  ];
+  selectors.forEach(sel => {
+    const el = document.querySelector(sel);
+    if (el) el.addEventListener('input', recalc);
   });
 
-  calc(); // начальный расчёт
+  // Переключение режима (если понадобится вернуть вариант Б — можно добавить обработку)
+  document.querySelectorAll('input[name="calc_mode"]').forEach(radio => {
+    radio.addEventListener('change', recalc);
+  });
 }
 
-// ---------- РАСЧЁТ ВЕСА ----------
-function calcWeight() {
-  const width = parseFloat(document.querySelector('input[name="size_width"]')?.value) || 0;
-  const length = parseFloat(document.querySelector('input[name="size_length"]')?.value) || 0;
-  const gsm = parseFloat(document.querySelector('input[name="gsm"]')?.value) || 0;
-  const sheets = parseInt(document.querySelector('input[name="print_sheets"]')?.value) || 0;
+// ---------- КНОПКИ ДЕЛЕНИЯ ВЕСА ----------
+function setupWeightDivision() {
+  const resultInput = document.getElementById('dividedResult');
+  const btn2 = document.getElementById('divideBy2');
+  const btn4 = document.getElementById('divideBy4');
 
-  // вес в кг = (ширина_мм * длина_мм * г/м² * тираж) / 1 000 000 000
-  const weightKg = (width * length * gsm * sheets) / 1_000_000_000;
-  const resultDiv = document.getElementById('weightResult');
-  if (resultDiv) {
-    resultDiv.textContent = weightKg ? weightKg.toFixed(3) + ' кг' : '— кг';
+  if (btn2 && resultInput) {
+    btn2.addEventListener('click', () => {
+      if (currentWeightKg > 0) {
+        resultInput.value = (currentWeightKg / 2).toFixed(2);
+      }
+    });
+  }
+  if (btn4 && resultInput) {
+    btn4.addEventListener('click', () => {
+      if (currentWeightKg > 0) {
+        resultInput.value = (currentWeightKg / 4).toFixed(2);
+      }
+    });
   }
 }
-
-document.getElementById('calcWeightBtn')?.addEventListener('click', calcWeight);
 
 // ---------- PDF ----------
 let pdfBase64 = null;
@@ -252,6 +306,10 @@ document.getElementById('clearPdfBtn').addEventListener('click', function(){
 document.getElementById('orderForm').addEventListener('submit', function(e){
   e.preventDefault();
   if(!this.checkValidity()) { this.reportValidity(); return; }
+
+  // Пересчитываем перед отправкой
+  recalc();
+
   const fd = new FormData(this);
   const order = {
     id: Date.now(),
@@ -264,17 +322,21 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
     media_type: fd.get('media_type'),
     paper_type: fd.get('paper_type'),
     order_qty: +fd.get('order_qty') || 0,
-    make_ready: +fd.get('make_ready') || 0,
+    make_ready: +fd.get('make_ready') || 0,  // поле есть, но в расчётах не участвует
     roll_format: fd.get('roll_format') ? parseFloat(fd.get('roll_format')) : null,
     size_length: +fd.get('size_length') || 0,
     size_width: +fd.get('size_width') || 0,
     stripes: +fd.get('stripes') || 0,
     gsm: +fd.get('gsm') || 0,
     color: fd.get('color'),
+    calc_mode: document.querySelector('input[name="calc_mode"]:checked')?.value || 'warehouse',
+    print_sheets: currentTotalSheets,
+    weight_kg: currentWeightKg,
     services: [],
     pdfData: pdfBase64 || null
   };
 
+  // Сбор услуг
   for (let key in SERVICE_TYPES) {
     const chk = document.getElementById('chk_' + key);
     if (chk && chk.checked) {
@@ -333,5 +395,6 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
 // ---------- ИНИЦИАЛИЗАЦИЯ ----------
 buildServicesBlock();
 setupMediaTypeToggle();
-setupCalc();
-calcWeight();
+setupCalcListeners();
+setupWeightDivision();
+recalc();   // первоначальный расчёт при загрузке
