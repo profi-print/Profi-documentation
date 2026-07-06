@@ -38,20 +38,14 @@
       --accent-red: #dc2626 !important;
     }
 
-    .theme-switch-wrapper {
-      display: none !important;
-    }
+    .theme-switch-wrapper { display: none !important; }
 
     /* ============================================================
        Стили для печати
        ============================================================ */
     @media print {
-      body * {
-        visibility: hidden;
-      }
-      #techCardContent, #techCardContent * {
-        visibility: visible;
-      }
+      body * { visibility: hidden; }
+      #techCardContent, #techCardContent * { visibility: visible; }
       #techCardContent {
         position: absolute;
         left: 0;
@@ -64,22 +58,10 @@
         box-shadow: none;
         border-radius: 0;
       }
-      #techCardContent h2 {
-        border-bottom: 2px solid #2563eb;
-      }
-      .action-bar, .back-link, .screenshot-modal, .modal-overlay {
-        display: none !important;
-      }
-      .tech-card .screenshot-container img {
-        max-width: 150px;
-        max-height: 150px;
-      }
-      .tech-card .file-block .label {
-        font-weight: 600;
-      }
-      .tech-card .file-row {
-        break-inside: avoid;
-      }
+      #techCardContent h2 { border-bottom: 2px solid #2563eb; }
+      .action-bar, .back-link, .screenshot-modal { display: none !important; }
+      .tech-card .screenshot-container img { max-width: 150px; max-height: 150px; }
+      .tech-card .file-row { break-inside: avoid; }
     }
 
     /* ============================================================
@@ -119,10 +101,7 @@
       border-bottom: 1px solid var(--border-color);
       color: var(--text-primary);
     }
-    .tech-list tr:hover {
-      background: var(--bg-main);
-      cursor: pointer;
-    }
+    .tech-list tr:hover { background: var(--bg-main); cursor: pointer; }
     .tech-list .btn-link {
       padding: 4px 12px;
       border-radius: 6px;
@@ -133,9 +112,7 @@
       border: none;
       cursor: pointer;
     }
-    .tech-list .btn-link:hover {
-      opacity: 0.85;
-    }
+    .tech-list .btn-link:hover { opacity: 0.85; }
     .tech-list .empty-msg {
       padding: 30px;
       text-align: center;
@@ -222,9 +199,7 @@
       text-decoration: none;
       font-weight: 500;
     }
-    .tech-card-container .back-link:hover {
-      text-decoration: underline;
-    }
+    .tech-card-container .back-link:hover { text-decoration: underline; }
 
     .tech-card {
       background: var(--bg-white);
@@ -241,27 +216,59 @@
       border-bottom: 2px solid var(--primary-blue);
       padding-bottom: 8px;
     }
+
+    /* Блок с заказчиком и описанием — увеличенные и жирные названия */
     .tech-card .order-meta {
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+    }
+    .tech-card .order-meta .meta-row {
       display: flex;
       flex-wrap: wrap;
       gap: 12px 40px;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-color);
+      align-items: baseline;
+      margin-bottom: 4px;
     }
-    .tech-card .order-meta p {
+    .tech-card .order-meta .meta-row p {
       margin: 0;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-    .tech-card .order-meta p span {
-      font-weight: 400;
+      font-weight: 700;
+      font-size: 16px;
       color: var(--text-primary);
-      margin-left: 4px;
     }
-    .tech-card .order-meta .qty {
+    .tech-card .order-meta .meta-row p span {
+      font-weight: 400;
+      font-size: 15px;
+      color: var(--text-primary);
+    }
+    .tech-card .order-meta .meta-row .qty {
       font-weight: 700;
       color: var(--primary-blue);
+    }
+    /* Строка описания — "Описание:" слева, текст по центру */
+    .tech-card .order-meta .desc-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      background: var(--bg-main);
+      padding: 8px 16px;
+      border-radius: 6px;
+      margin: 0;
+      width: 100%;
+    }
+    .tech-card .order-meta .desc-row .desc-label {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+    .tech-card .order-meta .desc-row .desc-value {
+      flex: 1;
+      text-align: center;
+      color: var(--text-primary);
+      font-weight: 400;
+      font-size: 15px;
+      font-style: italic;
     }
 
     .tech-card .section-title {
@@ -292,21 +299,37 @@
       text-align: center;
       color: var(--text-primary);
     }
-    .tech-card table td:empty::before {
-      content: "";
-    }
+    .tech-card table td:empty::before { content: ""; }
 
-    /* Таблица Тех ОП — три строки: Параметр, План и Факт */
-    .tech-card .tech-op-table td:first-child {
+    /* Таблица Тех ОП — вертикальная структура (услуги — колонки) */
+    .tech-card .tech-op-table {
+      width: auto;
+      max-width: 100%;
+      table-layout: auto;
+    }
+    .tech-card .tech-op-table th,
+    .tech-card .tech-op-table td {
+      padding: 8px 14px;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .tech-card .tech-op-table .row-label {
       font-weight: 600;
       background: var(--bg-main);
+      white-space: nowrap;
+      text-align: left;
+      padding-left: 14px;
     }
-    .tech-card .tech-op-table tr.row-parametr td {
-      background: rgba(37, 99, 235, 0.04);
+    .tech-card .tech-op-table .row-label.tech-op-header {
+      background: #d0d8e0;
+      font-weight: 700;
     }
-    .tech-card .tech-op-table tr.row-plan td,
-    .tech-card .tech-op-table tr.row-fakt td {
-      min-height: 30px;
+    .tech-card .tech-op-table .empty-row td {
+      color: var(--text-secondary);
+      font-style: italic;
+      text-align: center;
+      background: var(--bg-white);
+      white-space: normal;
     }
 
     .tech-card .file-block {
@@ -340,9 +363,7 @@
       cursor: pointer;
       transition: transform 0.2s;
     }
-    .tech-card .screenshot-container img:hover {
-      transform: scale(1.02);
-    }
+    .tech-card .screenshot-container img:hover { transform: scale(1.02); }
     .tech-card .pdf-name {
       background: var(--bg-main);
       padding: 4px 10px;
@@ -360,9 +381,7 @@
       gap: 12px;
       justify-content: center;
     }
-    .hidden-input {
-      display: none;
-    }
+    .hidden-input { display: none; }
 
     /* Модалка для увеличения скриншота */
     .screenshot-modal {
@@ -383,9 +402,7 @@
       border-radius: 8px;
       box-shadow: 0 0 30px rgba(0,0,0,0.5);
     }
-    .screenshot-modal.visible {
-      display: flex;
-    }
+    .screenshot-modal.visible { display: flex; }
     .screenshot-modal .close-modal {
       position: absolute;
       top: 20px;
@@ -396,21 +413,19 @@
     }
 
     @media screen and (max-width: 768px) {
-      .tech-card {
-        padding: 16px;
-      }
-      .tech-card table {
-        font-size: 12px;
-      }
+      .tech-card { padding: 16px; }
+      .tech-card table { font-size: 12px; }
       .tech-card table th,
-      .tech-card table td {
-        padding: 5px 6px;
+      .tech-card table td { padding: 5px 6px; }
+      .filter-bar .services-checkboxes { gap: 4px 10px; }
+      .filter-bar .services-checkboxes label { font-size: 12px; }
+      .tech-card .tech-op-table th,
+      .tech-card .tech-op-table td {
+        padding: 5px 8px;
+        white-space: normal;
       }
-      .filter-bar .services-checkboxes {
-        gap: 4px 10px;
-      }
-      .filter-bar .services-checkboxes label {
-        font-size: 12px;
+      .tech-card .order-meta .meta-row {
+        gap: 8px 20px;
       }
     }
   </style>
@@ -441,15 +456,12 @@
     </nav>
 
     <main class="main-content">
-      <div class="top-bar">
-        <h1>Технологическая карта</h1>
-      </div>
+      <div class="top-bar"><h1>Технологическая карта</h1></div>
       <div class="content-section">
         <div id="content">Загрузка...</div>
         <div id="actionBar" class="action-bar" style="display:none;">
           <button id="downloadPdfBtn" class="btn btn-primary">📥 Скачать PDF техкарты</button>
           <button id="viewOfficePdfBtn" class="btn btn-secondary" style="display:none;">👁️ Посмотреть PDF</button>
-          <button id="uploadLocalPdfBtn" class="btn btn-secondary">📤 Загрузить PDF</button>
           <button id="toggleFilesBtn" class="btn btn-secondary">🖨️ Скрыть файлы</button>
           <button id="printBtn" class="btn btn-primary">🖨️ Печать</button>
         </div>
@@ -482,11 +494,9 @@
       const toggleFilesBtn = document.getElementById('toggleFilesBtn');
       const printBtn = document.getElementById('printBtn');
 
-      // Получаем ID из URL
       const urlParams = new URLSearchParams(window.location.search);
       const orderId = urlParams.get('id');
 
-      // ---- Список возможных услуг (из otpCex) ----
       const SERVICE_LABELS = {
         vd_lak: 'ВД лак',
         lamination: 'Ламинация',
@@ -500,21 +510,17 @@
       };
       const SERVICE_KEYS = Object.keys(SERVICE_LABELS);
 
-      // Функция загрузки всех заказов из localStorage
       function loadOrders() {
         let orders = [];
         try {
           const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
           if (raw) orders = JSON.parse(raw);
-        } catch (e) {
-          console.error('Ошибка загрузки заказов:', e);
-        }
+        } catch (e) { console.error('Ошибка загрузки заказов:', e); }
         return orders;
       }
 
-      // ---- Функция рендеринга одной техкарты (табличный вид) ----
       function renderTechCard(order) {
-        // Определяем услуги для таблицы Тех ОП
+        // Собираем данные по услугам
         const serviceMap = {
           lamination: '',
           vd_lak: '',
@@ -553,17 +559,88 @@
           });
         }
 
-        // Проверяем наличие флоторезки
         const hasFlot = order.services && order.services.some(s => s.name === 'flot_cutting');
-
-        // Определяем формат печати
         const printType = order.print_type || 'A1';
         const printLabel = `Печать ${printType}`;
+        const printSheets = order.print_sheets || 0;
 
-        // Значение по умолчанию для незаполненных ячеек услуг ("нет")
-        const emptyOrDash = (val) => val ? val : 'нет';
+        // ---- Формируем вертикальную таблицу Тех ОП ----
+        // Массив всех возможных услуг в нужном порядке
+        const serviceList = [
+          { key: 'lamination', label: 'ламинация' },
+          { key: 'vd_lak', label: 'ВД Лак' },
+          { key: 'embossing', label: 'тиснения' },
+          { key: 'kongrev', label: 'конгрев' },
+          { key: 'die_cut', label: 'высечка' },
+          { key: 'gluing', label: 'склейка' },
+          { key: 'cutting_pre', label: 'Резка до печати' },
+          { key: 'cutting_post', label: 'Резка пост печати' }
+        ];
 
-        // Собираем HTML
+        // Фильтруем только те, у которых есть значение
+        const activeServices = serviceList.filter(item => serviceMap[item.key] !== '');
+
+        let techOpHTML = '';
+        if (activeServices.length > 0) {
+          // Собираем названия колонок (услуги)
+          const headers = activeServices.map(item => item.label);
+
+          // Строка "Тех ОП" (серый фон)
+          const techOpRow = activeServices.map(item => `<td>${item.label}</td>`).join('');
+
+          // Строка "Параметры"
+          const paramsRow = activeServices.map(item => {
+            let val = serviceMap[item.key];
+            // Для высечки и склейки параметр = "есть"
+            if (item.key === 'die_cut' || item.key === 'gluing') {
+              val = 'есть';
+            }
+            return `<td>${val}</td>`;
+          }).join('');
+
+          // Строка "План"
+          const planRow = activeServices.map(item => {
+            let val = '';
+            if (item.key === 'die_cut' || item.key === 'gluing') {
+              val = printSheets;
+            }
+            return `<td>${val}</td>`;
+          }).join('');
+
+          // Строка "Факт" (пустая)
+          const faktRow = activeServices.map(() => `<td></td>`).join('');
+
+          techOpHTML = `
+            <div class="section-title">Тех ОП</div>
+            <table class="tech-op-table">
+              <tbody>
+                <tr>
+                  <td class="row-label tech-op-header">Тех ОП</td>
+                  ${techOpRow}
+                </tr>
+                <tr>
+                  <td class="row-label">Параметры</td>
+                  ${paramsRow}
+                </tr>
+                <tr>
+                  <td class="row-label">План</td>
+                  ${planRow}
+                </tr>
+                <tr>
+                  <td class="row-label">Факт</td>
+                  ${faktRow}
+                </tr>
+              </tbody>
+            </table>
+          `;
+        } else {
+          techOpHTML = `
+            <div class="section-title">Тех ОП</div>
+            <p style="color: var(--text-secondary); font-style: italic; margin: 10px 0;">Нет дополнительных услуг</p>
+          `;
+        }
+
+        // ---- Сборка HTML с новым порядком блоков ----
         let html = `
           <div class="tech-card-container">
             <a href="texKarta.html" class="back-link">← Назад к списку</a>
@@ -571,10 +648,15 @@
               <h2>Техкарта №${order.techcard_no || order.id}</h2>
 
               <div class="order-meta">
-                <p><strong>Заказчик:</strong> <span>${order.customer || ''}</span></p>
-                <p><strong>Название продукции:</strong> <span>${order.product_name || ''}</span></p>
-                <p><strong>кол-во продукт:</strong> <span class="qty">${order.order_qty || 0}</span></p>
-                <p><strong>Описание:</strong> <span>${order.description || ''}</span></p>
+                <div class="meta-row">
+                  <p><strong>Заказчик:</strong> <span>${order.customer || ''}</span></p>
+                  <p><strong>Название продукции:</strong> <span>${order.product_name || ''}</span></p>
+                  <p><strong>кол-во продукт:</strong> <span class="qty">${order.order_qty || 0}</span></p>
+                </div>
+                <div class="desc-row">
+                  <span class="desc-label">Описание:</span>
+                  <span class="desc-value">${order.description || ''}</span>
+                </div>
               </div>
 
               ${hasFlot ? `
@@ -651,59 +733,8 @@
                 </tbody>
               </table>
 
-              <div class="section-title">Тех ОП</div>
-              <table class="tech-op-table">
-                <thead>
-                  <tr>
-                    <th>Параметр</th>
-                    <th>ламинация</th>
-                    <th>ВД Лак</th>
-                    <th>тиснения</th>
-                    <th>конгрев</th>
-                    <th>высечка</th>
-                    <th>склейка</th>
-                    <th>Резка до печати</th>
-                    <th>Резка пост печати</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="row-parametr">
-                    <td><strong>Параметр</strong></td>
-                    <td>${emptyOrDash(serviceMap.lamination)}</td>
-                    <td>${emptyOrDash(serviceMap.vd_lak)}</td>
-                    <td>${emptyOrDash(serviceMap.embossing)}</td>
-                    <td>${emptyOrDash(serviceMap.kongrev)}</td>
-                    <td>${emptyOrDash(serviceMap.die_cut)}</td>
-                    <td>${emptyOrDash(serviceMap.gluing)}</td>
-                    <td>${emptyOrDash(serviceMap.cutting_pre)}</td>
-                    <td>${emptyOrDash(serviceMap.cutting_post)}</td>
-                  </tr>
-                  <tr class="row-plan">
-                    <td><strong>План</strong></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr class="row-fakt">
-                    <td><strong>Факт</strong></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
+              ${techOpHTML}
 
-              <!-- Блок файлов (только если есть данные) -->
               ${(order.pdf_filename || order.screenshot_base64) ? `
                 <div class="section-title files-title">Файлы</div>
                 <div class="file-block">
@@ -730,11 +761,9 @@
         content.innerHTML = html;
         actionBar.style.display = 'flex';
 
-        // Переключатель видимости файлов
         let filesVisible = true;
         const filesTitle = document.querySelector('.files-title');
         const fileBlock = document.querySelector('.file-block');
-
         toggleFilesBtn.textContent = '🖨️ Скрыть файлы';
         toggleFilesBtn.onclick = function() {
           filesVisible = !filesVisible;
@@ -743,12 +772,8 @@
           this.textContent = filesVisible ? '🖨️ Скрыть файлы' : '🖨️ Показать файлы';
         };
 
-        // Кнопка печати
-        printBtn.onclick = function() {
-          window.print();
-        };
+        printBtn.onclick = function() { window.print(); };
 
-        // Скачать PDF техкарты
         downloadPdfBtn.onclick = function() {
           const element = document.getElementById('techCardContent');
           if (!element) return;
@@ -765,10 +790,8 @@
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             let heightLeft = pdfHeight;
             let position = 0;
-
             pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
             heightLeft -= pdf.internal.pageSize.getHeight();
-
             while (heightLeft > 0) {
               position = heightLeft - pdfHeight;
               pdf.addPage();
@@ -776,9 +799,7 @@
               heightLeft -= pdf.internal.pageSize.getHeight();
             }
             pdf.save(`Техкарта_${order.techcard_no || order.id}.pdf`);
-          }).catch(err => {
-            alert('Ошибка при создании PDF: ' + err.message);
-          });
+          }).catch(err => { alert('Ошибка при создании PDF: ' + err.message); });
         };
 
         viewOfficePdfBtn.onclick = function() {
@@ -789,18 +810,13 @@
           }
         };
 
-        uploadLocalPdfBtn.onclick = function() {
-          localPdfInput.click();
-        };
+        uploadLocalPdfBtn.onclick = function() { localPdfInput.click(); };
         localPdfInput.onchange = function(e) {
           const file = e.target.files[0];
-          if (file) {
-            alert(`Выбран файл: ${file.name}`);
-          }
+          if (file) { alert(`Выбран файл: ${file.name}`); }
           this.value = '';
         };
 
-        // Модалка скриншота
         const modal = document.getElementById('screenshotModal');
         modal.onclick = function(e) {
           if (e.target === this) this.classList.remove('visible');
@@ -811,36 +827,28 @@
       if (orderId) {
         const orders = loadOrders();
         const order = orders.find(o => String(o.id) === String(orderId));
-
         if (!order) {
           content.innerHTML = `<div class="tech-card"><h2>Ошибка</h2><p>Заказ с ID ${orderId} не найден. <a href="texKarta.html">Вернуться к списку</a></p></div>`;
           actionBar.style.display = 'none';
           return;
         }
-
         renderTechCard(order);
         return;
       }
 
       // ---- Если ID нет – показываем список с фильтром ----
       const allOrders = loadOrders();
-
-      // Получаем уникальные услуги из всех заказов (для чекбоксов)
       const serviceSet = new Set();
       allOrders.forEach(o => {
         if (o.services && Array.isArray(o.services)) {
-          o.services.forEach(s => {
-            if (s.name) serviceSet.add(s.name);
-          });
+          o.services.forEach(s => { if (s.name) serviceSet.add(s.name); });
         }
       });
       SERVICE_KEYS.forEach(key => serviceSet.add(key));
       const serviceList = Array.from(serviceSet).sort();
 
-      // Сохраняем оригинальный список для фильтрации
       window._originalOrders = allOrders.slice();
 
-      // Функция отображения списка с фильтрацией
       function renderList(orders) {
         if (orders.length === 0) {
           content.innerHTML = `
@@ -863,9 +871,7 @@
             <td>${o.manager || ''}</td>
             <td>${o.order_qty || 0}</td>
             <td>${o.print_sheets || 0}</td>
-            <td>
-              <a href="texKarta.html?id=${o.id}" class="btn-link">Открыть</a>
-            </td>
+            <td><a href="texKarta.html?id=${o.id}" class="btn-link">Открыть</a></td>
           </tr>
         `).join('');
 
@@ -899,50 +905,40 @@
                   <th>Действие</th>
                 </tr>
               </thead>
-              <tbody>
-                ${tableRows}
-              </tbody>
+              <tbody>${tableRows}</tbody>
             </table>
           </div>
         `;
-
         content.innerHTML = listHTML;
         actionBar.style.display = 'none';
       }
 
-      // Функция фильтрации
       window.applyFilters = function() {
         const searchVal = document.getElementById('searchInput')?.value.toLowerCase().trim() || '';
         const checkedBoxes = document.querySelectorAll('#servicesFilter input[type="checkbox"]:checked');
         const selectedServices = Array.from(checkedBoxes).map(cb => cb.value);
 
         let filtered = window._originalOrders || [];
-
         if (searchVal) {
           filtered = filtered.filter(o => {
-            const searchFields = [
-              o.techcard_no, o.customer, o.product_name, o.manager
-            ].map(f => String(f || '').toLowerCase());
-            return searchFields.some(f => f.includes(searchVal));
+            const fields = [o.techcard_no, o.customer, o.product_name, o.manager].map(f => String(f || '').toLowerCase());
+            return fields.some(f => f.includes(searchVal));
           });
         }
-
         if (selectedServices.length > 0) {
           filtered = filtered.filter(o => {
             if (!o.services || !Array.isArray(o.services) || o.services.length === 0) return false;
-            const serviceNames = o.services.map(s => s.name);
-            return selectedServices.some(sel => serviceNames.includes(sel));
+            const names = o.services.map(s => s.name);
+            return selectedServices.some(sel => names.includes(sel));
           });
         }
-
         renderList(filtered);
       };
 
       window.resetFilters = function() {
         const searchInput = document.getElementById('searchInput');
         if (searchInput) searchInput.value = '';
-        const checkboxes = document.querySelectorAll('#servicesFilter input[type="checkbox"]');
-        checkboxes.forEach(cb => cb.checked = false);
+        document.querySelectorAll('#servicesFilter input[type="checkbox"]').forEach(cb => cb.checked = false);
         applyFilters();
       };
 
