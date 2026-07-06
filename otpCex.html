@@ -319,7 +319,8 @@
       font-size: 13px;
       color: var(--text-primary);
       font-weight: 500;
-      white-space: nowrap;
+      flex: 1;
+      justify-content: space-between;
     }
     .print-sheets-info strong {
       font-weight: 700;
@@ -377,7 +378,7 @@
       margin-top: 10px;
       padding-top: 10px;
       border-top: 1px dashed var(--border-color);
-      display: none; /* Скрыт по умолчанию, показываем при отмеченном чекбоксе */
+      display: none;
       flex-direction: column;
       gap: 8px;
     }
@@ -390,6 +391,37 @@
     .flot-actions .print-sheets-info strong {
       background: rgba(220, 38, 38, 0.10);
       color: #dc2626;
+    }
+
+    /* Скрытая ссылка для Diyor */
+    .nav-menu .hidden-link {
+      display: none;
+    }
+    .nav-menu .hidden-link.visible {
+      display: block;
+    }
+
+    /* Стиль для поля автоподбора */
+    .customer-autocomplete {
+      position: relative;
+      width: 100%;
+    }
+    .customer-autocomplete input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: var(--font-main);
+      background: var(--bg-white);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .customer-autocomplete input:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
     }
 
     @media screen and (max-width: 768px) {
@@ -409,7 +441,8 @@
       }
       .data-table input[type="text"],
       .data-table input[type="number"],
-      .data-table select {
+      .data-table select,
+      .customer-autocomplete input {
         font-size: 14px !important;
         padding: 10px 12px !important;
       }
@@ -466,6 +499,8 @@
         <li><a href="backups.html">🗑️ Резервные копии</a></li>
         <li><a href="otpCex.html" class="active">⚙️ На производство</a></li>
         <li><a href="texKarta.html">⚙️ Техкарта</a></li>
+        <!-- Ссылка на index2.html, видна только для Diyor -->
+        <li id="index2Link" class="hidden-link"><a href="index2.html">📈 Аналитика (Diyor)</a></li>
       </ul>
       <div class="theme-switch-wrapper">
         <button id="themeToggle" class="btn btn-secondary" style="display:none;">
@@ -493,7 +528,13 @@
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>Заказчик</label><input type="text" name="customer" required></div>
+            <div class="form-group">
+              <label>Заказчик</label>
+              <div class="customer-autocomplete">
+                <input type="text" id="customerInput" name="customer" placeholder="Введите название контрагента..." autocomplete="off" required>
+                <datalist id="customerList"></datalist>
+              </div>
+            </div>
             <div class="form-group"><label>Название продукции</label><input type="text" name="product_name" required></div>
           </div>
           <div class="form-group"><label>Описание</label><textarea name="description" rows="2"></textarea></div>
@@ -559,7 +600,7 @@
                   <td>
                     <div class="print-sheets-container">
                       <div class="print-sheets-info">
-                        <span>Тираж: <strong id="printSheetsAuto">0</strong> листов</span>
+                        <span>Тираж листов: <strong id="printSheetsAuto">0</strong></span>
                         <span>Вес заказа: <strong id="weightResult">— кг</strong></span>
                       </div>
                     </div>
@@ -603,8 +644,12 @@
     })();
   </script>
 
+  <!-- Подключаем multi-account-storage для работы с контрагентами -->
+  <script src="js/multi-account-storage.js"></script>
+
   <!-- ============================================================
        ПОЛНЫЙ СКРИПТ (otpCex.js) С ДОБАВЛЕННОЙ ФЛОТОРЕЗКОЙ
+       И АВТОПОДБОРОМ КОНТРАГЕНТОВ
        ============================================================ -->
   <script>
     /* ============================================
@@ -641,22 +686,128 @@
     }
     document.getElementById('techcardNo').value = generateTechCardNo();
 
-    // ---------- УСЛУГИ (добавлена flot_cutting перед cutting) ----------
+    // ---------- ЗАГРУЗКА КОНТРАГЕНТОВ В DATALIST ----------
+    function loadClients() {
+      const input = document.getElementById('customerInput');
+      const datalist = document.getElementById('customerList');
+      if (!input || !datalist) return;
+
+      let clients = [];
+
+      // 1. Пробуем через Storage
+      if (typeof Storage !== 'undefined' && Storage.getClients) {
+        const storageClients = Storage.getClients();
+        if (storageClients && storageClients.length) {
+          clients = storageClients;
+        }
+      }
+
+      // 2. Если не получилось, читаем напрямую из localStorage
+      if (!clients.length) {
+        try {
+          const keys = ['profitprint_clients', 'clients'];
+          for (let k of keys) {
+            const raw = localStorage.getItem(k);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed) && parsed.length) {
+                clients = parsed;
+                break;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Не удалось загрузить клиентов из localStorage:', e);
+        }
+      }
+
+      // 3. Пробуем через MultiAccountStorage
+      if (!clients.length && typeof MultiAccountStorage !== 'undefined') {
+        try {
+          const ms = new MultiAccountStorage();
+          const all = ms.getData('clients') || [];
+          clients = all;
+        } catch(e) {}
+      }
+
+      // Заполняем datalist
+      datalist.innerHTML = '';
+      clients.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.name;
+        datalist.appendChild(opt);
+      });
+
+      // Если клиентов нет, добавим подсказку
+      if (!clients.length) {
+        const opt = document.createElement('option');
+        opt.value = '— Нет контрагентов —';
+        datalist.appendChild(opt);
+      }
+
+      // Сохраняем список для автоподбора
+      window._clientsList = clients.map(c => c.name);
+    }
+
+    // ---------- АВТОПОДБОР ПРИ ВВОДЕ ----------
+    function setupAutocomplete() {
+      const input = document.getElementById('customerInput');
+      if (!input) return;
+
+      // При вводе текста показываем datalist
+      input.addEventListener('input', function() {
+        const val = this.value.trim().toLowerCase();
+        const datalist = document.getElementById('customerList');
+        if (!datalist) return;
+
+        // Фильтруем опции в datalist
+        const options = datalist.querySelectorAll('option');
+        let hasMatch = false;
+        options.forEach(opt => {
+          const text = opt.value.toLowerCase();
+          if (text.includes(val) || val === '') {
+            opt.style.display = '';
+            hasMatch = true;
+          } else {
+            opt.style.display = 'none';
+          }
+        });
+
+        // Если ничего не совпало и есть ввод, показываем "Нет совпадений"
+        if (!hasMatch && val.length > 0) {
+          // Удаляем предыдущий placeholder, если был
+          const existing = datalist.querySelector('.no-match');
+          if (!existing) {
+            const opt = document.createElement('option');
+            opt.className = 'no-match';
+            opt.value = 'Нет совпадений';
+            opt.disabled = true;
+            datalist.appendChild(opt);
+          }
+        } else {
+          const noMatch = datalist.querySelector('.no-match');
+          if (noMatch) noMatch.remove();
+        }
+      });
+    }
+
+    // ---------- УСЛУГИ ----------
     const SERVICE_TYPES = {
       vd_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
       lamination: ['Глянцевый','Матовый','Золота','Серебро','Голограмма'],
       embossing: ['Золота','Серебро','Голограмма'],
       die_cut: ['автомат'],
+      kongrev: ['автомат'],
       gluing: ['1','2','3','4 и более'],
       uv_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
-      flot_cutting: [],   // Новая услуга – Флоторезка / Резка
-      cutting: [],        // Обычная Резка (после флоторезки)
+      cutting: [],
+      flot_cutting: [],
     };
 
     const SERVICE_LABELS = {
       vd_lak:'ВД лак', lamination:'Ламинация',
       embossing:'Тиснение', cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
-      die_cut:'Высечка',
+      die_cut:'Высечка', kongrev: 'Конгрев',
       flot_cutting:'✂️ Флоторезка / Резка'
     };
 
@@ -688,12 +839,11 @@
         mainRow.appendChild(lbl);
         div.appendChild(mainRow);
 
-        // ---------- ОСОБАЯ ОБРАБОТКА ДЛЯ ФЛОТОРЕЗКИ ----------
         if (key === 'flot_cutting') {
           const actionsDiv = document.createElement('div');
           actionsDiv.className = 'flot-actions';
           actionsDiv.id = 'flotActions';
-          actionsDiv.style.display = 'none'; // скрыт по умолчанию
+          actionsDiv.style.display = 'none';
 
           const containerInner = document.createElement('div');
           containerInner.className = 'print-sheets-container';
@@ -734,7 +884,6 @@
 
           div.appendChild(actionsDiv);
 
-          // --- ЛОГИКА ПОКАЗА/СКРЫТИЯ ---
           const flotActions = actionsDiv;
           cb.addEventListener('change', function() {
             flotActions.style.display = this.checked ? 'flex' : 'none';
@@ -747,7 +896,6 @@
           });
         }
 
-        // ---------- ОБЫЧНАЯ РЕЗКА (cutting) ----------
         else if (key === 'cutting') {
           const detailsDiv = document.createElement('div');
           detailsDiv.className = 'cutting-details';
@@ -758,7 +906,6 @@
           select.id = 'cutting_type';
           select.className = 'cutting-select';
           select.innerHTML = `
-            <option value="">Выбрать...</option>
             <option value="pre">до печать</option>
             <option value="post">пост печать</option>
             <option value="both">оба</option>
@@ -826,7 +973,6 @@
           div.appendChild(detailsDiv);
         }
 
-        // ---------- ОСТАЛЬНЫЕ УСЛУГИ (с выбором варианта) ----------
         else {
           const sel = document.createElement('select');
           sel.id = 'sel_' + key;
@@ -846,7 +992,7 @@
         container.appendChild(div);
       }
 
-      // ---------- ДОПОЛНИТЕЛЬНАЯ ПРИВЯЗКА СОБЫТИЙ ДЛЯ ФЛОТОРЕЗКИ ----------
+      // ---------- ФЛОТОРЕЗКА: ПРИВЯЗКА КНОПОК ----------
       const flotCheck = document.getElementById('chk_flot_cutting');
       const flotResult = document.getElementById('flotCuttingResult');
       const flotDividedInput = document.getElementById('flotDividedResult');
@@ -903,7 +1049,6 @@
           divideSheets(4);
         });
 
-        // Инициализация: скрыть блок, если галочка не стоит
         if (!flotCheck.checked) {
           const actions = document.getElementById('flotActions');
           if (actions) actions.style.display = 'none';
@@ -922,11 +1067,10 @@
       toggle();
     }
 
-    // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ РАСЧЁТА ==========
+    // ========== РАСЧЁТ ==========
     let currentWeightKg = 0;
     let currentTotalSheets = 0;
 
-    // ========== РАСЧЁТ ТИРАЖА И ВЕСА ==========
     function recalc() {
       const orderQty   = parseFloat(document.querySelector('input[name="order_qty"]')?.value) || 0;
       const width      = parseFloat(document.querySelector('input[name="size_width"]')?.value) || 0;
@@ -945,7 +1089,6 @@
       updateUI(totalSheets, weightKg);
     }
 
-    // ========== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ==========
     function updateUI(totalSheets, weightKg) {
       const hidden = document.getElementById('printSheetsHidden');
       if (hidden) hidden.value = totalSheets;
@@ -967,7 +1110,6 @@
       if (dividedInput) dividedInput.value = '';
     }
 
-    // ---------- ПРИВЯЗКА СОБЫТИЙ НА ПОЛЯ ВВОДА ----------
     function setupCalcListeners() {
       const selectors = [
         'input[name="order_qty"]',
@@ -983,11 +1125,6 @@
       document.querySelectorAll('input[name="calc_mode"]').forEach(radio => {
         radio.addEventListener('change', recalc);
       });
-    }
-
-    // ---------- КНОПКИ ДЕЛЕНИЯ ВЕСА (старые, удалены, но оставляем пустую функцию) ----------
-    function setupWeightDivision() {
-      // больше не используется, т.к. деление перенесено в флоторезку
     }
 
     // ---------- PDF ----------
@@ -1052,7 +1189,6 @@
         pdfData: pdfBase64 || null
       };
 
-      // Сбор услуг
       for (let key in SERVICE_TYPES) {
         const chk = document.getElementById('chk_' + key);
         if (chk && chk.checked) {
@@ -1110,12 +1246,26 @@
       document.getElementById('techcardNo').value = generateTechCardNo();
     });
 
+    // ---------- ПОКАЗ ССЫЛКИ INDEX2 ТОЛЬКО ДЛЯ DIYOR ----------
+    function showIndex2ForDiyor() {
+      const user = sessionStorage.getItem('profitprint_user') || '';
+      const role = sessionStorage.getItem('profitprint_role') || '';
+      const link = document.getElementById('index2Link');
+      if (user === 'Diyor' || role === 'designer') {
+        link.classList.add('visible');
+      }
+    }
+
     // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+    setTimeout(() => {
+      loadClients();
+      setupAutocomplete();
+    }, 100);
     buildServicesBlock();
     setupMediaTypeToggle();
     setupCalcListeners();
-    setupWeightDivision();
     recalc();
+    showIndex2ForDiyor();
   </script>
 
   <script src="js/auth-check.js"></script>
