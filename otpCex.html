@@ -38,7 +38,142 @@
     }
 
     /* ============================================
-       Остальные уникальные стили страницы
+       Стили для списка заказов
+       ============================================ */
+    .orders-list {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .orders-list .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .orders-list .header-row h2 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 20px;
+      border-bottom: 2px solid var(--primary-blue);
+      padding-bottom: 4px;
+    }
+    .orders-list .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .orders-list .controls input {
+      padding: 8px 12px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 13px;
+      background: var(--bg-white);
+      color: var(--text-primary);
+      min-width: 200px;
+    }
+    .orders-list .controls input:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .orders-list table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .orders-list th {
+      text-align: left;
+      padding: 10px 12px;
+      background: var(--bg-main);
+      border-bottom: 2px solid var(--border-color);
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .orders-list td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+    .orders-list tr:hover td {
+      background: var(--bg-main);
+      cursor: pointer;
+    }
+    .orders-list .btn-link {
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--primary-blue);
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      margin-right: 4px;
+    }
+    .orders-list .btn-link:hover {
+      opacity: 0.85;
+    }
+    .orders-list .btn-danger {
+      background: var(--accent-red);
+    }
+    .orders-list .empty-msg {
+      padding: 30px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .pagination button {
+      padding: 6px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-white);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.15s;
+    }
+    .pagination button:hover:not(:disabled) {
+      background: var(--bg-main);
+      border-color: var(--primary-blue);
+    }
+    .pagination button.active {
+      background: var(--primary-blue);
+      color: #fff;
+      border-color: var(--primary-blue);
+    }
+    .pagination button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ============================================
+       Переключение режимов
+       ============================================ */
+    #listContainer, #formContainer {
+      display: none;
+    }
+    #listContainer.active, #formContainer.active {
+      display: block;
+    }
+
+    /* ============================================
+       Стили формы (оригинальные, из примера)
        ============================================ */
     .form-columns {
       display: grid;
@@ -64,7 +199,6 @@
       padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
     }
-
     .choice-strip {
       background: var(--bg-main);
       border: 1px solid var(--border-color);
@@ -130,7 +264,6 @@
       border-color: var(--primary-blue);
       background: rgba(37, 99, 235, 0.06);
     }
-
     .service-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -204,7 +337,6 @@
       border-color: var(--primary-blue);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
-
     .data-table select {
       width: 100%;
       padding: 10px 12px;
@@ -234,7 +366,6 @@
       background: linear-gradient(135deg, var(--bg-white), rgba(59, 130, 246, 0.03));
       box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(59, 130, 246, 0.12);
     }
-
     .cutting-details {
       position: absolute;
       top: 100%;
@@ -296,7 +427,6 @@
       border-color: var(--primary-blue);
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 2px rgba(59, 130, 246, 0.1);
     }
-
     .print-sheets-container {
       display: flex;
       align-items: center;
@@ -349,7 +479,6 @@
       color: var(--text-primary);
       font-weight: 600;
     }
-
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -358,8 +487,6 @@
     input[type="number"] {
       -moz-appearance: textfield;
     }
-
-    /* Стили для Флоторезки */
     .flot-service {
       border-left: 3px solid #dc2626;
     }
@@ -384,16 +511,12 @@
       background: rgba(220, 38, 38, 0.10);
       color: #dc2626;
     }
-
-    /* Скрытая ссылка для Diyor */
     .nav-menu .hidden-link {
       display: none;
     }
     .nav-menu .hidden-link.visible {
       display: block;
     }
-
-    /* Стиль для поля автоподбора */
     .customer-autocomplete {
       position: relative;
       width: 100%;
@@ -415,12 +538,9 @@
       border-color: var(--primary-blue);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
     }
-
     .hidden-input {
       display: none;
     }
-
-    /* PDF & Screenshot блоки внутри правой колонки */
     .pdf-block, .screenshot-block {
       margin-top: 18px;
       padding-top: 16px;
@@ -459,8 +579,6 @@
       gap: 6px;
       white-space: nowrap;
     }
-
-    /* Область вставки скриншота */
     .screenshot-drop-area {
       flex: 1;
       min-height: 180px;
@@ -535,53 +653,6 @@
     .screenshot-drop-area.has-image .clear-screenshot {
       display: flex;
     }
-
-    @media screen and (max-width: 768px) {
-      .form-columns {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-      .choice-cards {
-        gap: 8px;
-      }
-      .choice-card label {
-        font-size: 12px;
-      }
-      .service-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 12px;
-      }
-      .data-table input[type="text"],
-      .data-table input[type="number"],
-      .data-table select,
-      .customer-autocomplete input {
-        font-size: 14px !important;
-        padding: 10px 12px !important;
-      }
-      .data-table select {
-        background-position: right 8px center;
-      }
-      .print-sheets-container {
-        flex-wrap: wrap;
-      }
-      .flot-actions .print-sheets-container {
-        flex-wrap: wrap;
-      }
-      .screenshot-drop-area {
-        min-height: 120px;
-      }
-    }
-    @media screen and (max-width: 400px) {
-      .choice-cards {
-        grid-template-columns: 1fr;
-      }
-      .print-sheets-actions {
-        flex-wrap: wrap;
-      }
-      .flot-actions .print-sheets-actions {
-        flex-wrap: wrap;
-      }
-    }
     .calc-mode-switch {
       margin: 0 0 16px 0;
       display: flex;
@@ -594,6 +665,38 @@
       align-items: center;
       gap: 4px;
       cursor: pointer;
+    }
+
+    .form-actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 16px;
+    }
+    .form-actions .btn {
+      padding: 8px 20px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .form-columns { grid-template-columns: 1fr; gap: 16px; }
+      .choice-cards { gap: 8px; }
+      .choice-card label { font-size: 12px; }
+      .service-grid { grid-template-columns: 1fr; gap: 12px; }
+      .data-table input[type="text"],
+      .data-table input[type="number"],
+      .data-table select,
+      .customer-autocomplete input { font-size: 14px !important; padding: 10px 12px !important; }
+      .data-table select { background-position: right 8px center; }
+      .print-sheets-container { flex-wrap: wrap; }
+      .flot-actions .print-sheets-container { flex-wrap: wrap; }
+      .screenshot-drop-area { min-height: 120px; }
+    }
+    @media screen and (max-width: 400px) {
+      .choice-cards { grid-template-columns: 1fr; }
+      .print-sheets-actions { flex-wrap: wrap; }
+      .flot-actions .print-sheets-actions { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -626,141 +729,182 @@
     <main class="main-content">
       <div class="top-bar"><h1>Отправка в цех</h1></div>
       <div class="content-section">
-        <form id="orderForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Техкарта №</label>
-              <input type="text" name="techcard_no" id="techcardNo" readonly>
-            </div>
-            <div class="form-group">
-              <label>Менеджер</label>
-              <select name="manager" required>
-                <option value="Муниса">Муниса</option>
-                <option value="Расул">Расул</option>
-                <option value="Руслан">Руслан</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Заказчик</label>
-              <div class="customer-autocomplete">
-                <input type="text" id="customerInput" name="customer" placeholder="Введите название контрагента..." autocomplete="off" list="customerList" required>
-                <datalist id="customerList"></datalist>
+        <!-- ========== СПИСОК ========== -->
+        <div id="listContainer" class="active">
+          <div class="orders-list">
+            <div class="header-row">
+              <h2>Производственные заказы</h2>
+              <div class="controls">
+                <input type="text" id="searchOrders" placeholder="🔍 Поиск..." oninput="renderOrders()">
+                <button class="btn btn-primary" onclick="showForm()">➕ Создать заказ</button>
               </div>
             </div>
-            <div class="form-group"><label>Название продукции</label><input type="text" name="product_name" required></div>
-          </div>
-          <div class="form-group"><label>Описание</label><textarea name="description" rows="2"></textarea></div>
-
-          <div class="form-columns">
-            <!-- ЛЕВАЯ КОЛОНКА: До печать и печать -->
-            <div class="form-column">
-              <div class="form-column-title">До печать и печать</div>
-
-              <div class="choice-strip">
-                <div class="choice-cards">
-                  <div class="choice-card">
-                    <input type="radio" name="print_type" value="A1" id="printA1" checked>
-                    <label for="printA1">🖨️ Печать А1</label>
-                  </div>
-                  <div class="choice-card">
-                    <input type="radio" name="print_type" value="A2" id="printA2">
-                    <label for="printA2">🖨️ Печать А2</label>
-                  </div>
-                </div>
-              </div>
-
-              <div class="choice-strip">
-                <div class="choice-cards">
-                  <div class="choice-card">
-                    <input type="radio" name="media_type" value="roll" id="mediaRoll" checked>
-                    <label for="mediaRoll">📜 Рулон</label>
-                  </div>
-                  <div class="choice-card">
-                    <input type="radio" name="media_type" value="sheet" id="mediaSheet">
-                    <label for="mediaSheet">📄 Листовой</label>
-                  </div>
-                </div>
-              </div>
-
-              <div class="calc-mode-switch">
-                <label>
-                  <input type="radio" name="calc_mode" value="warehouse" checked> Склад (чистый вес)
-                </label>
-              </div>
-
-              <table class="data-table">
-                <tr>
-                  <td>Тип бумаги</td>
-                  <td>
-                    <select name="paper_type" required>
-                      <option value="картон">картон</option>
-                      <option value="Меловка">Меловка</option>
-                      <option value="Офсет">Офсет</option>
-                    </select>
-                  </td>
-                </tr>
-                <tr><td>Кол-во заказ</td><td><input type="number" name="order_qty" min="0" required></td></tr>
-                <tr><td>Приладка</td><td><input type="number" name="make_ready" min="0" required></td></tr>
-                <tr id="rollFormatRow"><td>Формат рулона</td><td><input type="number" name="roll_format" step="any"></td></tr>
-                <tr><td>Размер заказа (Длина)</td><td><input type="number" name="size_length" min="0" required></td></tr>
-                <tr><td>Размер заказа (Ширина)</td><td><input type="number" name="size_width" min="0" required></td></tr>
-                <tr><td>Полос</td><td><input type="number" name="stripes" min="0" required></td></tr>
-                <tr><td>гр/м²</td><td><input type="number" name="gsm" min="0" required></td></tr>
-                <tr><td>Цвет</td><td><input type="text" name="color" required></td></tr>
-                <tr>
-                  <td>Тираж листов</td>
-                  <td>
-                    <div class="print-sheets-container">
-                      <div class="print-sheets-info">
-                        <span>Тираж листов: <strong id="printSheetsAuto">0</strong></span>
-                        <span>Вес заказа: <strong id="weightResult">— кг</strong></span>
-                      </div>
-                    </div>
-                    <input type="hidden" name="print_sheets" id="printSheetsHidden" value="0">
-                  </td>
-                </tr>
+            <div id="ordersTableContainer">
+              <table>
+                <thead>
+                  <tr>
+                    <th>№ техкарты</th>
+                    <th>Заказчик</th>
+                    <th>Продукция</th>
+                    <th>Менеджер</th>
+                    <th>Кол-во</th>
+                    <th>Тираж</th>
+                    <th>Действия</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersBody"></tbody>
               </table>
             </div>
+            <div id="pagination" class="pagination"></div>
+          </div>
+        </div>
 
-            <!-- ПРАВАЯ КОЛОНКА: Пост Печать + PDF + Скриншот -->
-            <div class="form-column" style="display:flex; flex-direction:column;">
-              <div class="form-column-title">Пост Печать</div>
-              <div class="service-grid" id="servicesContainer"></div>
-
-              <!-- Блок PDF (имя файла) -->
-              <div class="pdf-block">
-                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                  <label class="btn btn-secondary pdf-select-btn" for="pdfFileInput" style="cursor:pointer;">📎 Выбрать PDF</label>
-                  <input type="file" id="pdfFileInput" accept=".pdf" class="hidden-input">
-                  <div class="pdf-filename-input">
-                    <input type="text" id="pdfFileNameInput" name="pdf_filename" placeholder="Имя PDF-файла (выберите файл)" readonly>
-                  </div>
-                  <button type="button" id="clearPdfBtn" class="btn btn-secondary" style="display:none;">✕</button>
-                </div>
+        <!-- ========== ФОРМА (точная копия исходной) ========== -->
+        <div id="formContainer">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h2 id="formTitle" style="margin:0; font-size:22px; color:var(--text-primary);">Создание заказа</h2>
+            <button class="btn btn-secondary" onclick="showList()">← Вернуться к списку</button>
+          </div>
+          <form id="orderForm">
+            <input type="hidden" name="edit_id" id="editId" value="">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Техкарта №</label>
+                <input type="text" name="techcard_no" id="techcardNo" readonly>
               </div>
-
-              <!-- Блок скриншота (Ctrl+V) -->
-              <div class="screenshot-block">
-                <div style="font-size:13px; font-weight:500; margin-bottom:6px;">🖼️ Скриншот (Ctrl+V)</div>
-                <div id="screenshotDropArea" class="screenshot-drop-area" tabindex="0">
-                  <div class="placeholder">
-                    <div style="font-size:32px; margin-bottom:8px;">📷</div>
-                    <div>Вставьте скриншот из буфера обмена</div>
-                    <div class="key-hint">Ctrl + V</div>
-                  </div>
-                  <img id="screenshotPreview" alt="Скриншот">
-                  <button type="button" id="clearScreenshotBtn" class="clear-screenshot" title="Удалить">✕</button>
-                </div>
-                <input type="hidden" id="screenshotData" name="screenshot_base64" value="">
+              <div class="form-group">
+                <label>Менеджер</label>
+                <select name="manager" id="managerSelect" required>
+                  <option value="Муниса">Муниса</option>
+                  <option value="Расул">Расул</option>
+                  <option value="Руслан">Руслан</option>
+                </select>
               </div>
             </div>
-          </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Заказчик</label>
+                <div class="customer-autocomplete">
+                  <input type="text" id="customerInput" name="customer" placeholder="Введите название контрагента..." autocomplete="off" list="customerList" required>
+                  <datalist id="customerList"></datalist>
+                </div>
+              </div>
+              <div class="form-group"><label>Название продукции</label><input type="text" name="product_name" id="productNameInput" required></div>
+            </div>
+            <div class="form-group"><label>Описание</label><textarea name="description" id="descriptionInput" rows="2"></textarea></div>
 
-          <button type="submit" class="btn btn-primary" style="width:100%; margin-top:20px;">Передать в производство</button>
-          <div id="result"></div>
-        </form>
+            <div class="form-columns">
+              <!-- ЛЕВАЯ КОЛОНКА: До печать и печать -->
+              <div class="form-column">
+                <div class="form-column-title">До печать и печать</div>
+
+                <div class="choice-strip">
+                  <div class="choice-cards">
+                    <div class="choice-card">
+                      <input type="radio" name="print_type" value="A1" id="printA1" checked>
+                      <label for="printA1">🖨️ Печать А1</label>
+                    </div>
+                    <div class="choice-card">
+                      <input type="radio" name="print_type" value="A2" id="printA2">
+                      <label for="printA2">🖨️ Печать А2</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="choice-strip">
+                  <div class="choice-cards">
+                    <div class="choice-card">
+                      <input type="radio" name="media_type" value="roll" id="mediaRoll" checked>
+                      <label for="mediaRoll">📜 Рулон</label>
+                    </div>
+                    <div class="choice-card">
+                      <input type="radio" name="media_type" value="sheet" id="mediaSheet">
+                      <label for="mediaSheet">📄 Листовой</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="calc-mode-switch">
+                  <label>
+                    <input type="radio" name="calc_mode" value="warehouse" checked> Склад (чистый вес)
+                  </label>
+                </div>
+
+                <table class="data-table">
+                  <tr>
+                    <td>Тип бумаги</td>
+                    <td>
+                      <select name="paper_type" id="paperType" required>
+                        <option value="картон">картон</option>
+                        <option value="Меловка">Меловка</option>
+                        <option value="Офсет">Офсет</option>
+                      </select>
+                    </td>
+                  </tr>
+                  <tr><td>Кол-во заказ</td><td><input type="number" name="order_qty" id="orderQty" min="0" required></td></tr>
+                  <tr><td>Приладка</td><td><input type="number" name="make_ready" id="makeReady" min="0" required></td></tr>
+                  <tr id="rollFormatRow"><td>Формат рулона</td><td><input type="number" name="roll_format" id="rollFormat" step="any"></td></tr>
+                  <tr><td>Размер заказа (Длина)</td><td><input type="number" name="size_length" id="sizeLength" min="0" required></td></tr>
+                  <tr><td>Размер заказа (Ширина)</td><td><input type="number" name="size_width" id="sizeWidth" min="0" required></td></tr>
+                  <tr><td>Полос</td><td><input type="number" name="stripes" id="stripes" min="0" required></td></tr>
+                  <tr><td>гр/м²</td><td><input type="number" name="gsm" id="gsm" min="0" required></td></tr>
+                  <tr><td>Цвет</td><td><input type="text" name="color" id="color" required></td></tr>
+                  <tr>
+                    <td>Тираж листов</td>
+                    <td>
+                      <div class="print-sheets-container">
+                        <div class="print-sheets-info">
+                          <span>Тираж листов: <strong id="printSheetsAuto">0</strong></span>
+                          <span>Вес заказа: <strong id="weightResult">— кг</strong></span>
+                        </div>
+                      </div>
+                      <input type="hidden" name="print_sheets" id="printSheetsHidden" value="0">
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              <!-- ПРАВАЯ КОЛОНКА: Пост Печать + PDF + Скриншот -->
+              <div class="form-column" style="display:flex; flex-direction:column;">
+                <div class="form-column-title">Пост Печать</div>
+                <div class="service-grid" id="servicesContainer"></div>
+
+                <!-- Блок PDF (имя файла) -->
+                <div class="pdf-block">
+                  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <label class="btn btn-secondary pdf-select-btn" for="pdfFileInput" style="cursor:pointer;">📎 Выбрать PDF</label>
+                    <input type="file" id="pdfFileInput" accept=".pdf" class="hidden-input">
+                    <div class="pdf-filename-input">
+                      <input type="text" id="pdfFileNameInput" name="pdf_filename" placeholder="Имя PDF-файла (выберите файл)" readonly>
+                    </div>
+                    <button type="button" id="clearPdfBtn" class="btn btn-secondary" style="display:none;">✕</button>
+                  </div>
+                </div>
+
+                <!-- Блок скриншота (Ctrl+V) -->
+                <div class="screenshot-block">
+                  <div style="font-size:13px; font-weight:500; margin-bottom:6px;">🖼️ Скриншот (Ctrl+V)</div>
+                  <div id="screenshotDropArea" class="screenshot-drop-area" tabindex="0">
+                    <div class="placeholder">
+                      <div style="font-size:32px; margin-bottom:8px;">📷</div>
+                      <div>Вставьте скриншот из буфера обмена</div>
+                      <div class="key-hint">Ctrl + V</div>
+                    </div>
+                    <img id="screenshotPreview" alt="Скриншот">
+                    <button type="button" id="clearScreenshotBtn" class="clear-screenshot" title="Удалить">✕</button>
+                  </div>
+                  <input type="hidden" id="screenshotData" name="screenshot_base64" value="">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" onclick="showList()">Отмена</button>
+              <button type="submit" class="btn btn-primary">💾 Сохранить</button>
+            </div>
+            <div id="result"></div>
+          </form>
+        </div>
       </div>
     </main>
   </div>
@@ -782,64 +926,334 @@
       // ---------- ТЕМА ----------
       const body = document.body;
       const themeToggle = document.getElementById('themeToggle');
-      const themeIcon = document.getElementById('themeIcon');
-      const themeLabel = document.getElementById('themeLabel');
-
-      function setTheme(mode) {
-        body.className = mode;
-        localStorage.setItem('theme', mode);
-        if (themeIcon) themeIcon.textContent = mode === 'dark' ? '☀️' : '🌙';
-        if (themeLabel) themeLabel.textContent = mode === 'dark' ? 'Светлая тема' : 'Тёмная тема';
-      }
-      (function initTheme() {
-        const saved = localStorage.getItem('theme') || 'light';
-        setTheme(saved);
-      })();
       if (themeToggle) {
         themeToggle.addEventListener('click', () => {
           const next = body.classList.contains('dark') ? 'light' : 'dark';
-          setTheme(next);
+          body.className = next;
+          localStorage.setItem('theme', next);
         });
       }
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      body.className = savedTheme;
 
-      // ---------- АВТО НОМЕР ТЕХКАРТЫ ----------
-      function generateTechCardNo() {
-        const orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
-        return orders.length + 1;
-      }
-      document.getElementById('techcardNo').value = generateTechCardNo();
+      // ---------- ГЛОБАЛЬНЫЕ ДАННЫЕ ----------
+      let allOrders = [];
+      let currentPage = 1;
+      const perPage = 100;
 
-      // ---------- ЗАГРУЗКА КОНТРАГЕНТОВ ----------
-      function loadClients() {
-        const input = document.getElementById('customerInput');
-        const datalist = document.getElementById('customerList');
-        if (!input || !datalist) return;
-        let clients = [];
+      // ---------- ЗАГРУЗКА ДАННЫХ ----------
+      function loadOrders() {
         try {
-          const raw = localStorage.getItem('pp_clients');
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed) && parsed.length) clients = parsed;
-          }
-        } catch (e) {}
-        if (!clients.length && typeof Storage !== 'undefined' && Storage.getClients) {
-          try {
-            const storageClients = Storage.getClients();
-            if (storageClients && storageClients.length) clients = storageClients;
-          } catch (e) {}
-        }
-        datalist.innerHTML = '';
-        clients.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c.name;
-          datalist.appendChild(opt);
-        });
-        if (!clients.length) {
-          const opt = document.createElement('option');
-          opt.value = '— Нет контрагентов —';
-          datalist.appendChild(opt);
+          const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
+          allOrders = raw ? JSON.parse(raw) : [];
+          allOrders.sort((a, b) => b.id - a.id);
+        } catch (e) {
+          console.error('Ошибка загрузки заказов:', e);
+          allOrders = [];
         }
       }
+
+      // ---------- ПЕРЕКЛЮЧЕНИЕ ----------
+      function showList() {
+        document.getElementById('listContainer').classList.add('active');
+        document.getElementById('formContainer').classList.remove('active');
+        renderOrders();
+      }
+      function showForm(editData) {
+        document.getElementById('listContainer').classList.remove('active');
+        document.getElementById('formContainer').classList.add('active');
+        if (editData) {
+          fillForm(editData);
+          document.getElementById('formTitle').textContent = 'Редактирование заказа';
+        } else {
+          resetForm();
+          document.getElementById('formTitle').textContent = 'Создание заказа';
+        }
+        document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth' });
+      }
+      window.showList = showList;
+      window.showForm = showForm;
+
+      // ---------- ЗАПОЛНЕНИЕ ФОРМЫ ----------
+      function fillForm(order) {
+        document.getElementById('editId').value = order.id;
+        document.getElementById('techcardNo').value = order.techcard_no || '';
+        document.getElementById('managerSelect').value = order.manager || 'Муниса';
+        document.getElementById('customerInput').value = order.customer || '';
+        document.getElementById('productNameInput').value = order.product_name || '';
+        document.getElementById('descriptionInput').value = order.description || '';
+        document.querySelector(`input[name="print_type"][value="${order.print_type || 'A1'}"]`).checked = true;
+        document.querySelector(`input[name="media_type"][value="${order.media_type || 'roll'}"]`).checked = true;
+        document.getElementById('paperType').value = order.paper_type || 'картон';
+        document.getElementById('orderQty').value = order.order_qty || 0;
+        document.getElementById('makeReady').value = order.make_ready || 0;
+        document.getElementById('rollFormat').value = order.roll_format || '';
+        document.getElementById('sizeLength').value = order.size_length || 0;
+        document.getElementById('sizeWidth').value = order.size_width || 0;
+        document.getElementById('stripes').value = order.stripes || 0;
+        document.getElementById('gsm').value = order.gsm || 0;
+        document.getElementById('color').value = order.color || '';
+        // PDF
+        if (order.pdf_filename) {
+          document.getElementById('pdfFileNameInput').value = order.pdf_filename;
+          document.getElementById('clearPdfBtn').style.display = 'inline-block';
+        }
+        // Скриншот
+        if (order.screenshot_base64) {
+          document.getElementById('screenshotData').value = order.screenshot_base64;
+          document.getElementById('screenshotPreview').src = order.screenshot_base64;
+          const drop = document.getElementById('screenshotDropArea');
+          drop.classList.add('has-image');
+          const placeholder = drop.querySelector('.placeholder');
+          if (placeholder) placeholder.style.display = 'none';
+        }
+        // Услуги
+        const services = order.services || [];
+        // Сброс всех чекбоксов и полей
+        document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('#servicesContainer .service-item select').forEach(sel => sel.style.display = 'none');
+        document.querySelectorAll('#servicesContainer .cutting-details').forEach(d => d.style.display = 'none');
+        document.querySelectorAll('#servicesContainer .flot-actions').forEach(a => a.style.display = 'none');
+        // Установка услуг
+        services.forEach(s => {
+          const cb = document.getElementById('chk_' + s.name);
+          if (cb) {
+            cb.checked = true;
+            if (s.name === 'flot_cutting') {
+              const actions = document.getElementById('flotActions');
+              if (actions) actions.style.display = 'flex';
+              document.getElementById('flotDividedResult').value = s.result || 0;
+              document.getElementById('flotCuttingResult').textContent = s.result || 0;
+            } else if (s.name === 'cutting') {
+              const details = document.getElementById('cuttingDetails');
+              if (details) details.style.display = 'flex';
+              const sel = document.getElementById('cutting_type');
+              if (sel) {
+                if (s.type === 'до печать') sel.value = 'pre';
+                else if (s.type === 'пост печать') sel.value = 'post';
+                else if (s.type === 'оба') sel.value = 'both';
+                sel.dispatchEvent(new Event('change'));
+                if (s.type === 'до печать' && s.length) {
+                  document.getElementById('cut_pre_length').value = s.length;
+                  document.getElementById('cut_pre_width').value = s.width;
+                } else if (s.type === 'пост печать' && s.length) {
+                  document.getElementById('cut_post_length').value = s.length;
+                  document.getElementById('cut_post_width').value = s.width;
+                } else if (s.type === 'оба' && s.details) {
+                  const pre = s.details.find(d => d.type === 'до печать');
+                  const post = s.details.find(d => d.type === 'пост печать');
+                  if (pre) {
+                    document.getElementById('cut_both_pre_length').value = pre.length;
+                    document.getElementById('cut_both_pre_width').value = pre.width;
+                  }
+                  if (post) {
+                    document.getElementById('cut_both_post_length').value = post.length;
+                    document.getElementById('cut_both_post_width').value = post.width;
+                  }
+                }
+              }
+            } else {
+              const sel = document.getElementById('sel_' + s.name);
+              if (sel) { sel.style.display = 'block'; sel.value = s.type || ''; }
+            }
+          }
+        });
+        recalc();
+        // Обновить переключение рулон/лист
+        document.getElementById('rollFormatRow').style.display = document.getElementById('mediaRoll').checked ? '' : 'none';
+      }
+
+      function resetForm() {
+        document.getElementById('editId').value = '';
+        document.getElementById('techcardNo').value = allOrders.length + 1;
+        document.getElementById('managerSelect').value = 'Муниса';
+        document.getElementById('customerInput').value = '';
+        document.getElementById('productNameInput').value = '';
+        document.getElementById('descriptionInput').value = '';
+        document.querySelector('input[name="print_type"][value="A1"]').checked = true;
+        document.querySelector('input[name="media_type"][value="roll"]').checked = true;
+        document.getElementById('paperType').value = 'картон';
+        document.getElementById('orderQty').value = 0;
+        document.getElementById('makeReady').value = 0;
+        document.getElementById('rollFormat').value = '';
+        document.getElementById('sizeLength').value = 0;
+        document.getElementById('sizeWidth').value = 0;
+        document.getElementById('stripes').value = 0;
+        document.getElementById('gsm').value = 0;
+        document.getElementById('color').value = '';
+        document.getElementById('pdfFileNameInput').value = '';
+        document.getElementById('clearPdfBtn').style.display = 'none';
+        document.getElementById('pdfFileInput').value = '';
+        document.getElementById('screenshotData').value = '';
+        document.getElementById('screenshotPreview').src = '';
+        const drop = document.getElementById('screenshotDropArea');
+        drop.classList.remove('has-image');
+        const placeholder = drop.querySelector('.placeholder');
+        if (placeholder) placeholder.style.display = 'block';
+        document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('#servicesContainer .service-item select').forEach(sel => sel.style.display = 'none');
+        document.querySelectorAll('#servicesContainer .cutting-details').forEach(d => d.style.display = 'none');
+        document.querySelectorAll('#servicesContainer .flot-actions').forEach(a => a.style.display = 'none');
+        recalc();
+        document.getElementById('rollFormatRow').style.display = '';
+      }
+
+      // ---------- РЕНДЕР СПИСКА ----------
+      function renderOrders() {
+        const search = document.getElementById('searchOrders').value.toLowerCase().trim();
+        let filtered = allOrders;
+        if (search) {
+          filtered = filtered.filter(o => {
+            const fields = [o.techcard_no, o.customer, o.product_name, o.manager]
+              .map(f => String(f || '').toLowerCase());
+            return fields.some(f => f.includes(search));
+          });
+        }
+        const total = filtered.length;
+        const totalPages = Math.ceil(total / perPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        const start = (currentPage - 1) * perPage;
+        const pageItems = filtered.slice(start, start + perPage);
+
+        const tbody = document.getElementById('ordersBody');
+        if (pageItems.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="empty-msg">Нет заказов</td></tr>`;
+        } else {
+          tbody.innerHTML = pageItems.map(o => `
+            <tr>
+              <td><strong>${o.techcard_no || o.id}</strong></td>
+              <td>${o.customer || ''}</td>
+              <td>${o.product_name || ''}</td>
+              <td>${o.manager || ''}</td>
+              <td>${o.order_qty || 0}</td>
+              <td>${o.print_sheets || 0}</td>
+              <td>
+                <button class="btn-link" onclick="event.stopPropagation(); editOrder('${o.id}')">✏️</button>
+                <button class="btn-link btn-danger" onclick="event.stopPropagation(); deleteOrder('${o.id}')">🗑️</button>
+              </td>
+            </tr>
+          `).join('');
+        }
+
+        const pag = document.getElementById('pagination');
+        if (totalPages <= 1) {
+          pag.innerHTML = '';
+          return;
+        }
+        let pagHTML = `<button onclick="goPage(1)" ${currentPage===1?'disabled':''}>«</button>
+                       <button onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+          if (i === currentPage || i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+            pagHTML += `<button onclick="goPage(${i})" class="${i===currentPage?'active':''}">${i}</button>`;
+          } else if (i === currentPage - 3 || i === currentPage + 3) {
+            pagHTML += `<button disabled>…</button>`;
+          }
+        }
+        pagHTML += `<button onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>
+                    <button onclick="goPage(${totalPages})" ${currentPage===totalPages?'disabled':''}>»</button>`;
+        pag.innerHTML = pagHTML;
+      }
+
+      window.goPage = function(p) {
+        currentPage = p;
+        renderOrders();
+      };
+
+      // ---------- РЕДАКТИРОВАНИЕ ----------
+      window.editOrder = function(id) {
+        const order = allOrders.find(o => String(o.id) === String(id));
+        if (order) showForm(order);
+        else alert('Заказ не найден');
+      };
+
+      // ---------- УДАЛЕНИЕ ----------
+      window.deleteOrder = function(id) {
+        if (!confirm('Удалить заказ?')) return;
+        let orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
+        orders = orders.filter(o => o.id !== parseInt(id));
+        localStorage.setItem('pp_orders', JSON.stringify(orders));
+        loadOrders();
+        renderOrders();
+      };
+
+      // ---------- СОХРАНЕНИЕ ----------
+      document.getElementById('orderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('editId').value;
+        const order = {
+          id: id ? parseInt(id) : Date.now(),
+          techcard_no: document.getElementById('techcardNo').value,
+          manager: document.getElementById('managerSelect').value,
+          customer: document.getElementById('customerInput').value,
+          product_name: document.getElementById('productNameInput').value,
+          description: document.getElementById('descriptionInput').value,
+          print_type: document.querySelector('input[name="print_type"]:checked').value,
+          media_type: document.querySelector('input[name="media_type"]:checked').value,
+          paper_type: document.getElementById('paperType').value,
+          order_qty: parseFloat(document.getElementById('orderQty').value) || 0,
+          make_ready: parseFloat(document.getElementById('makeReady').value) || 0,
+          roll_format: document.getElementById('rollFormat').value || null,
+          size_length: parseFloat(document.getElementById('sizeLength').value) || 0,
+          size_width: parseFloat(document.getElementById('sizeWidth').value) || 0,
+          stripes: parseFloat(document.getElementById('stripes').value) || 0,
+          gsm: parseFloat(document.getElementById('gsm').value) || 0,
+          color: document.getElementById('color').value,
+          print_sheets: currentTotalSheets,
+          weight_kg: currentWeightKg,
+          pdf_filename: document.getElementById('pdfFileNameInput').value.trim() || null,
+          screenshot_base64: document.getElementById('screenshotData').value || null,
+          services: []
+        };
+
+        // Сбор услуг
+        for (let key in SERVICE_TYPES) {
+          const chk = document.getElementById('chk_' + key);
+          if (chk && chk.checked) {
+            if (key === 'cutting') {
+              const sel = document.getElementById('cutting_type');
+              const val = sel.value;
+              if (val === 'pre') {
+                const len = parseFloat(document.getElementById('cut_pre_length').value) || 0;
+                const wid = parseFloat(document.getElementById('cut_pre_width').value) || 0;
+                order.services.push({ name: 'cutting', type: 'до печать', length: len, width: wid });
+              } else if (val === 'post') {
+                const len = parseFloat(document.getElementById('cut_post_length').value) || 0;
+                const wid = parseFloat(document.getElementById('cut_post_width').value) || 0;
+                order.services.push({ name: 'cutting', type: 'пост печать', length: len, width: wid });
+              } else if (val === 'both') {
+                const lenPre = parseFloat(document.getElementById('cut_both_pre_length').value) || 0;
+                const widPre = parseFloat(document.getElementById('cut_both_pre_width').value) || 0;
+                const lenPost = parseFloat(document.getElementById('cut_both_post_length').value) || 0;
+                const widPost = parseFloat(document.getElementById('cut_both_post_width').value) || 0;
+                order.services.push({
+                  name: 'cutting',
+                  type: 'оба',
+                  details: [
+                    { type: 'до печать', length: lenPre, width: widPre },
+                    { type: 'пост печать', length: lenPost, width: widPost }
+                  ]
+                });
+              }
+            } else if (key === 'flot_cutting') {
+              const resultVal = document.getElementById('flotDividedResult').value || '0';
+              order.services.push({ name: 'flot_cutting', result: resultVal });
+            } else {
+              const sel = document.getElementById('sel_' + key);
+              order.services.push({ name: key, type: sel ? sel.value : '' });
+            }
+          }
+        }
+
+        // Сохраняем в localStorage
+        let orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
+        const index = orders.findIndex(o => o.id === order.id);
+        if (index >= 0) orders[index] = order;
+        else orders.push(order);
+        localStorage.setItem('pp_orders', JSON.stringify(orders));
+        loadOrders();
+        showList(); // переключаемся к списку
+        alert('Заказ сохранён!');
+      });
 
       // ---------- УСЛУГИ ----------
       const SERVICE_TYPES = {
@@ -1107,7 +1521,6 @@
               previewImg.src = base64;
               dropArea.classList.add('has-image');
               if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
-              // Скрываем плейсхолдер
               const placeholder = dropArea.querySelector('.placeholder');
               if (placeholder) placeholder.style.display = 'none';
             };
@@ -1118,22 +1531,17 @@
         }
       }
 
-      // Обработка вставки (глобально на странице)
       document.addEventListener('paste', function(e) {
-        // Если фокус внутри input или textarea, не перехватываем (кроме специального поля)
         const target = e.target;
         if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-          // Разрешаем стандартную вставку текста, но если это наше поле для скриншота, обрабатываем
           if (target.closest('#screenshotDropArea')) {
             handlePaste(e);
           }
           return;
         }
-        // В остальных случаях пытаемся обработать
         handlePaste(e);
       });
 
-      // Также можно обработать drag-and-drop для удобства
       dropArea.addEventListener('dragover', function(e) {
         e.preventDefault();
         dropArea.classList.add('dragover');
@@ -1160,7 +1568,6 @@
         }
       });
 
-      // Очистка скриншота
       if (clearScreenshotBtn) {
         clearScreenshotBtn.addEventListener('click', function() {
           screenshotData.value = '';
@@ -1188,10 +1595,10 @@
       let currentTotalSheets = 0;
 
       function recalc() {
-        const orderQty   = parseFloat(document.querySelector('input[name="order_qty"]')?.value) || 0;
-        const width      = parseFloat(document.querySelector('input[name="size_width"]')?.value) || 0;
-        const length     = parseFloat(document.querySelector('input[name="size_length"]')?.value) || 0;
-        const gsm        = parseFloat(document.querySelector('input[name="gsm"]')?.value) || 0;
+        const orderQty   = parseFloat(document.getElementById('orderQty').value) || 0;
+        const width      = parseFloat(document.getElementById('sizeWidth').value) || 0;
+        const length     = parseFloat(document.getElementById('sizeLength').value) || 0;
+        const gsm        = parseFloat(document.getElementById('gsm').value) || 0;
         const totalSheets = orderQty;
         currentTotalSheets = totalSheets;
         let weightKg = 0;
@@ -1219,14 +1626,9 @@
       }
 
       function setupCalcListeners() {
-        const selectors = [
-          'input[name="order_qty"]',
-          'input[name="size_width"]',
-          'input[name="size_length"]',
-          'input[name="gsm"]'
-        ];
-        selectors.forEach(sel => {
-          const el = document.querySelector(sel);
+        const selectors = ['orderQty','sizeWidth','sizeLength','gsm'];
+        selectors.forEach(id => {
+          const el = document.getElementById(id);
           if (el) el.addEventListener('input', recalc);
         });
         document.querySelectorAll('input[name="calc_mode"]').forEach(radio => {
@@ -1234,106 +1636,29 @@
         });
       }
 
-      // ---------- ОТПРАВКА ----------
-      document.getElementById('orderForm').addEventListener('submit', function(e){
-        e.preventDefault();
-        if(!this.checkValidity()) { this.reportValidity(); return; }
-
-        recalc();
-
-        const fd = new FormData(this);
-        const pdfName = pdfFileNameInput ? pdfFileNameInput.value.trim() : '';
-        const screenshotBase64 = screenshotData ? screenshotData.value : '';
-
-        const order = {
-          id: Date.now(),
-          techcard_no: fd.get('techcard_no'),
-          manager: fd.get('manager'),
-          customer: fd.get('customer'),
-          product_name: fd.get('product_name'),
-          description: fd.get('description'),
-          print_type: fd.get('print_type'),
-          media_type: fd.get('media_type'),
-          paper_type: fd.get('paper_type'),
-          order_qty: +fd.get('order_qty') || 0,
-          make_ready: +fd.get('make_ready') || 0,
-          roll_format: fd.get('roll_format') ? parseFloat(fd.get('roll_format')) : null,
-          size_length: +fd.get('size_length') || 0,
-          size_width: +fd.get('size_width') || 0,
-          stripes: +fd.get('stripes') || 0,
-          gsm: +fd.get('gsm') || 0,
-          color: fd.get('color'),
-          calc_mode: document.querySelector('input[name="calc_mode"]:checked')?.value || 'warehouse',
-          print_sheets: currentTotalSheets,
-          weight_kg: currentWeightKg,
-          pdf_filename: pdfName || null,
-          screenshot_base64: screenshotBase64 || null,
-          services: []
-        };
-
-        // Сбор услуг
-        for (let key in SERVICE_TYPES) {
-          const chk = document.getElementById('chk_' + key);
-          if (chk && chk.checked) {
-            if (key === 'cutting') {
-              const sel = document.getElementById('cutting_type');
-              const val = sel.value;
-              if (val === 'pre') {
-                const len = parseFloat(document.getElementById('cut_pre_length').value) || 0;
-                const wid = parseFloat(document.getElementById('cut_pre_width').value) || 0;
-                order.services.push({ name: 'cutting', type: 'до печать', length: len, width: wid });
-              } else if (val === 'post') {
-                const len = parseFloat(document.getElementById('cut_post_length').value) || 0;
-                const wid = parseFloat(document.getElementById('cut_post_width').value) || 0;
-                order.services.push({ name: 'cutting', type: 'пост печать', length: len, width: wid });
-              } else if (val === 'both') {
-                const lenPre = parseFloat(document.getElementById('cut_both_pre_length').value) || 0;
-                const widPre = parseFloat(document.getElementById('cut_both_pre_width').value) || 0;
-                const lenPost = parseFloat(document.getElementById('cut_both_post_length').value) || 0;
-                const widPost = parseFloat(document.getElementById('cut_both_post_width').value) || 0;
-                order.services.push({
-                  name: 'cutting',
-                  type: 'оба',
-                  details: [
-                    { type: 'до печать', length: lenPre, width: widPre },
-                    { type: 'пост печать', length: lenPost, width: widPost }
-                  ]
-                });
-              }
-            } else if (key === 'flot_cutting') {
-              const resultVal = document.getElementById('flotDividedResult')?.value || '0';
-              order.services.push({ name: 'flot_cutting', result: resultVal });
-            } else {
-              const sel = document.getElementById('sel_' + key);
-              order.services.push({ name: key, type: sel ? sel.value : '' });
-            }
-          }
+      // ---------- ЗАГРУЗКА КЛИЕНТОВ ----------
+      function loadClients() {
+        const datalist = document.getElementById('customerList');
+        let clients = [];
+        try {
+          const raw = localStorage.getItem('pp_clients');
+          if (raw) clients = JSON.parse(raw);
+        } catch(e) {}
+        if (!clients.length && typeof Storage !== 'undefined' && Storage.getClients) {
+          try { clients = Storage.getClients(); } catch(e) {}
         }
-
-        // Сохраняем в localStorage с ключом 'pp_orders'
-        let orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
-        orders.push(order);
-        localStorage.setItem('pp_orders', JSON.stringify(orders));
-
-        // Также пробуем синхронизировать через Storage, если доступно
-        if (typeof Storage !== 'undefined' && Storage.saveOrder) {
-          Storage.saveOrder(order).catch(() => {});
+        datalist.innerHTML = '';
+        clients.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.name;
+          datalist.appendChild(opt);
+        });
+        if (!clients.length) {
+          const opt = document.createElement('option');
+          opt.value = '— Нет контрагентов —';
+          datalist.appendChild(opt);
         }
-
-        (async () => {
-          try {
-            const resp = await fetch('/api/otpcex', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...order, id: String(order.id) }) });
-            if (!resp.ok) throw new Error('Server save failed');
-            const saved = await resp.json();
-            document.getElementById('result').innerHTML = `<div class="success-msg">✅ Заказ сохранён. <a href="texKarta.html?id=${saved.id}" style="color:#065f46;">Открыть техкарту</a></div>`;
-          } catch (err) {
-            console.warn('Save to server failed, kept local:', err);
-            document.getElementById('result').innerHTML = `<div class="success-msg">✅ Заказ сохранён локально. <a href="texKarta.html?id=${order.id}" style="color:#065f46;">Открыть техкарту</a></div>`;
-          }
-        })();
-
-        document.getElementById('techcardNo').value = generateTechCardNo();
-      });
+      }
 
       // ---------- ПОКАЗ ССЫЛКИ INDEX2 ТОЛЬКО ДЛЯ DIYOR ----------
       function showIndex2ForDiyor() {
@@ -1346,18 +1671,16 @@
       }
 
       // ---------- ИНИЦИАЛИЗАЦИЯ ----------
-      setTimeout(() => {
-        loadClients();
-      }, 300);
-
+      loadOrders();
+      loadClients();
       buildServicesBlock();
       setupMediaTypeToggle();
       setupCalcListeners();
       recalc();
+      renderOrders();
       showIndex2ForDiyor();
     });
   </script>
-
   <script src="js/auth-check.js"></script>
   <script src="js/nav-filter.js"></script>
 </body>
