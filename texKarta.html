@@ -42,7 +42,70 @@
       display: none !important;
     }
 
-    /* Стили для отображения техкарты */
+    /* ============================================================
+       Стили для списка техкарт
+       ============================================================ */
+    .tech-list {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .tech-list h2 {
+      margin: 0 0 16px 0;
+      color: var(--text-primary);
+      font-size: 20px;
+      border-bottom: 2px solid var(--primary-blue);
+      padding-bottom: 8px;
+    }
+    .tech-list table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .tech-list th {
+      text-align: left;
+      padding: 10px 12px;
+      background: var(--bg-main);
+      border-bottom: 2px solid var(--border-color);
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .tech-list td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+    .tech-list tr:hover {
+      background: var(--bg-main);
+      cursor: pointer;
+    }
+    .tech-list .btn-link {
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: var(--primary-blue);
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+    }
+    .tech-list .btn-link:hover {
+      opacity: 0.85;
+    }
+    .tech-list .empty-msg {
+      padding: 30px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* ============================================================
+       Стили для отображения одной техкарты
+       ============================================================ */
     .tech-card {
       background: var(--bg-white);
       border: 1px solid var(--border-color);
@@ -173,6 +236,18 @@
       color: #fff;
       cursor: pointer;
     }
+
+    /* Кнопка «Назад к списку» */
+    .back-link {
+      display: inline-block;
+      margin-bottom: 16px;
+      color: var(--primary-blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -242,228 +317,298 @@
       const uploadLocalPdfBtn = document.getElementById('uploadLocalPdfBtn');
       const localPdfInput = document.getElementById('localPdfInput');
 
+      // Получаем ID из URL
       const urlParams = new URLSearchParams(window.location.search);
       const orderId = urlParams.get('id');
 
-      if (!orderId) {
-        content.innerHTML = `<div class="tech-card"><h2>Ошибка</h2><p>Не указан ID заказа.</p></div>`;
-        return;
+      // Функция загрузки всех заказов из localStorage
+      function loadOrders() {
+        let orders = [];
+        try {
+          const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
+          if (raw) orders = JSON.parse(raw);
+        } catch (e) {
+          console.error('Ошибка загрузки заказов:', e);
+        }
+        return orders;
       }
 
-      let orders = [];
-      try {
-        // Ищем сначала в 'pp_orders' (основной ключ), затем в 'print_orders' для совместимости
-        const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
-        if (raw) orders = JSON.parse(raw);
-      } catch (e) {
-        console.error('Ошибка загрузки заказов:', e);
-      }
+      // ---- Если есть ID – показываем одну техкарту ----
+      if (orderId) {
+        const orders = loadOrders();
+        const order = orders.find(o => String(o.id) === String(orderId));
 
-      const order = orders.find(o => String(o.id) === String(orderId));
-      if (!order) {
-        content.innerHTML = `<div class="tech-card"><h2>Ошибка</h2><p>Заказ с ID ${orderId} не найден.</p></div>`;
-        return;
-      }
+        if (!order) {
+          content.innerHTML = `<div class="tech-card"><h2>Ошибка</h2><p>Заказ с ID ${orderId} не найден. <a href="texKarta.html">Вернуться к списку</a></p></div>`;
+          return;
+        }
 
-      function formatServices(services) {
-        if (!services || !services.length) return '<span class="no-data">Нет</span>';
-        const serviceNames = {
-          vd_lak: 'ВД лак',
-          lamination: 'Ламинация',
-          embossing: 'Тиснение',
-          cutting: 'Резка',
-          gluing: 'Склейка',
-          uv_lak: 'УФ лак',
-          die_cut: 'Высечка',
-          kongrev: 'Конгрев',
-          flot_cutting: 'Флоторезка / Резка'
-        };
-        return services.map(s => {
-          let label = serviceNames[s.name] || s.name;
-          let details = '';
-          if (s.name === 'cutting') {
-            if (s.type === 'до печать') details = ` (до печать: ${s.length}×${s.width})`;
-            else if (s.type === 'пост печать') details = ` (пост печать: ${s.length}×${s.width})`;
-            else if (s.type === 'оба') {
-              const pre = s.details ? s.details.find(d => d.type === 'до печать') : null;
-              const post = s.details ? s.details.find(d => d.type === 'пост печать') : null;
-              details = ` (до: ${pre ? pre.length+'×'+pre.width : '—'}, пост: ${post ? post.length+'×'+post.width : '—'})`;
+        // Функция форматирования услуг
+        function formatServices(services) {
+          if (!services || !services.length) return '<span class="no-data">Нет</span>';
+          const serviceNames = {
+            vd_lak: 'ВД лак',
+            lamination: 'Ламинация',
+            embossing: 'Тиснение',
+            cutting: 'Резка',
+            gluing: 'Склейка',
+            uv_lak: 'УФ лак',
+            die_cut: 'Высечка',
+            kongrev: 'Конгрев',
+            flot_cutting: 'Флоторезка / Резка'
+          };
+          return services.map(s => {
+            let label = serviceNames[s.name] || s.name;
+            let details = '';
+            if (s.name === 'cutting') {
+              if (s.type === 'до печать') details = ` (до печать: ${s.length}×${s.width})`;
+              else if (s.type === 'пост печать') details = ` (пост печать: ${s.length}×${s.width})`;
+              else if (s.type === 'оба') {
+                const pre = s.details ? s.details.find(d => d.type === 'до печать') : null;
+                const post = s.details ? s.details.find(d => d.type === 'пост печать') : null;
+                details = ` (до: ${pre ? pre.length+'×'+pre.width : '—'}, пост: ${post ? post.length+'×'+post.width : '—'})`;
+              }
+            } else if (s.name === 'flot_cutting') {
+              details = ` (результат: ${s.result || 0})`;
+            } else if (s.type && s.type !== '') {
+              details = ` (${s.type})`;
             }
-          } else if (s.name === 'flot_cutting') {
-            details = ` (результат: ${s.result || 0})`;
-          } else if (s.type && s.type !== '') {
-            details = ` (${s.type})`;
+            return `<span class="service-item-display">${label}${details}</span>`;
+          }).join(' ');
+        }
+
+        const cardHTML = `
+          <div>
+            <a href="texKarta.html" class="back-link">← Назад к списку</a>
+            <div class="tech-card" id="techCardContent">
+              <h2>Технологическая карта №${order.techcard_no || order.id}</h2>
+              <div class="info-row">
+                <span class="info-label">Менеджер:</span>
+                <span class="info-value">${order.manager || '—'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Заказчик:</span>
+                <span class="info-value">${order.customer || '—'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Продукция:</span>
+                <span class="info-value">${order.product_name || '—'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Описание:</span>
+                <span class="info-value">${order.description || '—'}</span>
+              </div>
+              <div class="section-title">Печать</div>
+              <div class="info-row">
+                <span class="info-label">Формат:</span>
+                <span class="info-value">${order.print_type || '—'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Тип носителя:</span>
+                <span class="info-value">${order.media_type === 'roll' ? 'Рулон' : order.media_type === 'sheet' ? 'Листовой' : '—'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Бумага:</span>
+                <span class="info-value">${order.paper_type || '—'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Количество заказа:</span>
+                <span class="info-value">${order.order_qty || 0}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Приладка:</span>
+                <span class="info-value">${order.make_ready || 0}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Размер (Д×Ш):</span>
+                <span class="info-value">${order.size_length || 0} × ${order.size_width || 0}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Полос:</span>
+                <span class="info-value">${order.stripes || 0}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">гр/м²:</span>
+                <span class="info-value">${order.gsm || 0}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Цвет:</span>
+                <span class="info-value">${order.color || '—'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Тираж листов:</span>
+                <span class="info-value">${order.print_sheets || 0}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Вес заказа:</span>
+                <span class="info-value">${order.weight_kg ? order.weight_kg.toFixed(3).replace('.', ',') + ' кг' : '—'}</span>
+              </div>
+
+              ${order.roll_format ? `
+                <div class="info-row">
+                  <span class="info-label">Формат рулона:</span>
+                  <span class="info-value">${order.roll_format}</span>
+                </div>
+              ` : ''}
+
+              <div class="section-title">Услуги</div>
+              <div class="info-row" style="flex-wrap: wrap; gap: 6px;">
+                <span class="info-label" style="min-width:100%;">Пост‑печать:</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; width:100%;">
+                  ${formatServices(order.services)}
+                </div>
+              </div>
+
+              <div class="section-title">Файлы</div>
+              <div class="info-row">
+                <span class="info-label">Имя PDF (офис):</span>
+                <span class="info-value">${order.pdf_filename ? `<span class="pdf-name">${order.pdf_filename}</span>` : '<span class="no-data">не указан</span>'}</span>
+              </div>
+              <div class="info-row" style="flex-direction: column; align-items: flex-start;">
+                <span class="info-label" style="margin-bottom: 8px;">Скриншот:</span>
+                ${order.screenshot_base64 ? `
+                  <div class="screenshot-container">
+                    <img src="${order.screenshot_base64}" alt="Скриншот" onclick="document.getElementById('screenshotModal').classList.add('visible'); document.getElementById('modalImage').src='${order.screenshot_base64}';">
+                  </div>
+                ` : '<span class="no-data">не загружен</span>'}
+              </div>
+            </div>
+          </div>
+        `;
+
+        content.innerHTML = cardHTML;
+        actionBar.style.display = 'flex';
+
+        // Дополнительная информация (детали)
+        let infoVisible = false;
+        toggleInfoBtn.addEventListener('click', function() {
+          infoVisible = !infoVisible;
+          additionalInfo.classList.toggle('visible', infoVisible);
+          if (infoVisible) {
+            additionalInfo.innerHTML = `
+              <h4>Детали заказа</h4>
+              <pre style="white-space: pre-wrap; background: var(--bg-white); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">${JSON.stringify(order, null, 2)}</pre>
+            `;
           }
-          return `<span class="service-item-display">${label}${details}</span>`;
-        }).join(' ');
+        });
+
+        // Скачать PDF техкарты
+        downloadPdfBtn.addEventListener('click', function() {
+          const element = document.getElementById('techCardContent');
+          if (!element) return;
+          html2canvas(element, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            allowTaint: true,
+            useCORS: true
+          }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            let heightLeft = pdfHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+            heightLeft -= pdf.internal.pageSize.getHeight();
+
+            while (heightLeft > 0) {
+              position = heightLeft - pdfHeight;
+              pdf.addPage();
+              pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+              heightLeft -= pdf.internal.pageSize.getHeight();
+            }
+            pdf.save(`Техкарта_${order.techcard_no || order.id}.pdf`);
+          }).catch(err => {
+            alert('Ошибка при создании PDF: ' + err.message);
+          });
+        });
+
+        // Посмотреть PDF (офисный)
+        viewOfficePdfBtn.addEventListener('click', function() {
+          if (order.pdf_filename) {
+            alert(`PDF-файл "${order.pdf_filename}" находится на сервере. Для просмотра откройте его вручную.`);
+          } else {
+            alert('PDF-файл не указан.');
+          }
+        });
+
+        // Загрузить локальный PDF
+        uploadLocalPdfBtn.addEventListener('click', function() {
+          localPdfInput.click();
+        });
+        localPdfInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            alert(`Выбран файл: ${file.name}`);
+          }
+          this.value = '';
+        });
+
+        const modal = document.getElementById('screenshotModal');
+        modal.addEventListener('click', function(e) {
+          if (e.target === this) this.classList.remove('visible');
+        });
+
+        return; // Конец обработки одной карты
       }
 
-      const cardHTML = `
-        <div class="tech-card" id="techCardContent">
-          <h2>Технологическая карта №${order.techcard_no || order.id}</h2>
-          <div class="info-row">
-            <span class="info-label">Менеджер:</span>
-            <span class="info-value">${order.manager || '—'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Заказчик:</span>
-            <span class="info-value">${order.customer || '—'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Продукция:</span>
-            <span class="info-value">${order.product_name || '—'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Описание:</span>
-            <span class="info-value">${order.description || '—'}</span>
-          </div>
-          <div class="section-title">Печать</div>
-          <div class="info-row">
-            <span class="info-label">Формат:</span>
-            <span class="info-value">${order.print_type || '—'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Тип носителя:</span>
-            <span class="info-value">${order.media_type === 'roll' ? 'Рулон' : order.media_type === 'sheet' ? 'Листовой' : '—'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Бумага:</span>
-            <span class="info-value">${order.paper_type || '—'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Количество заказа:</span>
-            <span class="info-value">${order.order_qty || 0}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Приладка:</span>
-            <span class="info-value">${order.make_ready || 0}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Размер (Д×Ш):</span>
-            <span class="info-value">${order.size_length || 0} × ${order.size_width || 0}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Полос:</span>
-            <span class="info-value">${order.stripes || 0}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">гр/м²:</span>
-            <span class="info-value">${order.gsm || 0}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Цвет:</span>
-            <span class="info-value">${order.color || '—'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Тираж листов:</span>
-            <span class="info-value">${order.print_sheets || 0}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Вес заказа:</span>
-            <span class="info-value">${order.weight_kg ? order.weight_kg.toFixed(3).replace('.', ',') + ' кг' : '—'}</span>
-          </div>
+      // ---- Если ID нет – показываем список всех техкарт ----
+      const orders = loadOrders();
 
-          ${order.roll_format ? `
-            <div class="info-row">
-              <span class="info-label">Формат рулона:</span>
-              <span class="info-value">${order.roll_format}</span>
-            </div>
-          ` : ''}
+      if (orders.length === 0) {
+        content.innerHTML = `
+          <div class="tech-list">
+            <h2>📋 Список техкарт</h2>
+            <div class="empty-msg">Техкарт пока нет. Создайте заказ на странице <a href="otpCex.html">«Отправка в цех»</a>.</div>
+          </div>
+        `;
+        actionBar.style.display = 'none';
+        return;
+      }
 
-          <div class="section-title">Услуги</div>
-          <div class="info-row" style="flex-wrap: wrap; gap: 6px;">
-            <span class="info-label" style="min-width:100%;">Пост‑печать:</span>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px; width:100%;">
-              ${formatServices(order.services)}
-            </div>
-          </div>
+      // Сортируем по дате (новые сверху) – используем id как временную метку
+      orders.sort((a, b) => b.id - a.id);
 
-          <div class="section-title">Файлы</div>
-          <div class="info-row">
-            <span class="info-label">Имя PDF (офис):</span>
-            <span class="info-value">${order.pdf_filename ? `<span class="pdf-name">${order.pdf_filename}</span>` : '<span class="no-data">не указан</span>'}</span>
-          </div>
-          <div class="info-row" style="flex-direction: column; align-items: flex-start;">
-            <span class="info-label" style="margin-bottom: 8px;">Скриншот:</span>
-            ${order.screenshot_base64 ? `
-              <div class="screenshot-container">
-                <img src="${order.screenshot_base64}" alt="Скриншот" onclick="document.getElementById('screenshotModal').classList.add('visible'); document.getElementById('modalImage').src='${order.screenshot_base64}';">
-              </div>
-            ` : '<span class="no-data">не загружен</span>'}
-          </div>
+      let tableRows = orders.map(o => `
+        <tr onclick="window.location.href='texKarta.html?id=${o.id}'">
+          <td><strong>${o.techcard_no || o.id}</strong></td>
+          <td>${o.customer || '—'}</td>
+          <td>${o.product_name || '—'}</td>
+          <td>${o.manager || '—'}</td>
+          <td>${o.order_qty || 0}</td>
+          <td>${o.print_sheets || 0}</td>
+          <td>
+            <a href="texKarta.html?id=${o.id}" class="btn-link">Открыть</a>
+          </td>
+        </tr>
+      `).join('');
+
+      const listHTML = `
+        <div class="tech-list">
+          <h2>📋 Список техкарт (${orders.length})</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>№ техкарты</th>
+                <th>Заказчик</th>
+                <th>Продукция</th>
+                <th>Менеджер</th>
+                <th>Кол-во</th>
+                <th>Тираж</th>
+                <th>Действие</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
         </div>
       `;
 
-      content.innerHTML = cardHTML;
-      actionBar.style.display = 'flex';
-
-      let infoVisible = false;
-      toggleInfoBtn.addEventListener('click', function() {
-        infoVisible = !infoVisible;
-        additionalInfo.classList.toggle('visible', infoVisible);
-        if (infoVisible) {
-          additionalInfo.innerHTML = `
-            <h4>Детали заказа</h4>
-            <pre style="white-space: pre-wrap; background: var(--bg-white); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">${JSON.stringify(order, null, 2)}</pre>
-          `;
-        }
-      });
-
-      downloadPdfBtn.addEventListener('click', function() {
-        const element = document.getElementById('techCardContent');
-        if (!element) return;
-        html2canvas(element, {
-          scale: 2,
-          backgroundColor: '#ffffff',
-          allowTaint: true,
-          useCORS: true
-        }).then(canvas => {
-          const imgData = canvas.toDataURL('image/png');
-          const { jsPDF } = window.jspdf;
-          const pdf = new jsPDF('p', 'mm', 'a4');
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-          let heightLeft = pdfHeight;
-          let position = 0;
-
-          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-          heightLeft -= pdf.internal.pageSize.getHeight();
-
-          while (heightLeft > 0) {
-            position = heightLeft - pdfHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-            heightLeft -= pdf.internal.pageSize.getHeight();
-          }
-          pdf.save(`Техкарта_${order.techcard_no || order.id}.pdf`);
-        }).catch(err => {
-          alert('Ошибка при создании PDF: ' + err.message);
-        });
-      });
-
-      viewOfficePdfBtn.addEventListener('click', function() {
-        if (order.pdf_filename) {
-          alert(`PDF-файл "${order.pdf_filename}" находится на сервере. Для просмотра откройте его вручную.`);
-        } else {
-          alert('PDF-файл не указан.');
-        }
-      });
-
-      uploadLocalPdfBtn.addEventListener('click', function() {
-        localPdfInput.click();
-      });
-      localPdfInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          alert(`Выбран файл: ${file.name}`);
-        }
-        this.value = '';
-      });
-
-      const modal = document.getElementById('screenshotModal');
-      modal.addEventListener('click', function(e) {
-        if (e.target === this) this.classList.remove('visible');
-      });
+      content.innerHTML = listHTML;
+      actionBar.style.display = 'none';
     });
   </script>
   <script src="js/auth-check.js"></script>
