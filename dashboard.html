@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProfitPrint — Панель управления</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --card-radius: 20px;
+            --card-shadow: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.02);
+        }
+        body {
+            margin: 0;
+            background: var(--bg-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: var(--font-main, system-ui, -apple-system, sans-serif);
+            transition: background 0.3s;
+        }
+        .dashboard-wrapper {
+            width: 100%;
+            max-width: 640px;
+            padding: 20px;
+        }
+        .dashboard-card {
+            background: var(--bg-white);
+            border-radius: 28px;
+            padding: 40px 32px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-blue, #2563eb);
+            color: #fff;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 22px;
+        }
+        .greeting h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .greeting p {
+            margin: 4px 0 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .theme-toggle-btn {
+            background: var(--bg-main);
+            border: 1.5px solid var(--border-color);
+            border-radius: 14px;
+            padding: 10px 16px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--text-primary);
+        }
+        .theme-toggle-btn:hover {
+            background: var(--bg-white);
+            border-color: var(--primary-blue);
+        }
+        .error-message {
+            color: #dc2626;
+            font-size: 14px;
+            margin: 12px 0 8px;
+            display: none;
+            background: rgba(220,38,38,0.06);
+            padding: 10px 16px;
+            border-radius: 12px;
+        }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+            margin: 28px 0 24px;
+        }
+        .nav-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 24px 12px;
+            border-radius: 24px;
+            background: var(--bg-main);
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 1.5px solid var(--border-color);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            aspect-ratio: 1 / 1; /* квадратные карточки */
+        }
+        .nav-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary-blue);
+            box-shadow: 0 12px 24px -8px rgba(37,99,235,0.18);
+            background: var(--bg-white);
+        }
+        .nav-card .icon {
+            font-size: 28px;
+        }
+        .nav-card span:last-child {
+            line-height: 1.3;
+        }
+        .logout-btn {
+            padding: 12px 32px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 16px;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logout-btn:hover {
+            border-color: #dc2626;
+            color: #dc2626;
+            background: rgba(220,38,38,0.04);
+        }
+
+        @media (max-width: 500px) {
+            .dashboard-card { padding: 24px 16px; }
+            .nav-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-card { padding: 16px 8px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <div class="dashboard-card">
+        <div class="header">
+            <div class="logo-area">
+                <div class="logo-icon">PP</div>
+                <div class="greeting">
+                    <h2>ProfitPrint</h2>
+                    <p>👤 <strong id="userName">...</strong></p>
+                </div>
+            </div>
+            <button class="theme-toggle-btn" id="themeToggle" title="Переключить тему">🌓</button>
+        </div>
+        <div class="error-message" id="errorMsg">⛔ У вас нет доступа к этой странице.</div>
+        <div class="nav-grid" id="navGrid"></div>
+        <button class="logout-btn" id="btnLogout">🚪 Выйти из системы</button>
+    </div>
+</div>
+
+<script>
+    // ========== ТЕМА ==========
+    function setTheme(mode) {
+        document.body.className = mode;
+        localStorage.setItem('theme', mode);
+    }
+    (function initTheme() {
+        const saved = localStorage.getItem('theme') || 'light';
+        setTheme(saved);
+    })();
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        const next = document.body.classList.contains('dark') ? 'light' : 'dark';
+        setTheme(next);
+    });
+
+    // ========== АВТОРИЗАЦИЯ ==========
+    const user = sessionStorage.getItem('profitprint_user');
+    const role = sessionStorage.getItem('profitprint_role');
+    if (!user || !role) {
+        window.location.href = 'login.html';
+    }
+    document.getElementById('userName').textContent = user;
+
+    // Показать ошибку, если пришли с ?error=access
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('error') === 'access') {
+        document.getElementById('errorMsg').style.display = 'block';
+    }
+
+    // ========== ПУНКТЫ МЕНЮ С ФИЛЬТРАЦИЕЙ ==========
+    const ALL_ITEMS = [
+        { icon: '📊', label: 'Главная',           href: 'index.html',        id: 'index' },
+        { icon: '📋', label: 'Заказы контрагентов', href: 'orders.html',      id: 'orders' },
+        { icon: '🏭', label: 'Заказы на производство', href: 'production.html', id: 'production' },
+        { icon: '📦', label: 'Накладные',          href: 'invoices.html',     id: 'invoices' },
+        { icon: '👥', label: 'Контрагенты',        href: 'clients.html',      id: 'clients' },
+        { icon: '📁', label: 'Продукты',           href: 'products.html',     id: 'products' },
+        { icon: '📑', label: 'Акты сверки',        href: 'reconciliations.html', id: 'reconciliations' },
+        { icon: '🗑️', label: 'Резервные копии',   href: 'backups.html',      id: 'backups' },
+        { icon: '⚙️', label: 'На производство',    href: 'otpCex.html',       id: 'otpCex' },
+        { icon: '🛠️', label: 'Техкарта',           href: 'texKarta.html',     id: 'texKarta' }
+    ];
+
+    // Фильтрация по роли
+    let visibleItems = [];
+    if (role === 'manager') {
+        // Bekzod – всё, кроме otpCex и texKarta
+        visibleItems = ALL_ITEMS.filter(item => item.id !== 'otpCex' && item.id !== 'texKarta');
+    } else if (role === 'designer') {
+        // Diyor – только clients, otpCex, texKarta
+        visibleItems = ALL_ITEMS.filter(item => ['clients','otpCex','texKarta'].includes(item.id));
+    }
+
+    // Отрисовка сетки
+    const grid = document.getElementById('navGrid');
+    grid.innerHTML = '';
+    visibleItems.forEach(item => {
+        const a = document.createElement('a');
+        a.className = 'nav-card';
+        a.href = item.href;
+        a.innerHTML = `<span class="icon">${item.icon}</span><span>${item.label}</span>`;
+        grid.appendChild(a);
+    });
+
+    // Если разрешённых пунктов нет — покажем сообщение
+    if (visibleItems.length === 0) {
+        grid.innerHTML = '<p style="color: var(--text-secondary);">Нет доступных разделов</p>';
+    }
+
+    // ========== ВЫХОД ==========
+    document.getElementById('btnLogout').addEventListener('click', () => {
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    });
+</script>
+<script src="js/nav-filter.js"></script>
+</body>
+    <script src="js/show-index2.js"></script>
+</html>

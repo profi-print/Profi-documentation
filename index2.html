@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProfitPrint — Производственный дашборд</title>
+    
+    <script>
+        (function() {
+            const user = sessionStorage.getItem('profitprint_user');
+            const role = sessionStorage.getItem('profitprint_role');
+            const isDiyor = user === 'Diyor' || role === 'designer';
+            if (!user || !isDiyor) {
+                window.location.replace(user ? 'index.html' : 'login.html');
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="css/theme.css">
+
+    <style>
+        /* ============================================
+           Единые стили, полностью повторяющие otpCex.html
+           ============================================ */
+        body { margin: 0; background: var(--bg-main); font-family: var(--font-main); }
+
+        .app-container { display: flex; min-height: 100vh; }
+
+        /* Sidebar — идентична otpCex */
+        .sidebar {
+            width: 240px; background: var(--bg-white);
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0; display: flex; flex-direction: column;
+            flex-shrink: 0;
+        }
+        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+        .logo-small { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text-primary); }
+        .logo-icon {
+            width: 36px; height: 36px; background: var(--primary-blue); color: #fff;
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 18px;
+        }
+        .nav-menu { list-style: none; padding: 0 12px; margin: 0; flex: 1; }
+        .nav-menu li { margin-bottom: 2px; }
+        .nav-menu a {
+            display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+            border-radius: 8px; color: var(--text-primary); text-decoration: none;
+            font-weight: 500; font-size: 14px; transition: background 0.15s;
+        }
+        .nav-menu a:hover, .nav-menu a.active { background: var(--bg-main); color: var(--primary-blue); }
+
+        .logout-btn {
+            margin: 20px; padding: 10px 20px; border: 1.5px solid var(--border-color);
+            border-radius: 8px; background: var(--bg-main); color: var(--text-primary);
+            font-size: 14px; font-weight: 600; cursor: pointer;
+        }
+        .logout-btn:hover { border-color: #dc2626; color: #dc2626; }
+
+        /* Основной контент — такие же отступы, как в otpCex */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .top-bar h1 {
+            margin: 0 0 24px 0;
+            font-size: 26px;
+            color: var(--text-primary);
+        }
+
+        /* Центральная карточка — унифицирована с .form-column из otpCex */
+        .dashboard-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px 40px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+            max-width: 640px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .dashboard-card h1 {
+            margin: 0 0 12px 0;
+            font-size: 28px;
+            color: var(--text-primary);
+        }
+
+        .dashboard-card p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .quick-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 18px 20px;
+            border-radius: 10px;
+            background: var(--bg-main);
+            border: 1.5px solid var(--border-color);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .quick-link:hover {
+            border-color: var(--primary-blue);
+            background: var(--bg-white);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12);
+        }
+
+        /* Убираем стрелки у number-инпутов на всём сайте */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* Адаптивность, как в otpCex */
+        @media screen and (max-width: 768px) {
+            .sidebar { width: 200px; }
+            .main-content { padding: 20px; }
+            .dashboard-card { padding: 24px; }
+            .quick-links { grid-template-columns: 1fr; }
+        }
+        @media screen and (max-width: 480px) {
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); }
+            .app-container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar (полностью как в otpCex) -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
+                    <div class="logo-icon">PP</div>
+                    <span>ProfitPrint</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">📊 Главная</a></li>
+                <li><a href="clients.html">👥 Контрагенты</a></li>
+                <li><a href="otpCex.html">⚙️ На производство</a></li>
+                <li><a href="texKarta.html">🛠️ Техкарта</a></li>
+            </ul>
+            <button class="logout-btn" id="logoutBtn">🚪 Выйти</button>
+        </nav>
+
+        <!-- Основное содержимое -->
+        <main class="main-content">
+            <div class="top-bar">
+            </div>
+
+            <div class="dashboard-card">
+                <h1>Добро пожаловать, <span id="userName">...</span>!</h1>
+                <p>Производственный раздел ProfitPrint</p>
+                
+                <div class="quick-links">
+                    <a href="clients.html" class="quick-link">👥 Контрагенты</a>
+                    <a href="otpCex.html" class="quick-link">⚙️ Отправка в цех</a>
+                    <a href="texKarta.html" class="quick-link">🛠️ Технологическая карта</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/multi-account-storage.js"></script>
+    <script src="js/auth-check-2.js"></script>
+    <script>
+        const user = sessionStorage.getItem('profitprint_user');
+        if (user) document.getElementById('userName').textContent = user;
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

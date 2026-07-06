@@ -5,6 +5,18 @@ const API_CONFIG = {
         : `${window.location.protocol}//${window.location.host}`
 };
 
+const STORAGE_SYNC_KEYS = [
+    'pp_clients',
+    'pp_products',
+    'pp_orders',
+    'pp_invoices',
+    'pp_payments',
+    'pp_reconciliations',
+    'pp_techcards',
+    'pp_trash',
+    'pp_production'
+];
+
 // Безопасный fetch с retry и timeout
 async function fetchWithRetry(url, options = {}, maxRetries = 3) {
     const timeout = options.timeout || 5000;
@@ -60,23 +72,52 @@ function safeSetItem(key, value) {
 }
 
 class Storage {
+    static _initPromise = null;
+
+    static hasCachedData() {
+        return STORAGE_SYNC_KEYS.some(key => {
+            const value = localStorage.getItem(key);
+            return value && value !== '[]';
+        });
+    }
+
     static async init() {
-        try {
-            const response = await fetchWithRetry(`${API_CONFIG.BASE_URL}/api/data`, { timeout: 5000 }, 3);
-            const data = await response.json();
-            try {
-                safeSetItem('pp_clients', data.clients);
-                safeSetItem('pp_products', data.products);
-                safeSetItem('pp_orders', data.orders);
-                safeSetItem('pp_invoices', data.invoices);
-                safeSetItem('pp_payments', data.payments);
-                safeSetItem('pp_reconciliations', data.reconciliations);
-                console.log('✅ Data synced from server');
-            } catch (storageErr) {
-                console.error('localStorage error:', storageErr.message);
+        if (this._initPromise) {
+            return this._initPromise;
+        }
+
+        const hasCached = this.hasCachedData();
+
+        this._initPromise = (async () => {
+            if (hasCached) {
+                return { fromCache: true };
             }
-        } catch (err) {
-            console.warn('Using local data (server unavailable):', err.message);
+
+            try {
+                const response = await fetchWithRetry(`${API_CONFIG.BASE_URL}/api/data`, { timeout: 1500 }, 1);
+                const data = await response.json();
+                try {
+                    safeSetItem('pp_clients', data.clients || []);
+                    safeSetItem('pp_products', data.products || []);
+                    safeSetItem('pp_orders', data.orders || []);
+                    safeSetItem('pp_invoices', data.invoices || []);
+                    safeSetItem('pp_payments', data.payments || []);
+                    safeSetItem('pp_reconciliations', data.reconciliations || []);
+                    console.log('✅ Data synced from server');
+                } catch (storageErr) {
+                    console.error('localStorage error:', storageErr.message);
+                }
+                return { fromCache: false, data };
+            } catch (err) {
+                console.warn('Using local data (server unavailable):', err.message);
+                return { fromCache: false, data: null };
+            }
+        })();
+
+        try {
+            return await this._initPromise;
+        } finally {
+            this._initPromise = null;
         }
     }
 

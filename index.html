@@ -41,6 +41,7 @@
         .btn-secondary { background: #e2e8f0; color: #334155; border-color: #cbd5e1; }
         .btn-sm { padding: 4px 8px; font-size: 12px; }
         .btn-success { background: #0f766e; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal-overlay.show { display: flex; }
         .modal-content { background: white; border-radius: 12px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
@@ -94,6 +95,7 @@
                     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
                     <a href="backups.html" class="btn btn-secondary">🗑️ Корзина</a>
                     <button class="btn btn-primary" onclick="syncWithServer()">🔄 Синхронизировать</button>
+                    <button class="btn btn-danger" id="logout-btn" style="margin-left: 10px;">🚪 Выйти</button>
                 </div>
             </header>
 
@@ -159,7 +161,31 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/multi-account-storage.js"></script>
     <script src="js/pdf-generator.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/auth-check.js"></script>
+    <script src="js/nav-filter.js"></script>
+    <script src="js/show-index2.js"></script>
+
+    <!-- Скрипт выхода и отображения пользователя -->
+    <script>
+        (function() {
+            // Отображаем имя текущего пользователя
+            const userName = sessionStorage.getItem('profitprint_user');
+            if (userName) {
+                document.getElementById('current-user-name').textContent = userName;
+            }
+
+            // Обработчик кнопки выхода
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    sessionStorage.clear();
+                    window.location.href = 'login.html';
+                });
+            }
+        })();
+    </script>
 </body>
 </html>

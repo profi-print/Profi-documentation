@@ -7,7 +7,38 @@
   <link rel="stylesheet" href="css/style.css">
   <style>
     /* ============================================
-       Уникальные стили страницы «Отправка в цех»
+       ПРИНУДИТЕЛЬНАЯ СВЕТЛАЯ ТЕМА
+       ============================================ */
+    :root {
+      --bg-main: #f1f4f9;
+      --bg-white: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --primary-blue: #2563eb;
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+      --accent-red: #dc2626;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body.dark-theme,
+    body[data-theme="dark"] {
+      --bg-main: #f1f4f9 !important;
+      --bg-white: #ffffff !important;
+      --text-primary: #1e293b !important;
+      --text-secondary: #64748b !important;
+      --border-color: #e2e8f0 !important;
+      --primary-blue: #2563eb !important;
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+      --accent-red: #dc2626 !important;
+    }
+
+    .theme-switch-wrapper {
+      display: none !important;
+    }
+
+    /* ============================================
+       Остальные уникальные стили страницы
        ============================================ */
     .form-columns {
       display: grid;
@@ -32,7 +63,6 @@
       border-bottom: 1px solid var(--border-color);
     }
 
-    /* ---------- Полоски выбора: печать отдельно, носитель отдельно ---------- */
     .choice-strip {
       background: var(--bg-main);
       border: 1px solid var(--border-color);
@@ -89,7 +119,7 @@
       margin-bottom: 2px;
       transition: 0.15s;
     }
-    .choice-card input:checked + label::before {
+    .choice-card input:checked+label::before {
       border-color: var(--primary-blue);
       background: var(--primary-blue);
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
@@ -99,11 +129,10 @@
       background: rgba(37, 99, 235, 0.06);
     }
 
-    /* ---------- Сетка услуг: крупнее, с отступами 1см / 1.5см ---------- */
     .service-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 1.5cm 1cm;   /* row-gap 1.5см, column-gap 1см */
+      gap: 1.5cm 1cm;
       margin-top: 12px;
       align-items: start;
     }
@@ -129,14 +158,15 @@
       width: 22px;
       height: 22px;
       accent-color: var(--primary-blue);
+      flex-shrink: 0;
     }
     .service-item label {
       font-size: 15px;
       font-weight: 600;
       color: var(--text-primary);
       flex: 1;
+      cursor: pointer;
     }
-    /* Скрываем обычные селекты, кроме резки */
     .service-item select:not(.cutting-select) {
       display: none;
       padding: 9px 10px;
@@ -158,7 +188,7 @@
       font-size: 12px;
       background: var(--bg-white);
       color: var(--text-primary);
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
       transition: all 0.2s ease;
       cursor: pointer;
       margin-top: 6px;
@@ -173,7 +203,6 @@
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
-    /* ---------- Универсальный стиль для селектов в таблице ---------- */
     .data-table select {
       width: 100%;
       padding: 10px 12px;
@@ -204,7 +233,6 @@
       box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(59, 130, 246, 0.12);
     }
 
-    /* ---------- Выпадающий блок резки ---------- */
     .cutting-details {
       position: absolute;
       top: 100%;
@@ -222,26 +250,51 @@
       gap: 8px;
       margin-top: -1px;
     }
-    .cutting-fields { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .cutting-fields.cutting-both { flex-direction: column; gap: 6px; }
-    .cutting-row-inline { display: flex; gap: 8px; align-items: center; }
-    .cutting-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); min-width: 35px; }
-    .cutting-fields input, .cutting-row-inline input {
-      width: 80px; padding: 5px 8px; border: 1.5px solid var(--border-color); border-radius: 5px;
-      font-size: 11px; background: var(--bg-white); color: var(--text-primary);
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04); transition: all 0.2s ease;
+    .cutting-fields {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
     }
-    .cutting-fields input:hover, .cutting-row-inline input:hover {
+    .cutting-fields.cutting-both {
+      flex-direction: column;
+      gap: 6px;
+    }
+    .cutting-row-inline {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .cutting-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 35px;
+    }
+    .cutting-fields input,
+    .cutting-row-inline input {
+      width: 80px;
+      padding: 5px 8px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 5px;
+      font-size: 11px;
+      background: var(--bg-white);
+      color: var(--text-primary);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
+    }
+    .cutting-fields input:hover,
+    .cutting-row-inline input:hover {
       border-color: var(--primary-blue);
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(59,130,246,0.08);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(59, 130, 246, 0.08);
     }
-    .cutting-fields input:focus, .cutting-row-inline input:focus {
+    .cutting-fields input:focus,
+    .cutting-row-inline input:focus {
       outline: none;
       border-color: var(--primary-blue);
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04), 0 0 0 2px rgba(59,130,246,0.1);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 2px rgba(59, 130, 246, 0.1);
     }
 
-    /* ---------- Блок загрузки PDF ---------- */
     .pdf-upload-block {
       margin-top: 18px;
       padding-top: 16px;
@@ -252,13 +305,12 @@
       flex-wrap: wrap;
     }
 
-    /* ---------- Строка тиража с весом и делением (одна строка) ---------- */
     .print-sheets-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      flex-wrap: nowrap;          /* всё в одну строку */
+      flex-wrap: nowrap;
     }
     .print-sheets-info {
       display: flex;
@@ -288,6 +340,10 @@
       font-size: 14px;
       font-weight: 600;
       height: 28px;
+      cursor: pointer;
+    }
+    .print-sheets-actions .btn-sm:active {
+      transform: scale(0.95);
     }
     #dividedResult {
       width: 70px;
@@ -301,7 +357,41 @@
       font-weight: 600;
     }
 
-    /* ---------- Адаптив для телефонов ---------- */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    /* Стили для Флоторезки */
+    .flot-service {
+      border-left: 3px solid #dc2626;
+    }
+    .flot-service .service-main label {
+      color: #dc2626;
+    }
+    .flot-actions {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-color);
+      display: none; /* Скрыт по умолчанию, показываем при отмеченном чекбоксе */
+      flex-direction: column;
+      gap: 8px;
+    }
+    .flot-actions.visible {
+      display: flex;
+    }
+    .flot-actions .print-sheets-container {
+      flex-wrap: wrap;
+    }
+    .flot-actions .print-sheets-info strong {
+      background: rgba(220, 38, 38, 0.10);
+      color: #dc2626;
+    }
+
     @media screen and (max-width: 768px) {
       .form-columns {
         grid-template-columns: 1fr;
@@ -315,7 +405,7 @@
       }
       .service-grid {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 12px;             /* на телефоне 1см/1.5см слишком много — уменьшаем */
+        gap: 12px;
       }
       .data-table input[type="text"],
       .data-table input[type="number"],
@@ -327,15 +417,23 @@
         background-position: right 8px center;
       }
       .print-sheets-container {
-        flex-wrap: wrap; /* на мобильных можно разрешить перенос */
+        flex-wrap: wrap;
+      }
+      .flot-actions .print-sheets-container {
+        flex-wrap: wrap;
       }
     }
     @media screen and (max-width: 400px) {
       .choice-cards {
         grid-template-columns: 1fr;
       }
+      .print-sheets-actions {
+        flex-wrap: wrap;
+      }
+      .flot-actions .print-sheets-actions {
+        flex-wrap: wrap;
+      }
     }
-    /* ---------- Переключатель режима расчёта ---------- */
     .calc-mode-switch {
       margin: 0 0 16px 0;
       display: flex;
@@ -370,7 +468,7 @@
         <li><a href="texKarta.html">⚙️ Техкарта</a></li>
       </ul>
       <div class="theme-switch-wrapper">
-        <button id="themeToggle" class="btn btn-secondary">
+        <button id="themeToggle" class="btn btn-secondary" style="display:none;">
           <span id="themeIcon">🌙</span> <span id="themeLabel">Тёмная тема</span>
         </button>
       </div>
@@ -401,6 +499,7 @@
           <div class="form-group"><label>Описание</label><textarea name="description" rows="2"></textarea></div>
 
           <div class="form-columns">
+            <!-- ЛЕВАЯ КОЛОНКА: До печать и печать -->
             <div class="form-column">
               <div class="form-column-title">До печать и печать</div>
 
@@ -430,12 +529,9 @@
                 </div>
               </div>
 
-              <!-- Переключатель режима расчёта -->
               <div class="calc-mode-switch">
                 <label>
                   <input type="radio" name="calc_mode" value="warehouse" checked> Склад (чистый вес)
-                </label>
-                <label>
                 </label>
               </div>
 
@@ -466,11 +562,6 @@
                         <span>Тираж: <strong id="printSheetsAuto">0</strong> листов</span>
                         <span>Вес заказа: <strong id="weightResult">— кг</strong></span>
                       </div>
-                      <div class="print-sheets-actions">
-                        <button type="button" class="btn btn-sm btn-secondary" id="divideBy2">÷2</button>
-                        <button type="button" class="btn btn-sm btn-secondary" id="divideBy4">÷4</button>
-                        <input type="number" id="dividedResult" readonly placeholder="Рез-т">
-                      </div>
                     </div>
                     <input type="hidden" name="print_sheets" id="printSheetsHidden" value="0">
                   </td>
@@ -478,9 +569,12 @@
               </table>
             </div>
 
+            <!-- ПРАВАЯ КОЛОНКА: Пост Печать -->
             <div class="form-column">
-              <div class="form-column-title">Дополнительные услуги</div>
-              <div class="service-grid" id="servicesContainer"></div>
+              <div class="form-column-title">Пост Печать</div>
+              <div class="service-grid" id="servicesContainer">
+                <!-- Услуги генерируются скриптом -->
+              </div>
 
               <div class="pdf-upload-block">
                 <label for="pdfUpload" class="btn btn-secondary" style="cursor:pointer;">📎 Загрузить PDF (офис)</label>
@@ -498,6 +592,533 @@
       </div>
     </main>
   </div>
-  <script src="js/otpCex.js"></script>
+
+  <!-- Сбрасываем тёмную тему -->
+  <script>
+    (function() {
+      document.body.classList.remove('dark-theme', 'dark');
+      document.body.removeAttribute('data-theme');
+      document.documentElement.classList.remove('dark-theme', 'dark');
+      document.documentElement.removeAttribute('data-theme');
+    })();
+  </script>
+
+  <!-- ============================================================
+       ПОЛНЫЙ СКРИПТ (otpCex.js) С ДОБАВЛЕННОЙ ФЛОТОРЕЗКОЙ
+       ============================================================ -->
+  <script>
+    /* ============================================
+       ProfitPrint – Логика страницы "Отправка в цех"
+       ============================================ */
+
+    // ---------- ТЕМА ----------
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeLabel = document.getElementById('themeLabel');
+
+    function setTheme(mode) {
+      body.className = mode;
+      localStorage.setItem('theme', mode);
+      if (themeIcon) themeIcon.textContent = mode === 'dark' ? '☀️' : '🌙';
+      if (themeLabel) themeLabel.textContent = mode === 'dark' ? 'Светлая тема' : 'Тёмная тема';
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('theme') || 'light';
+      setTheme(saved);
+    })();
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const next = body.classList.contains('dark') ? 'light' : 'dark';
+        setTheme(next);
+      });
+    }
+
+    // ---------- АВТО НОМЕР ТЕХКАРТЫ ----------
+    function generateTechCardNo() {
+      const orders = JSON.parse(localStorage.getItem('print_orders') || '[]');
+      return orders.length + 1;
+    }
+    document.getElementById('techcardNo').value = generateTechCardNo();
+
+    // ---------- УСЛУГИ (добавлена flot_cutting перед cutting) ----------
+    const SERVICE_TYPES = {
+      vd_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
+      lamination: ['Глянцевый','Матовый','Золота','Серебро','Голограмма'],
+      embossing: ['Золота','Серебро','Голограмма'],
+      die_cut: ['автомат'],
+      gluing: ['1','2','3','4 и более'],
+      uv_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
+      flot_cutting: [],   // Новая услуга – Флоторезка / Резка
+      cutting: [],        // Обычная Резка (после флоторезки)
+    };
+
+    const SERVICE_LABELS = {
+      vd_lak:'ВД лак', lamination:'Ламинация',
+      embossing:'Тиснение', cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
+      die_cut:'Высечка',
+      flot_cutting:'✂️ Флоторезка / Резка'
+    };
+
+    // ---------- ПОСТРОЕНИЕ БЛОКА УСЛУГ ----------
+    function buildServicesBlock() {
+      const container = document.getElementById('servicesContainer');
+      container.innerHTML = '';
+
+      for (let key in SERVICE_TYPES) {
+        const div = document.createElement('div');
+        div.className = 'service-item';
+        if (key === 'flot_cutting') {
+          div.classList.add('flot-service');
+        }
+
+        const mainRow = document.createElement('div');
+        mainRow.className = 'service-main';
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.id = 'chk_' + key;
+        cb.value = key;
+
+        const lbl = document.createElement('label');
+        lbl.htmlFor = 'chk_' + key;
+        lbl.textContent = SERVICE_LABELS[key];
+
+        mainRow.appendChild(cb);
+        mainRow.appendChild(lbl);
+        div.appendChild(mainRow);
+
+        // ---------- ОСОБАЯ ОБРАБОТКА ДЛЯ ФЛОТОРЕЗКИ ----------
+        if (key === 'flot_cutting') {
+          const actionsDiv = document.createElement('div');
+          actionsDiv.className = 'flot-actions';
+          actionsDiv.id = 'flotActions';
+          actionsDiv.style.display = 'none'; // скрыт по умолчанию
+
+          const containerInner = document.createElement('div');
+          containerInner.className = 'print-sheets-container';
+
+          const infoDiv = document.createElement('div');
+          infoDiv.className = 'print-sheets-info';
+          infoDiv.innerHTML = '<span>Резка: <strong id="flotCuttingResult">0</strong></span>';
+
+          const actionsInner = document.createElement('div');
+          actionsInner.className = 'print-sheets-actions';
+
+          const btn2 = document.createElement('button');
+          btn2.type = 'button';
+          btn2.className = 'btn btn-sm btn-secondary';
+          btn2.id = 'flotDivideBy2';
+          btn2.textContent = '÷2';
+
+          const btn4 = document.createElement('button');
+          btn4.type = 'button';
+          btn4.className = 'btn btn-sm btn-secondary';
+          btn4.id = 'flotDivideBy4';
+          btn4.textContent = '÷4';
+
+          const resultInput = document.createElement('input');
+          resultInput.type = 'number';
+          resultInput.id = 'flotDividedResult';
+          resultInput.readOnly = true;
+          resultInput.placeholder = 'Рез-т';
+          resultInput.value = '0';
+
+          actionsInner.appendChild(btn2);
+          actionsInner.appendChild(btn4);
+          actionsInner.appendChild(resultInput);
+
+          containerInner.appendChild(infoDiv);
+          containerInner.appendChild(actionsInner);
+          actionsDiv.appendChild(containerInner);
+
+          div.appendChild(actionsDiv);
+
+          // --- ЛОГИКА ПОКАЗА/СКРЫТИЯ ---
+          const flotActions = actionsDiv;
+          cb.addEventListener('change', function() {
+            flotActions.style.display = this.checked ? 'flex' : 'none';
+            if (!this.checked) {
+              const res = document.getElementById('flotDividedResult');
+              if (res) res.value = '0';
+              const resSpan = document.getElementById('flotCuttingResult');
+              if (resSpan) resSpan.textContent = '0';
+            }
+          });
+        }
+
+        // ---------- ОБЫЧНАЯ РЕЗКА (cutting) ----------
+        else if (key === 'cutting') {
+          const detailsDiv = document.createElement('div');
+          detailsDiv.className = 'cutting-details';
+          detailsDiv.id = 'cuttingDetails';
+          detailsDiv.style.display = 'none';
+
+          const select = document.createElement('select');
+          select.id = 'cutting_type';
+          select.className = 'cutting-select';
+          select.innerHTML = `
+            <option value="">Выбрать...</option>
+            <option value="pre">до печать</option>
+            <option value="post">пост печать</option>
+            <option value="both">оба</option>
+          `;
+          detailsDiv.appendChild(select);
+
+          const fieldsPre = document.createElement('div');
+          fieldsPre.className = 'cutting-fields';
+          fieldsPre.id = 'fields_pre';
+          fieldsPre.style.display = 'none';
+          fieldsPre.innerHTML = `
+            <input type="number" id="cut_pre_length" placeholder="Длина" min="0">
+            <input type="number" id="cut_pre_width" placeholder="Ширина" min="0">
+          `;
+
+          const fieldsPost = document.createElement('div');
+          fieldsPost.className = 'cutting-fields';
+          fieldsPost.id = 'fields_post';
+          fieldsPost.style.display = 'none';
+          fieldsPost.innerHTML = `
+            <input type="number" id="cut_post_length" placeholder="Длина" min="0">
+            <input type="number" id="cut_post_width" placeholder="Ширина" min="0">
+          `;
+
+          const fieldsBoth = document.createElement('div');
+          fieldsBoth.className = 'cutting-fields cutting-both';
+          fieldsBoth.id = 'fields_both';
+          fieldsBoth.style.display = 'none';
+          fieldsBoth.innerHTML = `
+            <div class="cutting-row-inline">
+              <label class="cutting-label">До:</label>
+              <input type="number" id="cut_both_pre_length" placeholder="Длина" min="0">
+              <input type="number" id="cut_both_pre_width" placeholder="Ширина" min="0">
+            </div>
+            <div class="cutting-row-inline">
+              <label class="cutting-label">Пост:</label>
+              <input type="number" id="cut_both_post_length" placeholder="Длина" min="0">
+              <input type="number" id="cut_both_post_width" placeholder="Ширина" min="0">
+            </div>
+          `;
+
+          detailsDiv.appendChild(fieldsPre);
+          detailsDiv.appendChild(fieldsPost);
+          detailsDiv.appendChild(fieldsBoth);
+
+          select.addEventListener('change', function() {
+            const val = this.value;
+            fieldsPre.style.display = (val === 'pre') ? 'flex' : 'none';
+            fieldsPost.style.display = (val === 'post') ? 'flex' : 'none';
+            fieldsBoth.style.display = (val === 'both') ? 'flex' : 'none';
+          });
+
+          cb.addEventListener('change', function() {
+            const isChecked = this.checked;
+            detailsDiv.style.display = isChecked ? 'flex' : 'none';
+            if (!isChecked) {
+              select.value = '';
+              fieldsPre.style.display = 'none';
+              fieldsPost.style.display = 'none';
+              fieldsBoth.style.display = 'none';
+              document.querySelectorAll('#cuttingDetails input[type="number"]').forEach(inp => inp.value = '');
+            }
+          });
+
+          div.appendChild(detailsDiv);
+        }
+
+        // ---------- ОСТАЛЬНЫЕ УСЛУГИ (с выбором варианта) ----------
+        else {
+          const sel = document.createElement('select');
+          sel.id = 'sel_' + key;
+          SERVICE_TYPES[key].forEach(v => {
+            const o = document.createElement('option');
+            o.value = v;
+            o.textContent = v;
+            sel.appendChild(o);
+          });
+          cb.addEventListener('change', function() {
+            sel.style.display = this.checked ? 'block' : 'none';
+            if (!this.checked) sel.selectedIndex = 0;
+          });
+          mainRow.appendChild(sel);
+        }
+
+        container.appendChild(div);
+      }
+
+      // ---------- ДОПОЛНИТЕЛЬНАЯ ПРИВЯЗКА СОБЫТИЙ ДЛЯ ФЛОТОРЕЗКИ ----------
+      const flotCheck = document.getElementById('chk_flot_cutting');
+      const flotResult = document.getElementById('flotCuttingResult');
+      const flotDividedInput = document.getElementById('flotDividedResult');
+      const btn2 = document.getElementById('flotDivideBy2');
+      const btn4 = document.getElementById('flotDivideBy4');
+      const printSheetsAuto = document.getElementById('printSheetsAuto');
+
+      if (flotCheck && btn2 && btn4) {
+        function getCurrentSheets() {
+          const raw = printSheetsAuto ? printSheetsAuto.textContent.trim() : '0';
+          const val = parseInt(raw, 10);
+          return isNaN(val) ? 0 : val;
+        }
+
+        function updateFlotResult(value) {
+          const num = Number(value);
+          if (isNaN(num) || num < 0) {
+            if (flotResult) flotResult.textContent = '0';
+            if (flotDividedInput) flotDividedInput.value = '0';
+            return;
+          }
+          const display = Math.floor(num);
+          if (flotResult) flotResult.textContent = display;
+          if (flotDividedInput) flotDividedInput.value = display;
+        }
+
+        function divideSheets(divisor) {
+          const base = getCurrentSheets();
+          if (base === 0) {
+            updateFlotResult(0);
+            return;
+          }
+          const result = base / divisor;
+          updateFlotResult(result);
+        }
+
+        btn2.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (!flotCheck.checked) {
+            flotCheck.checked = true;
+            const actions = document.getElementById('flotActions');
+            if (actions) actions.style.display = 'flex';
+          }
+          divideSheets(2);
+        });
+
+        btn4.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (!flotCheck.checked) {
+            flotCheck.checked = true;
+            const actions = document.getElementById('flotActions');
+            if (actions) actions.style.display = 'flex';
+          }
+          divideSheets(4);
+        });
+
+        // Инициализация: скрыть блок, если галочка не стоит
+        if (!flotCheck.checked) {
+          const actions = document.getElementById('flotActions');
+          if (actions) actions.style.display = 'none';
+        }
+      }
+    }
+
+    // ---------- ФОРМАТ РУЛОНА ----------
+    function setupMediaTypeToggle() {
+      const roll = document.querySelector('input[name="media_type"][value="roll"]');
+      const sheet = document.querySelector('input[name="media_type"][value="sheet"]');
+      const row = document.getElementById('rollFormatRow');
+      const toggle = () => row.style.display = roll.checked ? '' : 'none';
+      roll.addEventListener('change', toggle);
+      sheet.addEventListener('change', toggle);
+      toggle();
+    }
+
+    // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ РАСЧЁТА ==========
+    let currentWeightKg = 0;
+    let currentTotalSheets = 0;
+
+    // ========== РАСЧЁТ ТИРАЖА И ВЕСА ==========
+    function recalc() {
+      const orderQty   = parseFloat(document.querySelector('input[name="order_qty"]')?.value) || 0;
+      const width      = parseFloat(document.querySelector('input[name="size_width"]')?.value) || 0;
+      const length     = parseFloat(document.querySelector('input[name="size_length"]')?.value) || 0;
+      const gsm        = parseFloat(document.querySelector('input[name="gsm"]')?.value) || 0;
+
+      const totalSheets = orderQty;
+      currentTotalSheets = totalSheets;
+
+      let weightKg = 0;
+      if (width > 0 && length > 0 && gsm > 0 && totalSheets > 0) {
+        weightKg = (width * length * gsm * totalSheets) / 1_000_000_000;
+      }
+      currentWeightKg = weightKg;
+
+      updateUI(totalSheets, weightKg);
+    }
+
+    // ========== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ==========
+    function updateUI(totalSheets, weightKg) {
+      const hidden = document.getElementById('printSheetsHidden');
+      if (hidden) hidden.value = totalSheets;
+
+      const autoSheets = document.getElementById('printSheetsAuto');
+      if (autoSheets) autoSheets.textContent = totalSheets;
+
+      const weightEl = document.getElementById('weightResult');
+      if (weightEl) {
+        if (weightKg <= 0 || totalSheets <= 0) {
+          weightEl.textContent = '— кг';
+        } else {
+          const truncated = Math.floor(weightKg * 1000) / 1000;
+          weightEl.textContent = truncated.toFixed(3).replace('.', ',') + ' кг';
+        }
+      }
+
+      const dividedInput = document.getElementById('dividedResult');
+      if (dividedInput) dividedInput.value = '';
+    }
+
+    // ---------- ПРИВЯЗКА СОБЫТИЙ НА ПОЛЯ ВВОДА ----------
+    function setupCalcListeners() {
+      const selectors = [
+        'input[name="order_qty"]',
+        'input[name="size_width"]',
+        'input[name="size_length"]',
+        'input[name="gsm"]'
+      ];
+      selectors.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) el.addEventListener('input', recalc);
+      });
+
+      document.querySelectorAll('input[name="calc_mode"]').forEach(radio => {
+        radio.addEventListener('change', recalc);
+      });
+    }
+
+    // ---------- КНОПКИ ДЕЛЕНИЯ ВЕСА (старые, удалены, но оставляем пустую функцию) ----------
+    function setupWeightDivision() {
+      // больше не используется, т.к. деление перенесено в флоторезку
+    }
+
+    // ---------- PDF ----------
+    let pdfBase64 = null;
+    document.getElementById('pdfUpload').addEventListener('change', function(e){
+      const f = e.target.files[0];
+      document.getElementById('pdfError').textContent = '';
+      if(!f) return;
+      if(f.type !== 'application/pdf') {
+        document.getElementById('pdfError').textContent = 'Только PDF файлы!';
+        return;
+      }
+      if(f.size > 5*1024*1024) {
+        document.getElementById('pdfError').textContent = 'Макс. 5 МБ';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = ev => {
+        pdfBase64 = ev.target.result;
+        document.getElementById('pdfFileName').textContent = f.name;
+        document.getElementById('clearPdfBtn').style.display = 'inline-block';
+      };
+      reader.readAsDataURL(f);
+    });
+    document.getElementById('clearPdfBtn').addEventListener('click', function(){
+      pdfBase64 = null;
+      document.getElementById('pdfUpload').value = '';
+      document.getElementById('pdfFileName').textContent = '';
+      this.style.display = 'none';
+    });
+
+    // ---------- ОТПРАВКА ----------
+    document.getElementById('orderForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      if(!this.checkValidity()) { this.reportValidity(); return; }
+
+      recalc();
+
+      const fd = new FormData(this);
+      const order = {
+        id: Date.now(),
+        techcard_no: fd.get('techcard_no'),
+        manager: fd.get('manager'),
+        customer: fd.get('customer'),
+        product_name: fd.get('product_name'),
+        description: fd.get('description'),
+        print_type: fd.get('print_type'),
+        media_type: fd.get('media_type'),
+        paper_type: fd.get('paper_type'),
+        order_qty: +fd.get('order_qty') || 0,
+        make_ready: +fd.get('make_ready') || 0,
+        roll_format: fd.get('roll_format') ? parseFloat(fd.get('roll_format')) : null,
+        size_length: +fd.get('size_length') || 0,
+        size_width: +fd.get('size_width') || 0,
+        stripes: +fd.get('stripes') || 0,
+        gsm: +fd.get('gsm') || 0,
+        color: fd.get('color'),
+        calc_mode: document.querySelector('input[name="calc_mode"]:checked')?.value || 'warehouse',
+        print_sheets: currentTotalSheets,
+        weight_kg: currentWeightKg,
+        services: [],
+        pdfData: pdfBase64 || null
+      };
+
+      // Сбор услуг
+      for (let key in SERVICE_TYPES) {
+        const chk = document.getElementById('chk_' + key);
+        if (chk && chk.checked) {
+          if (key === 'cutting') {
+            const sel = document.getElementById('cutting_type');
+            const val = sel.value;
+            if (val === 'pre') {
+              const len = parseFloat(document.getElementById('cut_pre_length').value) || 0;
+              const wid = parseFloat(document.getElementById('cut_pre_width').value) || 0;
+              order.services.push({ name: 'cutting', type: 'до печать', length: len, width: wid });
+            } else if (val === 'post') {
+              const len = parseFloat(document.getElementById('cut_post_length').value) || 0;
+              const wid = parseFloat(document.getElementById('cut_post_width').value) || 0;
+              order.services.push({ name: 'cutting', type: 'пост печать', length: len, width: wid });
+            } else if (val === 'both') {
+              const lenPre = parseFloat(document.getElementById('cut_both_pre_length').value) || 0;
+              const widPre = parseFloat(document.getElementById('cut_both_pre_width').value) || 0;
+              const lenPost = parseFloat(document.getElementById('cut_both_post_length').value) || 0;
+              const widPost = parseFloat(document.getElementById('cut_both_post_width').value) || 0;
+              order.services.push({
+                name: 'cutting',
+                type: 'оба',
+                details: [
+                  { type: 'до печать', length: lenPre, width: widPre },
+                  { type: 'пост печать', length: lenPost, width: widPost }
+                ]
+              });
+            }
+          } else if (key === 'flot_cutting') {
+            const resultVal = document.getElementById('flotDividedResult')?.value || '0';
+            order.services.push({ name: 'flot_cutting', result: resultVal });
+          } else {
+            const sel = document.getElementById('sel_' + key);
+            order.services.push({ name: key, type: sel ? sel.value : '' });
+          }
+        }
+      }
+
+      let orders = JSON.parse(localStorage.getItem('print_orders') || '[]');
+      orders.push(order);
+      localStorage.setItem('print_orders', JSON.stringify(orders));
+
+      (async () => {
+        try {
+          const resp = await fetch('/api/otpcex', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...order, id: String(order.id) }) });
+          if (!resp.ok) throw new Error('Server save failed');
+          const saved = await resp.json();
+          document.getElementById('result').innerHTML = `<div class="success-msg">✅ Заказ сохранён. <a href="texKarta.html?id=${saved.id}" style="color:#065f46;">Открыть техкарту</a></div>`;
+        } catch (err) {
+          console.warn('Save to server failed, kept local:', err);
+          document.getElementById('result').innerHTML = `<div class="success-msg">✅ Заказ сохранён локально. <a href="texKarta.html?id=${order.id}" style="color:#065f46;">Открыть техкарту</a></div>`;
+        }
+      })();
+
+      document.getElementById('techcardNo').value = generateTechCardNo();
+    });
+
+    // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+    buildServicesBlock();
+    setupMediaTypeToggle();
+    setupCalcListeners();
+    setupWeightDivision();
+    recalc();
+  </script>
+
+  <script src="js/auth-check.js"></script>
+  <script src="js/nav-filter.js"></script>
 </body>
 </html>

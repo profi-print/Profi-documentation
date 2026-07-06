@@ -173,6 +173,7 @@
 
     <script src="js/utils.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/multi-account-storage.js"></script>
     <script>
         function renderClients() {
             const clients = Storage.getClients();
@@ -313,5 +314,8 @@
 
         Storage.init().then(() => renderClients());
     </script>
+<script src="js/auth-check.js"></script>
+<script src="js/nav-filter.js"></script>
+  <script src="js/multi-account-storage.js"></script>
 </body>
 </html>
