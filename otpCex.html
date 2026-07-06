@@ -53,6 +53,8 @@
       border-radius: 12px;
       padding: 18px;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      display: flex;
+      flex-direction: column;
     }
     .form-column-title {
       font-size: 15px;
@@ -295,33 +297,6 @@
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 2px rgba(59, 130, 246, 0.1);
     }
 
-    .pdf-upload-block, .screenshot-block {
-      margin-top: 18px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .screenshot-block {
-      border-top: none;
-      margin-top: 12px;
-      padding-top: 0;
-    }
-    .screenshot-preview {
-      max-width: 120px;
-      max-height: 120px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      display: none;
-      object-fit: contain;
-      background: var(--bg-main);
-    }
-    .screenshot-preview.visible {
-      display: block;
-    }
-
     .print-sheets-container {
       display: flex;
       align-items: center;
@@ -444,6 +419,22 @@
     .hidden-input {
       display: none;
     }
+
+    /* PDF & Screenshot блоки внутри правой колонки */
+    .pdf-block, .screenshot-block {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+    .screenshot-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-top: none;
+      padding-top: 12px;
+      margin-top: 12px;
+      min-height: 120px;
+    }
     .pdf-filename-input {
       flex: 1;
       min-width: 150px;
@@ -461,6 +452,88 @@
       outline: none;
       border-color: var(--primary-blue);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .pdf-select-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    /* Область вставки скриншота */
+    .screenshot-drop-area {
+      flex: 1;
+      min-height: 180px;
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .screenshot-drop-area.dragover {
+      border-color: var(--primary-blue);
+      background: rgba(37, 99, 235, 0.05);
+    }
+    .screenshot-drop-area.has-image {
+      border-style: solid;
+      border-color: var(--primary-blue);
+      background: var(--bg-white);
+    }
+    .screenshot-drop-area .placeholder {
+      color: var(--text-secondary);
+      font-size: 14px;
+      text-align: center;
+      pointer-events: none;
+    }
+    .screenshot-drop-area .placeholder .key-hint {
+      display: inline-block;
+      background: var(--bg-white);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      font-family: monospace;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    .screenshot-drop-area img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 4px;
+      display: none;
+    }
+    .screenshot-drop-area.has-image img {
+      display: block;
+    }
+    .screenshot-drop-area .clear-screenshot {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      font-size: 18px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .screenshot-drop-area .clear-screenshot:hover {
+      background: rgba(220, 38, 38, 0.8);
+    }
+    .screenshot-drop-area.has-image .clear-screenshot {
+      display: flex;
     }
 
     @media screen and (max-width: 768px) {
@@ -494,8 +567,8 @@
       .flot-actions .print-sheets-container {
         flex-wrap: wrap;
       }
-      .pdf-upload-block, .screenshot-block {
-        flex-wrap: wrap;
+      .screenshot-drop-area {
+        min-height: 120px;
       }
     }
     @media screen and (max-width: 400px) {
@@ -541,7 +614,6 @@
         <li><a href="backups.html">🗑️ Резервные копии</a></li>
         <li><a href="otpCex.html" class="active">⚙️ На производство</a></li>
         <li><a href="texKarta.html">⚙️ Техкарта</a></li>
-        <!-- Ссылка на index2.html, видна только для Diyor -->
         <li id="index2Link" class="hidden-link"><a href="index2.html">📈 Аналитика (Diyor)</a></li>
       </ul>
       <div class="theme-switch-wrapper">
@@ -652,33 +724,37 @@
               </table>
             </div>
 
-            <!-- ПРАВАЯ КОЛОНКА: Пост Печать -->
-            <div class="form-column">
+            <!-- ПРАВАЯ КОЛОНКА: Пост Печать + PDF + Скриншот -->
+            <div class="form-column" style="display:flex; flex-direction:column;">
               <div class="form-column-title">Пост Печать</div>
-              <div class="service-grid" id="servicesContainer">
-                <!-- Услуги генерируются скриптом -->
-              </div>
+              <div class="service-grid" id="servicesContainer"></div>
 
-              <!-- Блок PDF (только имя) -->
-              <div class="pdf-upload-block">
-                <label class="btn btn-secondary" for="pdfFileInput" style="cursor:pointer;">📎 Выбрать PDF</label>
-                <input type="file" id="pdfFileInput" accept=".pdf" class="hidden-input">
-                <div class="pdf-filename-input">
-                  <input type="text" id="pdfFileNameInput" name="pdf_filename" placeholder="Имя PDF-файла (выберите файл)" readonly>
+              <!-- Блок PDF (имя файла) -->
+              <div class="pdf-block">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <label class="btn btn-secondary pdf-select-btn" for="pdfFileInput" style="cursor:pointer;">📎 Выбрать PDF</label>
+                  <input type="file" id="pdfFileInput" accept=".pdf" class="hidden-input">
+                  <div class="pdf-filename-input">
+                    <input type="text" id="pdfFileNameInput" name="pdf_filename" placeholder="Имя PDF-файла (выберите файл)" readonly>
+                  </div>
+                  <button type="button" id="clearPdfBtn" class="btn btn-secondary" style="display:none;">✕</button>
                 </div>
-                <button type="button" id="clearPdfBtn" class="btn btn-secondary" style="display:none;">✕ Очистить</button>
               </div>
 
-              <!-- Блок скриншота -->
+              <!-- Блок скриншота (Ctrl+V) -->
               <div class="screenshot-block">
-                <label class="btn btn-secondary" for="screenshotInput" style="cursor:pointer;">🖼️ Загрузить скриншот</label>
-                <input type="file" id="screenshotInput" accept="image/*" class="hidden-input">
-                <img id="screenshotPreview" class="screenshot-preview" alt="Preview">
-                <button type="button" id="clearScreenshotBtn" class="btn btn-secondary" style="display:none;">✕</button>
+                <div style="font-size:13px; font-weight:500; margin-bottom:6px;">🖼️ Скриншот (Ctrl+V)</div>
+                <div id="screenshotDropArea" class="screenshot-drop-area" tabindex="0">
+                  <div class="placeholder">
+                    <div style="font-size:32px; margin-bottom:8px;">📷</div>
+                    <div>Вставьте скриншот из буфера обмена</div>
+                    <div class="key-hint">Ctrl + V</div>
+                  </div>
+                  <img id="screenshotPreview" alt="Скриншот">
+                  <button type="button" id="clearScreenshotBtn" class="clear-screenshot" title="Удалить">✕</button>
+                </div>
                 <input type="hidden" id="screenshotData" name="screenshot_base64" value="">
               </div>
-
-              <div id="pdfError" style="color:var(--accent-red); font-size:12px; margin-top:4px;"></div>
             </div>
           </div>
 
@@ -699,20 +775,10 @@
     })();
   </script>
 
-  <!-- Подключаем storage.js для работы с контрагентами -->
   <script src="js/storage.js"></script>
   <script src="js/multi-account-storage.js"></script>
-
-  <!-- ============================================================
-       ПОЛНЫЙ СКРИПТ (otpCex.js) С ДОБАВЛЕННОЙ ФЛОТОРЕЗКОЙ,
-       АВТОПОДБОРОМ КОНТРАГЕНТОВ, PDF-ИМЯ И СКРИНШОТОМ
-       ============================================================ -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      /* ============================================
-         ProfitPrint – Логика страницы "Отправка в цех"
-         ============================================ */
-
       // ---------- ТЕМА ----------
       const body = document.body;
       const themeToggle = document.getElementById('themeToggle');
@@ -738,7 +804,7 @@
 
       // ---------- АВТО НОМЕР ТЕХКАРТЫ ----------
       function generateTechCardNo() {
-        const orders = JSON.parse(localStorage.getItem('print_orders') || '[]');
+        const orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
         return orders.length + 1;
       }
       document.getElementById('techcardNo').value = generateTechCardNo();
@@ -748,9 +814,7 @@
         const input = document.getElementById('customerInput');
         const datalist = document.getElementById('customerList');
         if (!input || !datalist) return;
-
         let clients = [];
-
         try {
           const raw = localStorage.getItem('pp_clients');
           if (raw) {
@@ -758,21 +822,18 @@
             if (Array.isArray(parsed) && parsed.length) clients = parsed;
           }
         } catch (e) {}
-
         if (!clients.length && typeof Storage !== 'undefined' && Storage.getClients) {
           try {
             const storageClients = Storage.getClients();
             if (storageClients && storageClients.length) clients = storageClients;
           } catch (e) {}
         }
-
         datalist.innerHTML = '';
         clients.forEach(c => {
           const opt = document.createElement('option');
           opt.value = c.name;
           datalist.appendChild(opt);
         });
-
         if (!clients.length) {
           const opt = document.createElement('option');
           opt.value = '— Нет контрагентов —';
@@ -792,7 +853,6 @@
         cutting: [],
         flot_cutting: [],
       };
-
       const SERVICE_LABELS = {
         vd_lak:'ВД лак', lamination:'Ламинация',
         embossing:'Тиснение', cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
@@ -800,28 +860,22 @@
         flot_cutting:'✂️ Флоторезка / Резка'
       };
 
-      // ---------- ПОСТРОЕНИЕ БЛОКА УСЛУГ ----------
       function buildServicesBlock() {
         const container = document.getElementById('servicesContainer');
         container.innerHTML = '';
-
         for (let key in SERVICE_TYPES) {
           const div = document.createElement('div');
           div.className = 'service-item';
           if (key === 'flot_cutting') div.classList.add('flot-service');
-
           const mainRow = document.createElement('div');
           mainRow.className = 'service-main';
-
           const cb = document.createElement('input');
           cb.type = 'checkbox';
           cb.id = 'chk_' + key;
           cb.value = key;
-
           const lbl = document.createElement('label');
           lbl.htmlFor = 'chk_' + key;
           lbl.textContent = SERVICE_LABELS[key];
-
           mainRow.appendChild(cb);
           mainRow.appendChild(lbl);
           div.appendChild(mainRow);
@@ -831,46 +885,36 @@
             actionsDiv.className = 'flot-actions';
             actionsDiv.id = 'flotActions';
             actionsDiv.style.display = 'none';
-
             const containerInner = document.createElement('div');
             containerInner.className = 'print-sheets-container';
-
             const infoDiv = document.createElement('div');
             infoDiv.className = 'print-sheets-info';
             infoDiv.innerHTML = '<span>Резка: <strong id="flotCuttingResult">0</strong></span>';
-
             const actionsInner = document.createElement('div');
             actionsInner.className = 'print-sheets-actions';
-
             const btn2 = document.createElement('button');
             btn2.type = 'button';
             btn2.className = 'btn btn-sm btn-secondary';
             btn2.id = 'flotDivideBy2';
             btn2.textContent = '÷2';
-
             const btn4 = document.createElement('button');
             btn4.type = 'button';
             btn4.className = 'btn btn-sm btn-secondary';
             btn4.id = 'flotDivideBy4';
             btn4.textContent = '÷4';
-
             const resultInput = document.createElement('input');
             resultInput.type = 'number';
             resultInput.id = 'flotDividedResult';
             resultInput.readOnly = true;
             resultInput.placeholder = 'Рез-т';
             resultInput.value = '0';
-
             actionsInner.appendChild(btn2);
             actionsInner.appendChild(btn4);
             actionsInner.appendChild(resultInput);
-
             containerInner.appendChild(infoDiv);
             containerInner.appendChild(actionsInner);
             actionsDiv.appendChild(containerInner);
-
             div.appendChild(actionsDiv);
-
             const flotActions = actionsDiv;
             cb.addEventListener('change', function() {
               flotActions.style.display = this.checked ? 'flex' : 'none';
@@ -881,15 +925,11 @@
                 if (resSpan) resSpan.textContent = '0';
               }
             });
-          }
-
-          // Резка (cutting) с предустановленным "до печать"
-          else if (key === 'cutting') {
+          } else if (key === 'cutting') {
             const detailsDiv = document.createElement('div');
             detailsDiv.className = 'cutting-details';
             detailsDiv.id = 'cuttingDetails';
             detailsDiv.style.display = 'none';
-
             const select = document.createElement('select');
             select.id = 'cutting_type';
             select.className = 'cutting-select';
@@ -899,7 +939,6 @@
               <option value="both">оба</option>
             `;
             detailsDiv.appendChild(select);
-
             const fieldsPre = document.createElement('div');
             fieldsPre.className = 'cutting-fields';
             fieldsPre.id = 'fields_pre';
@@ -908,7 +947,6 @@
               <input type="number" id="cut_pre_length" placeholder="Длина" min="0">
               <input type="number" id="cut_pre_width" placeholder="Ширина" min="0">
             `;
-
             const fieldsPost = document.createElement('div');
             fieldsPost.className = 'cutting-fields';
             fieldsPost.id = 'fields_post';
@@ -917,7 +955,6 @@
               <input type="number" id="cut_post_length" placeholder="Длина" min="0">
               <input type="number" id="cut_post_width" placeholder="Ширина" min="0">
             `;
-
             const fieldsBoth = document.createElement('div');
             fieldsBoth.className = 'cutting-fields cutting-both';
             fieldsBoth.id = 'fields_both';
@@ -934,18 +971,15 @@
                 <input type="number" id="cut_both_post_width" placeholder="Ширина" min="0">
               </div>
             `;
-
             detailsDiv.appendChild(fieldsPre);
             detailsDiv.appendChild(fieldsPost);
             detailsDiv.appendChild(fieldsBoth);
-
             select.addEventListener('change', function() {
               const val = this.value;
               fieldsPre.style.display = (val === 'pre') ? 'flex' : 'none';
               fieldsPost.style.display = (val === 'post') ? 'flex' : 'none';
               fieldsBoth.style.display = (val === 'both') ? 'flex' : 'none';
             });
-
             cb.addEventListener('change', function() {
               const isChecked = this.checked;
               detailsDiv.style.display = isChecked ? 'flex' : 'none';
@@ -958,12 +992,8 @@
                 fieldsBoth.style.display = (val === 'both') ? 'flex' : 'none';
               }
             });
-
             div.appendChild(detailsDiv);
-          }
-
-          // Остальные услуги с выбором
-          else {
+          } else {
             const sel = document.createElement('select');
             sel.id = 'sel_' + key;
             SERVICE_TYPES[key].forEach(v => {
@@ -978,25 +1008,22 @@
             });
             mainRow.appendChild(sel);
           }
-
           container.appendChild(div);
         }
 
-        // Привязка кнопок флоторезки
+        // Флоторезка: привязка кнопок
         const flotCheck = document.getElementById('chk_flot_cutting');
         const flotResult = document.getElementById('flotCuttingResult');
         const flotDividedInput = document.getElementById('flotDividedResult');
         const btn2 = document.getElementById('flotDivideBy2');
         const btn4 = document.getElementById('flotDivideBy4');
         const printSheetsAuto = document.getElementById('printSheetsAuto');
-
         if (flotCheck && btn2 && btn4) {
           function getCurrentSheets() {
             const raw = printSheetsAuto ? printSheetsAuto.textContent.trim() : '0';
             const val = parseInt(raw, 10);
             return isNaN(val) ? 0 : val;
           }
-
           function updateFlotResult(value) {
             const num = Number(value);
             if (isNaN(num) || num < 0) {
@@ -1008,7 +1035,6 @@
             if (flotResult) flotResult.textContent = display;
             if (flotDividedInput) flotDividedInput.value = display;
           }
-
           function divideSheets(divisor) {
             const base = getCurrentSheets();
             if (base === 0) {
@@ -1018,7 +1044,6 @@
             const result = base / divisor;
             updateFlotResult(result);
           }
-
           btn2.addEventListener('click', function(e) {
             e.preventDefault();
             if (!flotCheck.checked) {
@@ -1028,7 +1053,6 @@
             }
             divideSheets(2);
           });
-
           btn4.addEventListener('click', function(e) {
             e.preventDefault();
             if (!flotCheck.checked) {
@@ -1038,7 +1062,6 @@
             }
             divideSheets(4);
           });
-
           if (!flotCheck.checked) {
             const actions = document.getElementById('flotActions');
             if (actions) actions.style.display = 'none';
@@ -1050,7 +1073,6 @@
       const pdfFileInput = document.getElementById('pdfFileInput');
       const pdfFileNameInput = document.getElementById('pdfFileNameInput');
       const clearPdfBtn = document.getElementById('clearPdfBtn');
-
       if (pdfFileInput && pdfFileNameInput) {
         pdfFileInput.addEventListener('change', function(e) {
           const file = e.target.files[0];
@@ -1059,7 +1081,6 @@
           if (clearPdfBtn) clearPdfBtn.style.display = 'inline-block';
         });
       }
-
       if (clearPdfBtn) {
         clearPdfBtn.addEventListener('click', function() {
           if (pdfFileInput) pdfFileInput.value = '';
@@ -1068,37 +1089,86 @@
         });
       }
 
-      // ---------- СКРИНШОТ: загрузка изображения → base64 ----------
-      const screenshotInput = document.getElementById('screenshotInput');
-      const screenshotPreview = document.getElementById('screenshotPreview');
+      // ---------- СКРИНШОТ: вставка через Ctrl+V ----------
+      const dropArea = document.getElementById('screenshotDropArea');
+      const previewImg = document.getElementById('screenshotPreview');
       const screenshotData = document.getElementById('screenshotData');
       const clearScreenshotBtn = document.getElementById('clearScreenshotBtn');
 
-      if (screenshotInput && screenshotPreview && screenshotData) {
-        screenshotInput.addEventListener('change', function(e) {
-          const file = e.target.files[0];
-          if (!file) return;
+      function handlePaste(e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let item of items) {
+          if (item.type.startsWith('image/')) {
+            const blob = item.getAsFile();
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+              const base64 = ev.target.result;
+              screenshotData.value = base64;
+              previewImg.src = base64;
+              dropArea.classList.add('has-image');
+              if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
+              // Скрываем плейсхолдер
+              const placeholder = dropArea.querySelector('.placeholder');
+              if (placeholder) placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(blob);
+            e.preventDefault();
+            break;
+          }
+        }
+      }
+
+      // Обработка вставки (глобально на странице)
+      document.addEventListener('paste', function(e) {
+        // Если фокус внутри input или textarea, не перехватываем (кроме специального поля)
+        const target = e.target;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+          // Разрешаем стандартную вставку текста, но если это наше поле для скриншота, обрабатываем
+          if (target.closest('#screenshotDropArea')) {
+            handlePaste(e);
+          }
+          return;
+        }
+        // В остальных случаях пытаемся обработать
+        handlePaste(e);
+      });
+
+      // Также можно обработать drag-and-drop для удобства
+      dropArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropArea.classList.add('dragover');
+      });
+      dropArea.addEventListener('dragleave', function(e) {
+        dropArea.classList.remove('dragover');
+      });
+      dropArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = function(ev) {
             const base64 = ev.target.result;
             screenshotData.value = base64;
-            screenshotPreview.src = base64;
-            screenshotPreview.classList.add('visible');
-            if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'inline-block';
+            previewImg.src = base64;
+            dropArea.classList.add('has-image');
+            if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
+            const placeholder = dropArea.querySelector('.placeholder');
+            if (placeholder) placeholder.style.display = 'none';
           };
-          reader.readAsDataURL(file);
-        });
-      }
+          reader.readAsDataURL(files[0]);
+        }
+      });
 
+      // Очистка скриншота
       if (clearScreenshotBtn) {
         clearScreenshotBtn.addEventListener('click', function() {
-          if (screenshotInput) screenshotInput.value = '';
-          if (screenshotData) screenshotData.value = '';
-          if (screenshotPreview) {
-            screenshotPreview.src = '';
-            screenshotPreview.classList.remove('visible');
-          }
+          screenshotData.value = '';
+          previewImg.src = '';
+          dropArea.classList.remove('has-image');
           clearScreenshotBtn.style.display = 'none';
+          const placeholder = dropArea.querySelector('.placeholder');
+          if (placeholder) placeholder.style.display = 'block';
         });
       }
 
@@ -1122,26 +1192,21 @@
         const width      = parseFloat(document.querySelector('input[name="size_width"]')?.value) || 0;
         const length     = parseFloat(document.querySelector('input[name="size_length"]')?.value) || 0;
         const gsm        = parseFloat(document.querySelector('input[name="gsm"]')?.value) || 0;
-
         const totalSheets = orderQty;
         currentTotalSheets = totalSheets;
-
         let weightKg = 0;
         if (width > 0 && length > 0 && gsm > 0 && totalSheets > 0) {
           weightKg = (width * length * gsm * totalSheets) / 1_000_000_000;
         }
         currentWeightKg = weightKg;
-
         updateUI(totalSheets, weightKg);
       }
 
       function updateUI(totalSheets, weightKg) {
         const hidden = document.getElementById('printSheetsHidden');
         if (hidden) hidden.value = totalSheets;
-
         const autoSheets = document.getElementById('printSheetsAuto');
         if (autoSheets) autoSheets.textContent = totalSheets;
-
         const weightEl = document.getElementById('weightResult');
         if (weightEl) {
           if (weightKg <= 0 || totalSheets <= 0) {
@@ -1164,7 +1229,6 @@
           const el = document.querySelector(sel);
           if (el) el.addEventListener('input', recalc);
         });
-
         document.querySelectorAll('input[name="calc_mode"]').forEach(radio => {
           radio.addEventListener('change', recalc);
         });
@@ -1246,9 +1310,15 @@
           }
         }
 
-        let orders = JSON.parse(localStorage.getItem('print_orders') || '[]');
+        // Сохраняем в localStorage с ключом 'pp_orders'
+        let orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
         orders.push(order);
-        localStorage.setItem('print_orders', JSON.stringify(orders));
+        localStorage.setItem('pp_orders', JSON.stringify(orders));
+
+        // Также пробуем синхронизировать через Storage, если доступно
+        if (typeof Storage !== 'undefined' && Storage.saveOrder) {
+          Storage.saveOrder(order).catch(() => {});
+        }
 
         (async () => {
           try {
