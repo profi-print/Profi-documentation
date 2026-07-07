@@ -6,6 +6,114 @@
     <title>Контрагенты — ProfitPrint</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Дополнительные стили для модального окна деталей */
+        .detail-section {
+            padding: 8px 0;
+        }
+        .detail-section .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 24px;
+            margin: 12px 0;
+        }
+        .detail-section .detail-grid .detail-item {
+            display: flex;
+            flex-direction: column;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .detail-section .detail-grid .detail-item .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 2px;
+        }
+        .detail-section .detail-grid .detail-item .value {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+        .detail-section .finance-block {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+            background: var(--bg-main);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 12px 0;
+            border: 1px solid var(--border-color);
+        }
+        .detail-section .finance-block .finance-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .detail-section .finance-block .finance-item .fin-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        .detail-section .finance-block .finance-item .fin-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .detail-section .finance-block .finance-item .fin-value.positive {
+            color: #10b981;
+        }
+        .detail-section .finance-block .finance-item .fin-value.negative {
+            color: #dc2626;
+        }
+        .detail-section .documents-list {
+            margin: 8px 0 4px 0;
+            padding: 0;
+            list-style: none;
+        }
+        .detail-section .documents-list li {
+            padding: 4px 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-size: 14px;
+        }
+        .detail-section .documents-list li:last-child {
+            border-bottom: none;
+        }
+        .detail-section .documents-list li a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .detail-section .documents-list li a:hover {
+            text-decoration: underline;
+        }
+        .detail-section .documents-list li .doc-meta {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-left: 8px;
+        }
+        .detail-section .no-data {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 14px;
+        }
+        .modal-content .modal-body {
+            padding: 20px 24px;
+        }
+        @media screen and (max-width: 768px) {
+            .detail-section .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+            .detail-section .finance-block {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
 </head>
 <body>
     <button class="burger-btn" id="burgerBtn" aria-label="Меню"><span></span><span></span><span></span></button>
@@ -20,6 +128,8 @@
             </div>
             <ul class="nav-menu">
                 <li><a href="index.html">📊 Главная</a></li>
+        <li><a href="index2.html">📊 Главная</a></li>
+
                 <li><a href="orders.html">📋 Заказы контрагентов</a></li>
                 <li><a href="production.html">🏭 Заказы на производство</a></li>
                 <li><a href="invoices.html">📦 Накладные</a></li>
@@ -29,6 +139,7 @@
                 <li><a href="backups.html">🗑️ Резервные копии</a></li>
                 <li><a href="otpCex.html">⚙️ На производство</a></li>
                 <li><a href="texKarta.html">⚙️ Техкарта</a></li>
+                <li><a href="statuses.html">📊 Статусы</a></li>
             </ul>
         </nav>
 
@@ -68,7 +179,6 @@
                     <div class="modal-body">
                         <form id="client-form">
                             <input type="hidden" id="client-id">
-                            <!-- Основная информация -->
                             <h4>Основная информация</h4>
                             <div class="form-row">
                                 <div class="form-group">
@@ -92,7 +202,6 @@
                                 <input type="text" id="client-name" required>
                             </div>
 
-                            <!-- Юридические данные -->
                             <h4>Юридические данные</h4>
                             <div class="form-row">
                                 <div class="form-group">
@@ -109,7 +218,6 @@
                                 <input type="text" id="client-bank">
                             </div>
 
-                            <!-- Адреса и контакты -->
                             <h4>Адреса, телефоны</h4>
                             <div class="form-row">
                                 <div class="form-group">
@@ -130,7 +238,6 @@
                                 <input type="text" id="client-address">
                             </div>
 
-                            <!-- Контактное лицо -->
                             <h4>Контактное лицо</h4>
                             <div class="form-row">
                                 <div class="form-group">
@@ -155,7 +262,7 @@
                 </div>
             </div>
 
-            <!-- Модальное окно просмотра деталей контрагента -->
+            <!-- Модальное окно просмотра деталей контрагента (улучшенное) -->
             <div class="modal-overlay" id="detail-modal">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -271,30 +378,82 @@
         function showClientDetail(clientId) {
             const client = Storage.getClient(clientId);
             if (!client) return;
+
             const orders = Storage.getOrders().filter(o => o.clientId === clientId);
             const invoices = Storage.getInvoices().filter(inv => inv.clientId === clientId);
             const payments = Storage.getPayments().filter(p => p.clientId === clientId);
             const recons = Storage.getReconciliations().filter(r => r.clientId === clientId);
+
             const totalRealization = invoices.reduce((sum, inv) => sum + inv.items.reduce((s, i) => s + (i.cost || 0), 0), 0);
             const totalPayments = payments.reduce((sum, p) => sum + p.amount, 0);
             const debt = totalRealization - totalPayments;
 
-            let html = `<div class="detail-section"><h3>${escapeHtml(client.name)}</h3>`;
-            html += `<p><b>Тип:</b> ${escapeHtml(client.type || '')} | <b>Покупатель:</b> ${client.buyer ? '✅' : '❌'} | <b>Поставщик:</b> ${client.supplier ? '✅' : '❌'}</p>`;
-            html += `<p><b>ИНН:</b> ${escapeHtml(client.inn || 'не указан')} | <b>КПП:</b> ${escapeHtml(client.kpp || 'не указан')}</p>`;
-            html += `<p><b>Банк. счёт:</b> ${escapeHtml(client.bank_account || 'не указан')}</p>`;
-            html += `<p><b>E‑mail:</b> ${escapeHtml(client.email || 'не указан')}</p>`;
-            html += `<p><b>Юр. адрес:</b> ${escapeHtml(client.legal_address || '')}</p>`;
-            html += `<p><b>Факт. адрес:</b> ${escapeHtml(client.actual_address || client.address || '')}</p>`;
-            html += `<p><b>Контактное лицо:</b> ${escapeHtml(client.contact_person_name || client.contact || '')} (${escapeHtml(client.contact_person_position || '')})</p>`;
-            html += `<p><b>Телефон:</b> ${escapeHtml(client.contact_person_phone || client.phone || '')}</p>`;
-            html += `<hr><h4>💰 Финансы</h4><p>Реализация: ${formatCurrency(totalRealization)} | Оплаты: ${formatCurrency(totalPayments)} | Задолженность: <span style="color:${debt >= 0 ? '#10B981' : '#e60000'};">${formatCurrency(debt)}</span></p>`;
-            html += `<hr><h4>📋 Документы</h4>`;
-            if (orders.length > 0) { html += `<p><b>Заказы (${orders.length}):</b></p><ul>`; orders.slice(-5).reverse().forEach(o => html += `<li><a href="#" onclick="editOrder('${o.id}')">${escapeHtml(o.number)}</a> от ${formatDate(o.date)} — ${formatCurrency(o.items.reduce((s,i)=>s+(i.total||i.cost||0),0))}</li>`); html += `</ul>`; }
-            if (invoices.length > 0) { html += `<p><b>Накладные (${invoices.length}):</b></p><ul>`; invoices.slice(-5).reverse().forEach(inv => html += `<li><a href="#" onclick="editInvoice('${inv.id}')">${escapeHtml(inv.number)}</a> от ${formatDate(inv.date)} — ${formatCurrency(inv.items.reduce((s,i)=>s+(i.cost||0),0))}</li>`); html += `</ul>`; }
-            if (payments.length > 0) { html += `<p><b>Платежи (${payments.length}):</b></p><ul>`; payments.slice(-5).reverse().forEach(p => html += `<li>${formatDate(p.date)} — ${formatCurrency(p.amount)} (${escapeHtml(p.description || '')})</li>`); html += `</ul>`; }
-            if (recons.length > 0) { html += `<p><b>Акты сверки (${recons.length}):</b></p><ul>`; recons.slice(-5).reverse().forEach(r => html += `<li><a href="#" onclick="editReconciliation('${r.id}')">${escapeHtml(r.number)}</a> от ${formatDate(r.date)}</li>`); html += `</ul>`; }
+            let html = `<div class="detail-section">`;
+
+            // Основная информация в две колонки
+            html += `<div class="detail-grid">
+                <div class="detail-item"><span class="label">Название</span><span class="value">${escapeHtml(client.name)}</span></div>
+                <div class="detail-item"><span class="label">Тип</span><span class="value">${escapeHtml(client.type || '')}</span></div>
+                <div class="detail-item"><span class="label">Роль</span><span class="value">${client.buyer ? 'Покупатель ✅' : ''} ${client.supplier ? 'Поставщик ✅' : ''}</span></div>
+                <div class="detail-item"><span class="label">ИНН</span><span class="value">${escapeHtml(client.inn || 'не указан')}</span></div>
+                <div class="detail-item"><span class="label">КПП</span><span class="value">${escapeHtml(client.kpp || 'не указан')}</span></div>
+                <div class="detail-item"><span class="label">Банковский счёт</span><span class="value">${escapeHtml(client.bank_account || 'не указан')}</span></div>
+                <div class="detail-item"><span class="label">E‑mail</span><span class="value">${escapeHtml(client.email || 'не указан')}</span></div>
+                <div class="detail-item"><span class="label">Телефон</span><span class="value">${escapeHtml(client.contact_person_phone || client.phone || 'не указан')}</span></div>
+                <div class="detail-item" style="grid-column: 1 / -1;"><span class="label">Юридический адрес</span><span class="value">${escapeHtml(client.legal_address || '')}</span></div>
+                <div class="detail-item" style="grid-column: 1 / -1;"><span class="label">Фактический адрес</span><span class="value">${escapeHtml(client.actual_address || client.address || '')}</span></div>
+                <div class="detail-item"><span class="label">Контактное лицо</span><span class="value">${escapeHtml(client.contact_person_name || client.contact || '')}</span></div>
+                <div class="detail-item"><span class="label">Должность</span><span class="value">${escapeHtml(client.contact_person_position || '')}</span></div>
+            </div>`;
+
+            // Блок финансов (всегда отображается)
+            html += `<div class="finance-block">
+                <div class="finance-item">
+                    <span class="fin-label">Реализация</span>
+                    <span class="fin-value">${formatCurrency(totalRealization)}</span>
+                </div>
+                <div class="finance-item">
+                    <span class="fin-label">Оплаты</span>
+                    <span class="fin-value">${formatCurrency(totalPayments)}</span>
+                </div>
+                <div class="finance-item">
+                    <span class="fin-label">Задолженность</span>
+                    <span class="fin-value ${debt >= 0 ? 'positive' : 'negative'}">${formatCurrency(debt)}</span>
+                </div>
+            </div>`;
+
+            // Документы
+            html += `<h4 style="margin: 16px 0 8px 0; color: var(--text-primary);">📋 Документы</h4>`;
+            const hasDocs = orders.length || invoices.length || payments.length || recons.length;
+            if (hasDocs) {
+                html += `<ul class="documents-list">`;
+                if (orders.length) {
+                    orders.slice(-5).reverse().forEach(o => {
+                        html += `<li><a href="#" onclick="editOrder('${o.id}')">${escapeHtml(o.number)}</a> <span class="doc-meta">Заказ от ${formatDate(o.date)} — ${formatCurrency(o.items.reduce((s,i)=>s+(i.total||i.cost||0),0))}</span></li>`;
+                    });
+                }
+                if (invoices.length) {
+                    invoices.slice(-5).reverse().forEach(inv => {
+                        html += `<li><a href="#" onclick="editInvoice('${inv.id}')">${escapeHtml(inv.number)}</a> <span class="doc-meta">Накладная от ${formatDate(inv.date)} — ${formatCurrency(inv.items.reduce((s,i)=>s+(i.cost||0),0))}</span></li>`;
+                    });
+                }
+                if (payments.length) {
+                    payments.slice(-5).reverse().forEach(p => {
+                        html += `<li><span class="doc-meta">Платёж от ${formatDate(p.date)} — ${formatCurrency(p.amount)} ${p.description ? ' (' + escapeHtml(p.description) + ')' : ''}</span></li>`;
+                    });
+                }
+                if (recons.length) {
+                    recons.slice(-5).reverse().forEach(r => {
+                        html += `<li><a href="#" onclick="editReconciliation('${r.id}')">${escapeHtml(r.number)}</a> <span class="doc-meta">Акт сверки от ${formatDate(r.date)}</span></li>`;
+                    });
+                }
+                html += `</ul>`;
+            } else {
+                html += `<p class="no-data">Нет документов</p>`;
+            }
+
             html += `</div>`;
+
             document.getElementById('detail-title').textContent = client.name;
             document.getElementById('detail-body').innerHTML = html;
             document.getElementById('detail-modal').classList.add('show');
@@ -314,8 +473,8 @@
 
         Storage.init().then(() => renderClients());
     </script>
-<script src="js/auth-check.js"></script>
-<script src="js/nav-filter.js"></script>
-  <script src="js/multi-account-storage.js"></script>
+    <script src="js/auth-check.js"></script>
+    <script src="js/nav-filter.js"></script>
+    <script src="js/multi-account-storage.js"></script>
 </body>
 </html>

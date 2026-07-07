@@ -5,8 +5,8 @@
     // Селекторы пунктов меню в сайдбаре (подгоните под свою вёрстку)
     const menuItems = document.querySelectorAll('.nav-menu li a, .sidebar a'); // все ссылки в сайдбаре
 
-    const forbiddenForManager = ['otpCex.html', 'texKarta.html'];
-    const allowedForDesigner = ['clients.html', 'otpCex.html', 'texKarta.html'];
+    const forbiddenForManager = ['otpCex.html', 'texKarta.html', 'index2.html', 'statuses.html'];
+    const allowedForDesigner = ['clients.html', 'otpCex.html', 'texKarta.html', 'statuses.html', 'index2.html'];
 
     menuItems.forEach(link => {
         const href = link.getAttribute('href');

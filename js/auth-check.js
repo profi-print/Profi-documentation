@@ -4,8 +4,8 @@
   if (!user || !role) { window.location.href = 'login.html'; return; }
   const currentPage = window.location.pathname.split('/').pop().toLowerCase();
   const ACCESS = {
-    manager: { forbidden: ['otpcex.html', 'texkarta.html'] },
-    designer: { allowed: ['index2.html', 'clients.html', 'otpcex.html', 'texkarta.html'] }
+    manager: { forbidden: ['otpcex.html', 'texkarta.html', 'statuses.html'] },
+    designer: { allowed: ['index2.html', 'clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html'] }
   };
   const rules = ACCESS[role];
   if (!rules) { sessionStorage.clear(); window.location.href = 'login.html'; return; }
