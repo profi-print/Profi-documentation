@@ -924,763 +924,723 @@
   <script src="js/multi-account-storage.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // ---------- ТЕМА ----------
-      const body = document.body;
-      const themeToggle = document.getElementById('themeToggle');
-      if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-          const next = body.classList.contains('dark') ? 'light' : 'dark';
-          body.className = next;
-          localStorage.setItem('theme', next);
-        });
-      }
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      body.className = savedTheme;
-
-      // ---------- ГЛОБАЛЬНЫЕ ДАННЫЕ ----------
-      let allOrders = [];
-      let currentPage = 1;
-      const perPage = 100;
-
-      // ---------- ЗАГРУЗКА ДАННЫХ ----------
-      function loadOrders() {
-        try {
-          const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
-          allOrders = raw ? JSON.parse(raw) : [];
-          allOrders.sort((a, b) => b.id - a.id);
-        } catch (e) {
-          console.error('Ошибка загрузки заказов:', e);
-          allOrders = [];
-        }
-      }
-
-      // ---------- ПЕРЕКЛЮЧЕНИЕ ----------
-      function showList() {
-        document.getElementById('listContainer').classList.add('active');
-        document.getElementById('formContainer').classList.remove('active');
-        renderOrders();
-      }
-      function showForm(editData) {
-        document.getElementById('listContainer').classList.remove('active');
-        document.getElementById('formContainer').classList.add('active');
-        if (editData) {
-          fillForm(editData);
-          document.getElementById('formTitle').textContent = 'Редактирование заказа';
-        } else {
-          resetForm();
-          document.getElementById('formTitle').textContent = 'Создание заказа';
-        }
-        document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth' });
-      }
-      window.showList = showList;
-      window.showForm = showForm;
-
-      // ---------- ЗАПОЛНЕНИЕ ФОРМЫ ----------
-      function fillForm(order) {
-        document.getElementById('editId').value = order.id;
-        document.getElementById('techcardNo').value = order.techcard_no || '';
-        document.getElementById('managerSelect').value = order.manager || 'Муниса';
-        document.getElementById('customerInput').value = order.customer || '';
-        document.getElementById('productNameInput').value = order.product_name || '';
-        document.getElementById('descriptionInput').value = order.description || '';
-        document.querySelector(`input[name="print_type"][value="${order.print_type || 'A1'}"]`).checked = true;
-        document.querySelector(`input[name="media_type"][value="${order.media_type || 'roll'}"]`).checked = true;
-        document.getElementById('paperType').value = order.paper_type || 'картон';
-        document.getElementById('orderQty').value = order.order_qty || 0;
-        document.getElementById('makeReady').value = order.make_ready || 0;
-        document.getElementById('rollFormat').value = order.roll_format || '';
-        document.getElementById('sizeLength').value = order.size_length || 0;
-        document.getElementById('sizeWidth').value = order.size_width || 0;
-        document.getElementById('stripes').value = order.stripes || 0;
-        document.getElementById('gsm').value = order.gsm || 0;
-        document.getElementById('color').value = order.color || '';
-        // PDF
-        if (order.pdf_filename) {
-          document.getElementById('pdfFileNameInput').value = order.pdf_filename;
-          document.getElementById('clearPdfBtn').style.display = 'inline-block';
-        }
-        // Скриншот
-        if (order.screenshot_base64) {
-          document.getElementById('screenshotData').value = order.screenshot_base64;
-          document.getElementById('screenshotPreview').src = order.screenshot_base64;
-          const drop = document.getElementById('screenshotDropArea');
-          drop.classList.add('has-image');
-          const placeholder = drop.querySelector('.placeholder');
-          if (placeholder) placeholder.style.display = 'none';
-        }
-        // Услуги
-        const services = order.services || [];
-        // Сброс всех чекбоксов и полей
-        document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb => cb.checked = false);
-        document.querySelectorAll('#servicesContainer .service-item select').forEach(sel => sel.style.display = 'none');
-        document.querySelectorAll('#servicesContainer .cutting-details').forEach(d => d.style.display = 'none');
-        document.querySelectorAll('#servicesContainer .flot-actions').forEach(a => a.style.display = 'none');
-        // Установка услуг
-        services.forEach(s => {
-          const cb = document.getElementById('chk_' + s.name);
-          if (cb) {
-            cb.checked = true;
-            if (s.name === 'flot_cutting') {
-              const actions = document.getElementById('flotActions');
-              if (actions) actions.style.display = 'flex';
-              document.getElementById('flotDividedResult').value = s.result || 0;
-              document.getElementById('flotCuttingResult').textContent = s.result || 0;
-            } else if (s.name === 'cutting') {
-              const details = document.getElementById('cuttingDetails');
-              if (details) details.style.display = 'flex';
-              const sel = document.getElementById('cutting_type');
-              if (sel) {
-                if (s.type === 'до печать') sel.value = 'pre';
-                else if (s.type === 'пост печать') sel.value = 'post';
-                else if (s.type === 'оба') sel.value = 'both';
-                sel.dispatchEvent(new Event('change'));
-                if (s.type === 'до печать' && s.length) {
-                  document.getElementById('cut_pre_length').value = s.length;
-                  document.getElementById('cut_pre_width').value = s.width;
-                } else if (s.type === 'пост печать' && s.length) {
-                  document.getElementById('cut_post_length').value = s.length;
-                  document.getElementById('cut_post_width').value = s.width;
-                } else if (s.type === 'оба' && s.details) {
-                  const pre = s.details.find(d => d.type === 'до печать');
-                  const post = s.details.find(d => d.type === 'пост печать');
-                  if (pre) {
-                    document.getElementById('cut_both_pre_length').value = pre.length;
-                    document.getElementById('cut_both_pre_width').value = pre.width;
-                  }
-                  if (post) {
-                    document.getElementById('cut_both_post_length').value = post.length;
-                    document.getElementById('cut_both_post_width').value = post.width;
-                  }
-                }
-              }
-            } else {
-              const sel = document.getElementById('sel_' + s.name);
-              if (sel) { sel.style.display = 'block'; sel.value = s.type || ''; }
-            }
-          }
-        });
-        recalc();
-        // Обновить переключение рулон/лист
-        document.getElementById('rollFormatRow').style.display = document.getElementById('mediaRoll').checked ? '' : 'none';
-      }
-
-      function resetForm() {
-        document.getElementById('editId').value = '';
-        document.getElementById('techcardNo').value = allOrders.length + 1;
-        document.getElementById('managerSelect').value = 'Муниса';
-        document.getElementById('customerInput').value = '';
-        document.getElementById('productNameInput').value = '';
-        document.getElementById('descriptionInput').value = '';
-        document.querySelector('input[name="print_type"][value="A1"]').checked = true;
-        document.querySelector('input[name="media_type"][value="roll"]').checked = true;
-        document.getElementById('paperType').value = 'картон';
-        document.getElementById('orderQty').value = 0;
-        document.getElementById('makeReady').value = 0;
-        document.getElementById('rollFormat').value = '';
-        document.getElementById('sizeLength').value = 0;
-        document.getElementById('sizeWidth').value = 0;
-        document.getElementById('stripes').value = 0;
-        document.getElementById('gsm').value = 0;
-        document.getElementById('color').value = '';
-        document.getElementById('pdfFileNameInput').value = '';
-        document.getElementById('clearPdfBtn').style.display = 'none';
-        document.getElementById('pdfFileInput').value = '';
-        document.getElementById('screenshotData').value = '';
-        document.getElementById('screenshotPreview').src = '';
-        const drop = document.getElementById('screenshotDropArea');
-        drop.classList.remove('has-image');
-        const placeholder = drop.querySelector('.placeholder');
-        if (placeholder) placeholder.style.display = 'block';
-        document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb => cb.checked = false);
-        document.querySelectorAll('#servicesContainer .service-item select').forEach(sel => sel.style.display = 'none');
-        document.querySelectorAll('#servicesContainer .cutting-details').forEach(d => d.style.display = 'none');
-        document.querySelectorAll('#servicesContainer .flot-actions').forEach(a => a.style.display = 'none');
-        recalc();
-        document.getElementById('rollFormatRow').style.display = '';
-      }
-
-      // ---------- РЕНДЕР СПИСКА ----------
-      function renderOrders() {
-        const search = document.getElementById('searchOrders').value.toLowerCase().trim();
-        let filtered = allOrders;
-        if (search) {
-          filtered = filtered.filter(o => {
-            const fields = [o.techcard_no, o.customer, o.product_name, o.manager]
-              .map(f => String(f || '').toLowerCase());
-            return fields.some(f => f.includes(search));
-          });
-        }
-        const total = filtered.length;
-        const totalPages = Math.ceil(total / perPage) || 1;
-        if (currentPage > totalPages) currentPage = totalPages;
-        const start = (currentPage - 1) * perPage;
-        const pageItems = filtered.slice(start, start + perPage);
-
-        const tbody = document.getElementById('ordersBody');
-        if (pageItems.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" class="empty-msg">Нет заказов</td></tr>`;
-        } else {
-          tbody.innerHTML = pageItems.map(o => `
-            <tr>
-              <td><strong>${o.techcard_no || o.id}</strong></td>
-              <td>${o.customer || ''}</td>
-              <td>${o.product_name || ''}</td>
-              <td>${o.manager || ''}</td>
-              <td>${o.order_qty || 0}</td>
-              <td>${o.print_sheets || 0}</td>
-              <td>
-                <button class="btn-link" onclick="event.stopPropagation(); editOrder('${o.id}')">✏️</button>
-                <button class="btn-link btn-danger" onclick="event.stopPropagation(); deleteOrder('${o.id}')">🗑️</button>
-              </td>
-            </tr>
-          `).join('');
-        }
-
-        const pag = document.getElementById('pagination');
-        if (totalPages <= 1) {
-          pag.innerHTML = '';
-          return;
-        }
-        let pagHTML = `<button onclick="goPage(1)" ${currentPage===1?'disabled':''}>«</button>
-                       <button onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-        for (let i = 1; i <= totalPages; i++) {
-          if (i === currentPage || i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
-            pagHTML += `<button onclick="goPage(${i})" class="${i===currentPage?'active':''}">${i}</button>`;
-          } else if (i === currentPage - 3 || i === currentPage + 3) {
-            pagHTML += `<button disabled>…</button>`;
-          }
-        }
-        pagHTML += `<button onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>
-                    <button onclick="goPage(${totalPages})" ${currentPage===totalPages?'disabled':''}>»</button>`;
-        pag.innerHTML = pagHTML;
-      }
-
-      window.goPage = function(p) {
-        currentPage = p;
-        renderOrders();
-      };
-
-      // ---------- РЕДАКТИРОВАНИЕ ----------
-      window.editOrder = function(id) {
-        const order = allOrders.find(o => String(o.id) === String(id));
-        if (order) showForm(order);
-        else alert('Заказ не найден');
-      };
-
-      // ---------- УДАЛЕНИЕ ----------
-      window.deleteOrder = function(id) {
-        if (!confirm('Удалить заказ?')) return;
-        let orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
-        orders = orders.filter(o => o.id !== parseInt(id));
-        localStorage.setItem('pp_orders', JSON.stringify(orders));
-        loadOrders();
-        renderOrders();
-      };
-
-      // ---------- СОХРАНЕНИЕ ----------
-      document.getElementById('orderForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const id = document.getElementById('editId').value;
-        const order = {
-          id: id ? parseInt(id) : Date.now(),
-          techcard_no: document.getElementById('techcardNo').value,
-          manager: document.getElementById('managerSelect').value,
-          customer: document.getElementById('customerInput').value,
-          product_name: document.getElementById('productNameInput').value,
-          description: document.getElementById('descriptionInput').value,
-          print_type: document.querySelector('input[name="print_type"]:checked').value,
-          media_type: document.querySelector('input[name="media_type"]:checked').value,
-          paper_type: document.getElementById('paperType').value,
-          order_qty: parseFloat(document.getElementById('orderQty').value) || 0,
-          make_ready: parseFloat(document.getElementById('makeReady').value) || 0,
-          roll_format: document.getElementById('rollFormat').value || null,
-          size_length: parseFloat(document.getElementById('sizeLength').value) || 0,
-          size_width: parseFloat(document.getElementById('sizeWidth').value) || 0,
-          stripes: parseFloat(document.getElementById('stripes').value) || 0,
-          gsm: parseFloat(document.getElementById('gsm').value) || 0,
-          color: document.getElementById('color').value,
-          print_sheets: currentTotalSheets,
-          weight_kg: currentWeightKg,
-          pdf_filename: document.getElementById('pdfFileNameInput').value.trim() || null,
-          screenshot_base64: document.getElementById('screenshotData').value || null,
-          services: []
-        };
-
-        // Сбор услуг
-        for (let key in SERVICE_TYPES) {
-          const chk = document.getElementById('chk_' + key);
-          if (chk && chk.checked) {
-            if (key === 'cutting') {
-              const sel = document.getElementById('cutting_type');
-              const val = sel.value;
-              if (val === 'pre') {
-                const len = parseFloat(document.getElementById('cut_pre_length').value) || 0;
-                const wid = parseFloat(document.getElementById('cut_pre_width').value) || 0;
-                order.services.push({ name: 'cutting', type: 'до печать', length: len, width: wid });
-              } else if (val === 'post') {
-                const len = parseFloat(document.getElementById('cut_post_length').value) || 0;
-                const wid = parseFloat(document.getElementById('cut_post_width').value) || 0;
-                order.services.push({ name: 'cutting', type: 'пост печать', length: len, width: wid });
-              } else if (val === 'both') {
-                const lenPre = parseFloat(document.getElementById('cut_both_pre_length').value) || 0;
-                const widPre = parseFloat(document.getElementById('cut_both_pre_width').value) || 0;
-                const lenPost = parseFloat(document.getElementById('cut_both_post_length').value) || 0;
-                const widPost = parseFloat(document.getElementById('cut_both_post_width').value) || 0;
-                order.services.push({
-                  name: 'cutting',
-                  type: 'оба',
-                  details: [
-                    { type: 'до печать', length: lenPre, width: widPre },
-                    { type: 'пост печать', length: lenPost, width: widPost }
-                  ]
-                });
-              }
-            } else if (key === 'flot_cutting') {
-              const resultVal = document.getElementById('flotDividedResult').value || '0';
-              order.services.push({ name: 'flot_cutting', result: resultVal });
-            } else {
-              const sel = document.getElementById('sel_' + key);
-              order.services.push({ name: key, type: sel ? sel.value : '' });
-            }
-          }
-        }
-
-        // Сохраняем в localStorage
-        let orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
-        const index = orders.findIndex(o => o.id === order.id);
-        if (index >= 0) orders[index] = order;
-        else orders.push(order);
-        localStorage.setItem('pp_orders', JSON.stringify(orders));
-        loadOrders();
-        showList(); // переключаемся к списку
-        alert('Заказ сохранён!');
-      });
-
-      // ---------- УСЛУГИ ----------
-      const SERVICE_TYPES = {
-        vd_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
-        lamination: ['Глянцевый','Матовый','Золота','Серебро','Голограмма'],
-        embossing: ['Золота','Серебро','Голограмма'],
-        die_cut: ['автомат'],
-        kongrev: ['автомат'],
-        gluing: ['1','2','3','4 и более'],
-        uv_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
-        cutting: [],
-        flot_cutting: [],
-      };
-      const SERVICE_LABELS = {
-        vd_lak:'ВД лак', lamination:'Ламинация',
-        embossing:'Тиснение', cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
-        die_cut:'Высечка', kongrev: 'Конгрев',
-        flot_cutting:'✂️ Флоторезка / Резка'
-      };
-
-      function buildServicesBlock() {
-        const container = document.getElementById('servicesContainer');
-        container.innerHTML = '';
-        for (let key in SERVICE_TYPES) {
-          const div = document.createElement('div');
-          div.className = 'service-item';
-          if (key === 'flot_cutting') div.classList.add('flot-service');
-          const mainRow = document.createElement('div');
-          mainRow.className = 'service-main';
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.id = 'chk_' + key;
-          cb.value = key;
-          const lbl = document.createElement('label');
-          lbl.htmlFor = 'chk_' + key;
-          lbl.textContent = SERVICE_LABELS[key];
-          mainRow.appendChild(cb);
-          mainRow.appendChild(lbl);
-          div.appendChild(mainRow);
-
-          if (key === 'flot_cutting') {
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'flot-actions';
-            actionsDiv.id = 'flotActions';
-            actionsDiv.style.display = 'none';
-            const containerInner = document.createElement('div');
-            containerInner.className = 'print-sheets-container';
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'print-sheets-info';
-            infoDiv.innerHTML = '<span>Резка: <strong id="flotCuttingResult">0</strong></span>';
-            const actionsInner = document.createElement('div');
-            actionsInner.className = 'print-sheets-actions';
-            const btn2 = document.createElement('button');
-            btn2.type = 'button';
-            btn2.className = 'btn btn-sm btn-secondary';
-            btn2.id = 'flotDivideBy2';
-            btn2.textContent = '÷2';
-            const btn4 = document.createElement('button');
-            btn4.type = 'button';
-            btn4.className = 'btn btn-sm btn-secondary';
-            btn4.id = 'flotDivideBy4';
-            btn4.textContent = '÷4';
-            const resultInput = document.createElement('input');
-            resultInput.type = 'number';
-            resultInput.id = 'flotDividedResult';
-            resultInput.readOnly = true;
-            resultInput.placeholder = 'Рез-т';
-            resultInput.value = '0';
-            actionsInner.appendChild(btn2);
-            actionsInner.appendChild(btn4);
-            actionsInner.appendChild(resultInput);
-            containerInner.appendChild(infoDiv);
-            containerInner.appendChild(actionsInner);
-            actionsDiv.appendChild(containerInner);
-            div.appendChild(actionsDiv);
-            const flotActions = actionsDiv;
-            cb.addEventListener('change', function() {
-              flotActions.style.display = this.checked ? 'flex' : 'none';
-              if (!this.checked) {
-                const res = document.getElementById('flotDividedResult');
-                if (res) res.value = '0';
-                const resSpan = document.getElementById('flotCuttingResult');
-                if (resSpan) resSpan.textContent = '0';
-              }
-            });
-          } else if (key === 'cutting') {
-            const detailsDiv = document.createElement('div');
-            detailsDiv.className = 'cutting-details';
-            detailsDiv.id = 'cuttingDetails';
-            detailsDiv.style.display = 'none';
-            const select = document.createElement('select');
-            select.id = 'cutting_type';
-            select.className = 'cutting-select';
-            select.innerHTML = `
-              <option value="pre" selected>до печать</option>
-              <option value="post">пост печать</option>
-              <option value="both">оба</option>
-            `;
-            detailsDiv.appendChild(select);
-            const fieldsPre = document.createElement('div');
-            fieldsPre.className = 'cutting-fields';
-            fieldsPre.id = 'fields_pre';
-            fieldsPre.style.display = 'flex';
-            fieldsPre.innerHTML = `
-              <input type="number" id="cut_pre_length" placeholder="Длина" min="0">
-              <input type="number" id="cut_pre_width" placeholder="Ширина" min="0">
-            `;
-            const fieldsPost = document.createElement('div');
-            fieldsPost.className = 'cutting-fields';
-            fieldsPost.id = 'fields_post';
-            fieldsPost.style.display = 'none';
-            fieldsPost.innerHTML = `
-              <input type="number" id="cut_post_length" placeholder="Длина" min="0">
-              <input type="number" id="cut_post_width" placeholder="Ширина" min="0">
-            `;
-            const fieldsBoth = document.createElement('div');
-            fieldsBoth.className = 'cutting-fields cutting-both';
-            fieldsBoth.id = 'fields_both';
-            fieldsBoth.style.display = 'none';
-            fieldsBoth.innerHTML = `
-              <div class="cutting-row-inline">
-                <label class="cutting-label">До:</label>
-                <input type="number" id="cut_both_pre_length" placeholder="Длина" min="0">
-                <input type="number" id="cut_both_pre_width" placeholder="Ширина" min="0">
-              </div>
-              <div class="cutting-row-inline">
-                <label class="cutting-label">Пост:</label>
-                <input type="number" id="cut_both_post_length" placeholder="Длина" min="0">
-                <input type="number" id="cut_both_post_width" placeholder="Ширина" min="0">
-              </div>
-            `;
-            detailsDiv.appendChild(fieldsPre);
-            detailsDiv.appendChild(fieldsPost);
-            detailsDiv.appendChild(fieldsBoth);
-            select.addEventListener('change', function() {
-              const val = this.value;
-              fieldsPre.style.display = (val === 'pre') ? 'flex' : 'none';
-              fieldsPost.style.display = (val === 'post') ? 'flex' : 'none';
-              fieldsBoth.style.display = (val === 'both') ? 'flex' : 'none';
-            });
-            cb.addEventListener('change', function() {
-              const isChecked = this.checked;
-              detailsDiv.style.display = isChecked ? 'flex' : 'none';
-              if (!isChecked) {
-                document.querySelectorAll('#cuttingDetails input[type="number"]').forEach(inp => inp.value = '');
-              } else {
-                const val = select.value;
-                fieldsPre.style.display = (val === 'pre') ? 'flex' : 'none';
-                fieldsPost.style.display = (val === 'post') ? 'flex' : 'none';
-                fieldsBoth.style.display = (val === 'both') ? 'flex' : 'none';
-              }
-            });
-            div.appendChild(detailsDiv);
-          } else {
-            const sel = document.createElement('select');
-            sel.id = 'sel_' + key;
-            SERVICE_TYPES[key].forEach(v => {
-              const o = document.createElement('option');
-              o.value = v;
-              o.textContent = v;
-              sel.appendChild(o);
-            });
-            cb.addEventListener('change', function() {
-              sel.style.display = this.checked ? 'block' : 'none';
-              if (!this.checked) sel.selectedIndex = 0;
-            });
-            mainRow.appendChild(sel);
-          }
-          container.appendChild(div);
-        }
-
-        // Флоторезка: привязка кнопок
-        const flotCheck = document.getElementById('chk_flot_cutting');
-        const flotResult = document.getElementById('flotCuttingResult');
-        const flotDividedInput = document.getElementById('flotDividedResult');
-        const btn2 = document.getElementById('flotDivideBy2');
-        const btn4 = document.getElementById('flotDivideBy4');
-        const printSheetsAuto = document.getElementById('printSheetsAuto');
-        if (flotCheck && btn2 && btn4) {
-          function getCurrentSheets() {
-            const raw = printSheetsAuto ? printSheetsAuto.textContent.trim() : '0';
-            const val = parseInt(raw, 10);
-            return isNaN(val) ? 0 : val;
-          }
-          function updateFlotResult(value) {
-            const num = Number(value);
-            if (isNaN(num) || num < 0) {
-              if (flotResult) flotResult.textContent = '0';
-              if (flotDividedInput) flotDividedInput.value = '0';
-              return;
-            }
-            const display = Math.floor(num);
-            if (flotResult) flotResult.textContent = display;
-            if (flotDividedInput) flotDividedInput.value = display;
-          }
-          function divideSheets(divisor) {
-            const base = getCurrentSheets();
-            if (base === 0) {
-              updateFlotResult(0);
-              return;
-            }
-            const result = base / divisor;
-            updateFlotResult(result);
-          }
-          btn2.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (!flotCheck.checked) {
-              flotCheck.checked = true;
-              const actions = document.getElementById('flotActions');
-              if (actions) actions.style.display = 'flex';
-            }
-            divideSheets(2);
-          });
-          btn4.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (!flotCheck.checked) {
-              flotCheck.checked = true;
-              const actions = document.getElementById('flotActions');
-              if (actions) actions.style.display = 'flex';
-            }
-            divideSheets(4);
-          });
-          if (!flotCheck.checked) {
-            const actions = document.getElementById('flotActions');
-            if (actions) actions.style.display = 'none';
-          }
-        }
-      }
-
-      // ---------- PDF: выбор файла → только имя ----------
-      const pdfFileInput = document.getElementById('pdfFileInput');
-      const pdfFileNameInput = document.getElementById('pdfFileNameInput');
-      const clearPdfBtn = document.getElementById('clearPdfBtn');
-      if (pdfFileInput && pdfFileNameInput) {
-        pdfFileInput.addEventListener('change', function(e) {
-          const file = e.target.files[0];
-          if (!file) return;
-          pdfFileNameInput.value = file.name;
-          if (clearPdfBtn) clearPdfBtn.style.display = 'inline-block';
-        });
-      }
-      if (clearPdfBtn) {
-        clearPdfBtn.addEventListener('click', function() {
-          if (pdfFileInput) pdfFileInput.value = '';
-          if (pdfFileNameInput) pdfFileNameInput.value = '';
-          clearPdfBtn.style.display = 'none';
-        });
-      }
-
-      // ---------- СКРИНШОТ: вставка через Ctrl+V ----------
-      const dropArea = document.getElementById('screenshotDropArea');
-      const previewImg = document.getElementById('screenshotPreview');
-      const screenshotData = document.getElementById('screenshotData');
-      const clearScreenshotBtn = document.getElementById('clearScreenshotBtn');
-
-      function handlePaste(e) {
-        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-        for (let item of items) {
-          if (item.type.startsWith('image/')) {
-            const blob = item.getAsFile();
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-              const base64 = ev.target.result;
-              screenshotData.value = base64;
-              previewImg.src = base64;
-              dropArea.classList.add('has-image');
-              if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
-              const placeholder = dropArea.querySelector('.placeholder');
-              if (placeholder) placeholder.style.display = 'none';
-            };
-            reader.readAsDataURL(blob);
-            e.preventDefault();
-            break;
-          }
-        }
-      }
-
-      document.addEventListener('paste', function(e) {
-        const target = e.target;
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-          if (target.closest('#screenshotDropArea')) {
-            handlePaste(e);
-          }
-          return;
-        }
-        handlePaste(e);
-      });
-
-      dropArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        dropArea.classList.add('dragover');
-      });
-      dropArea.addEventListener('dragleave', function(e) {
-        dropArea.classList.remove('dragover');
-      });
-      dropArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        dropArea.classList.remove('dragover');
-        const files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = function(ev) {
-            const base64 = ev.target.result;
-            screenshotData.value = base64;
-            previewImg.src = base64;
-            dropArea.classList.add('has-image');
-            if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
-            const placeholder = dropArea.querySelector('.placeholder');
-            if (placeholder) placeholder.style.display = 'none';
-          };
-          reader.readAsDataURL(files[0]);
-        }
-      });
-
-      if (clearScreenshotBtn) {
-        clearScreenshotBtn.addEventListener('click', function() {
-          screenshotData.value = '';
-          previewImg.src = '';
-          dropArea.classList.remove('has-image');
-          clearScreenshotBtn.style.display = 'none';
-          const placeholder = dropArea.querySelector('.placeholder');
-          if (placeholder) placeholder.style.display = 'block';
-        });
-      }
-
-      // ---------- ФОРМАТ РУЛОНА ----------
-      function setupMediaTypeToggle() {
-        const roll = document.querySelector('input[name="media_type"][value="roll"]');
-        const sheet = document.querySelector('input[name="media_type"][value="sheet"]');
-        const row = document.getElementById('rollFormatRow');
-        const toggle = () => row.style.display = roll.checked ? '' : 'none';
-        roll.addEventListener('change', toggle);
-        sheet.addEventListener('change', toggle);
-        toggle();
-      }
-
-      // ========== РАСЧЁТ ==========
-      let currentWeightKg = 0;
-      let currentTotalSheets = 0;
-
-      function recalc() {
-        const orderQty   = parseFloat(document.getElementById('orderQty').value) || 0;
-        const width      = parseFloat(document.getElementById('sizeWidth').value) || 0;
-        const length     = parseFloat(document.getElementById('sizeLength').value) || 0;
-        const gsm        = parseFloat(document.getElementById('gsm').value) || 0;
-        const totalSheets = orderQty;
-        currentTotalSheets = totalSheets;
-        let weightKg = 0;
-        if (width > 0 && length > 0 && gsm > 0 && totalSheets > 0) {
-          weightKg = (width * length * gsm * totalSheets) / 1_000_000_000;
-        }
-        currentWeightKg = weightKg;
-        updateUI(totalSheets, weightKg);
-      }
-
-      function updateUI(totalSheets, weightKg) {
-        const hidden = document.getElementById('printSheetsHidden');
-        if (hidden) hidden.value = totalSheets;
-        const autoSheets = document.getElementById('printSheetsAuto');
-        if (autoSheets) autoSheets.textContent = totalSheets;
-        const weightEl = document.getElementById('weightResult');
-        if (weightEl) {
-          if (weightKg <= 0 || totalSheets <= 0) {
-            weightEl.textContent = '— кг';
-          } else {
-            const truncated = Math.floor(weightKg * 1000) / 1000;
-            weightEl.textContent = truncated.toFixed(3).replace('.', ',') + ' кг';
-          }
-        }
-      }
-
-      function setupCalcListeners() {
-        const selectors = ['orderQty','sizeWidth','sizeLength','gsm'];
-        selectors.forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.addEventListener('input', recalc);
-        });
-        document.querySelectorAll('input[name="calc_mode"]').forEach(radio => {
-          radio.addEventListener('change', recalc);
-        });
-      }
-
-      // ---------- ЗАГРУЗКА КЛИЕНТОВ ----------
-      function loadClients() {
-        const datalist = document.getElementById('customerList');
-        let clients = [];
-        try {
-          const raw = localStorage.getItem('pp_clients');
-          if (raw) clients = JSON.parse(raw);
-        } catch(e) {}
-        if (!clients.length && typeof Storage !== 'undefined' && Storage.getClients) {
-          try { clients = Storage.getClients(); } catch(e) {}
-        }
-        datalist.innerHTML = '';
-        clients.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c.name;
-          datalist.appendChild(opt);
-        });
-        if (!clients.length) {
-          const opt = document.createElement('option');
-          opt.value = '— Нет контрагентов —';
-          datalist.appendChild(opt);
-        }
-      }
-
-      // ---------- ПОКАЗ ССЫЛКИ INDEX2 ТОЛЬКО ДЛЯ DIYOR ----------
-      function showIndex2ForDiyor() {
-        const user = sessionStorage.getItem('profitprint_user') || '';
-        const role = sessionStorage.getItem('profitprint_role') || '';
-        const link = document.getElementById('index2Link');
-        if (user === 'Diyor' || role === 'designer') {
-          link.classList.add('visible');
-        }
-      }
-
-      // ---------- ИНИЦИАЛИЗАЦИЯ ----------
-      loadOrders();
-      loadClients();
-      buildServicesBlock();
-      setupMediaTypeToggle();
-      setupCalcListeners();
-      recalc();
-      renderOrders();
-      showIndex2ForDiyor();
+  const body = document.body;
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const next = body.classList.contains('dark') ? 'light' : 'dark';
+      body.className = next;
+      localStorage.setItem('theme', next);
     });
+  }
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  body.className = savedTheme;
+
+  let allOrders = [];
+  let currentPage = 1;
+  const perPage = 100;
+
+  function loadOrders() {
+    try {
+      const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
+      allOrders = raw ? JSON.parse(raw) : [];
+      allOrders.sort((a, b) => b.id - a.id);
+    } catch (e) {
+      console.error('Ошибка загрузки заказов:', e);
+      allOrders = [];
+    }
+  }
+
+  function showList() {
+    document.getElementById('listContainer').classList.add('active');
+    document.getElementById('formContainer').classList.remove('active');
+    renderOrders();
+  }
+  function showForm(editData) {
+    document.getElementById('listContainer').classList.remove('active');
+    document.getElementById('formContainer').classList.add('active');
+    if (editData) {
+      fillForm(editData);
+      document.getElementById('formTitle').textContent = 'Редактирование заказа';
+    } else {
+      resetForm();
+      document.getElementById('formTitle').textContent = 'Создание заказа';
+    }
+    document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth' });
+  }
+  window.showList = showList;
+  window.showForm = showForm;
+
+  function fillForm(order) {
+    document.getElementById('editId').value = order.id;
+    document.getElementById('techcardNo').value = order.techcard_no || '';
+    document.getElementById('managerSelect').value = order.manager || 'Муниса';
+    document.getElementById('customerInput').value = order.customer || '';
+    document.getElementById('productNameInput').value = order.product_name || '';
+    document.getElementById('descriptionInput').value = order.description || '';
+    document.querySelector(`input[name="print_type"][value="${order.print_type || 'A1'}"]`).checked = true;
+    document.querySelector(`input[name="media_type"][value="${order.media_type || 'roll'}"]`).checked = true;
+    document.getElementById('paperType').value = order.paper_type || 'картон';
+    document.getElementById('orderQty').value = order.order_qty || '';
+    document.getElementById('makeReady').value = order.make_ready || '';
+    document.getElementById('rollFormat').value = order.roll_format || '';
+    document.getElementById('sizeLength').value = order.size_length || '';
+    document.getElementById('sizeWidth').value = order.size_width || '';
+    document.getElementById('stripes').value = order.stripes || '';
+    document.getElementById('gsm').value = order.gsm || '';
+    document.getElementById('color').value = order.color || '';
+    if (order.pdf_filename) {
+      document.getElementById('pdfFileNameInput').value = order.pdf_filename;
+      document.getElementById('clearPdfBtn').style.display = 'inline-block';
+    }
+    if (order.screenshot_base64) {
+      document.getElementById('screenshotData').value = order.screenshot_base64;
+      document.getElementById('screenshotPreview').src = order.screenshot_base64;
+      const drop = document.getElementById('screenshotDropArea');
+      drop.classList.add('has-image');
+      const placeholder = drop.querySelector('.placeholder');
+      if (placeholder) placeholder.style.display = 'none';
+    }
+    const services = order.services || [];
+    document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('#servicesContainer .service-item select').forEach(sel => sel.style.display = 'none');
+    document.querySelectorAll('#servicesContainer .cutting-details').forEach(d => d.style.display = 'none');
+    document.querySelectorAll('#servicesContainer .flot-actions').forEach(a => a.style.display = 'none');
+    services.forEach(s => {
+      const cb = document.getElementById('chk_' + s.name);
+      if (cb) {
+        cb.checked = true;
+        if (s.name === 'flot_cutting') {
+          const actions = document.getElementById('flotActions');
+          if (actions) actions.style.display = 'flex';
+          document.getElementById('flotDividedResult').value = s.result || 0;
+          document.getElementById('flotCuttingResult').textContent = s.result || 0;
+        } else if (s.name === 'cutting') {
+          const details = document.getElementById('cuttingDetails');
+          if (details) details.style.display = 'flex';
+          const sel = document.getElementById('cutting_type');
+          if (sel) {
+            if (s.type === 'до печать') sel.value = 'pre';
+            else if (s.type === 'пост печать') sel.value = 'post';
+            else if (s.type === 'оба') sel.value = 'both';
+            sel.dispatchEvent(new Event('change'));
+            if (s.type === 'до печать' && s.length) {
+              document.getElementById('cut_pre_length').value = s.length;
+              document.getElementById('cut_pre_width').value = s.width;
+            } else if (s.type === 'пост печать' && s.length) {
+              document.getElementById('cut_post_length').value = s.length;
+              document.getElementById('cut_post_width').value = s.width;
+            } else if (s.type === 'оба' && s.details) {
+              const pre = s.details.find(d => d.type === 'до печать');
+              const post = s.details.find(d => d.type === 'пост печать');
+              if (pre) {
+                document.getElementById('cut_both_pre_length').value = pre.length;
+                document.getElementById('cut_both_pre_width').value = pre.width;
+              }
+              if (post) {
+                document.getElementById('cut_both_post_length').value = post.length;
+                document.getElementById('cut_both_post_width').value = post.width;
+              }
+            }
+          }
+        } else {
+          const sel = document.getElementById('sel_' + s.name);
+          if (sel) { sel.style.display = 'block'; sel.value = s.type || ''; }
+        }
+      }
+    });
+    recalc();
+    document.getElementById('rollFormatRow').style.display = document.getElementById('mediaRoll').checked ? '' : 'none';
+  }
+
+  function resetForm() {
+    document.getElementById('editId').value = '';
+    document.getElementById('techcardNo').value = allOrders.length + 1;
+    document.getElementById('managerSelect').value = 'Муниса';
+    document.getElementById('customerInput').value = '';
+    document.getElementById('productNameInput').value = '';
+    document.getElementById('descriptionInput').value = '';
+    document.querySelector('input[name="print_type"][value="A1"]').checked = true;
+    document.querySelector('input[name="media_type"][value="roll"]').checked = true;
+    document.getElementById('paperType').value = 'картон';
+    document.getElementById('orderQty').value = '';
+    document.getElementById('makeReady').value = '';
+    document.getElementById('rollFormat').value = '';
+    document.getElementById('sizeLength').value = '';
+    document.getElementById('sizeWidth').value = '';
+    document.getElementById('stripes').value = '';
+    document.getElementById('gsm').value = '';
+    document.getElementById('color').value = '';
+    document.getElementById('pdfFileNameInput').value = '';
+    document.getElementById('clearPdfBtn').style.display = 'none';
+    document.getElementById('pdfFileInput').value = '';
+    document.getElementById('screenshotData').value = '';
+    document.getElementById('screenshotPreview').src = '';
+    const drop = document.getElementById('screenshotDropArea');
+    drop.classList.remove('has-image');
+    const placeholder = drop.querySelector('.placeholder');
+    if (placeholder) placeholder.style.display = 'block';
+    document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('#servicesContainer .service-item select').forEach(sel => sel.style.display = 'none');
+    document.querySelectorAll('#servicesContainer .cutting-details').forEach(d => d.style.display = 'none');
+    document.querySelectorAll('#servicesContainer .flot-actions').forEach(a => a.style.display = 'none');
+    recalc();
+    document.getElementById('rollFormatRow').style.display = '';
+  }
+
+  function renderOrders() {
+    const search = document.getElementById('searchOrders').value.toLowerCase().trim();
+    let filtered = allOrders;
+    if (search) {
+      filtered = filtered.filter(o => {
+        const fields = [o.techcard_no, o.customer, o.product_name, o.manager]
+          .map(f => String(f || '').toLowerCase());
+        return fields.some(f => f.includes(search));
+      });
+    }
+    const total = filtered.length;
+    const totalPages = Math.ceil(total / perPage) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * perPage;
+    const pageItems = filtered.slice(start, start + perPage);
+    const tbody = document.getElementById('ordersBody');
+    if (pageItems.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-msg">Нет заказов</td></tr>';
+    } else {
+      tbody.innerHTML = pageItems.map(o => `
+        <tr>
+          <td><strong>${o.techcard_no || o.id}</strong></td>
+          <td>${o.customer || ''}</td>
+          <td>${o.product_name || ''}</td>
+          <td>${o.manager || ''}</td>
+          <td>${o.order_qty || ''}</td>
+          <td>${o.print_sheets || ''}</td>
+          <td>
+            <button class="btn-link" onclick="event.stopPropagation(); editOrder('${o.id}')">✏️</button>
+            <button class="btn-link btn-danger" onclick="event.stopPropagation(); deleteOrder('${o.id}')">🗑️</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    const pag = document.getElementById('pagination');
+    if (totalPages <= 1) { pag.innerHTML = ''; return; }
+    let pagHTML = `<button onclick="goPage(1)" ${currentPage===1?'disabled':''}>«</button>
+                   <button onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === currentPage || i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+        pagHTML += `<button onclick="goPage(${i})" class="${i===currentPage?'active':''}">${i}</button>`;
+      } else if (i === currentPage - 3 || i === currentPage + 3) {
+        pagHTML += '<button disabled>…</button>';
+      }
+    }
+    pagHTML += `<button onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>
+                <button onclick="goPage(${totalPages})" ${currentPage===totalPages?'disabled':''}>»</button>`;
+    pag.innerHTML = pagHTML;
+  }
+
+  window.goPage = function(p) { currentPage = p; renderOrders(); };
+  window.editOrder = function(id) {
+    const order = allOrders.find(o => String(o.id) === String(id));
+    if (order) showForm(order);
+    else alert('Заказ не найден');
+  };
+  window.deleteOrder = function(id) {
+    if (!confirm('Удалить заказ?')) return;
+    let orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
+    orders = orders.filter(o => o.id !== parseInt(id));
+    localStorage.setItem('pp_orders', JSON.stringify(orders));
+    loadOrders();
+    renderOrders();
+  };
+
+  document.getElementById('orderForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const id = document.getElementById('editId').value;
+    const order = {
+      id: id ? parseInt(id) : Date.now(),
+      techcard_no: document.getElementById('techcardNo').value,
+      manager: document.getElementById('managerSelect').value,
+      customer: document.getElementById('customerInput').value,
+      product_name: document.getElementById('productNameInput').value,
+      description: document.getElementById('descriptionInput').value,
+      print_type: document.querySelector('input[name="print_type"]:checked').value,
+      media_type: document.querySelector('input[name="media_type"]:checked').value,
+      paper_type: document.getElementById('paperType').value,
+      order_qty: parseFloat(document.getElementById('orderQty').value) || 0,
+      make_ready: parseFloat(document.getElementById('makeReady').value) || 0,
+      roll_format: document.getElementById('rollFormat').value || null,
+      size_length: parseFloat(document.getElementById('sizeLength').value) || 0,
+      size_width: parseFloat(document.getElementById('sizeWidth').value) || 0,
+      stripes: parseFloat(document.getElementById('stripes').value) || 0,
+      gsm: parseFloat(document.getElementById('gsm').value) || 0,
+      color: document.getElementById('color').value,
+      print_sheets: currentTotalSheets,
+      weight_kg: currentWeightKg,
+      pdf_filename: document.getElementById('pdfFileNameInput').value.trim() || null,
+      screenshot_base64: document.getElementById('screenshotData').value || null,
+      services: []
+    };
+    for (let key in SERVICE_TYPES) {
+      const chk = document.getElementById('chk_' + key);
+      if (chk && chk.checked) {
+        if (key === 'cutting') {
+          const sel = document.getElementById('cutting_type');
+          const val = sel.value;
+          if (val === 'pre') {
+            const len = parseFloat(document.getElementById('cut_pre_length').value) || 0;
+            const wid = parseFloat(document.getElementById('cut_pre_width').value) || 0;
+            order.services.push({ name: 'cutting', type: 'до печать', length: len, width: wid });
+          } else if (val === 'post') {
+            const len = parseFloat(document.getElementById('cut_post_length').value) || 0;
+            const wid = parseFloat(document.getElementById('cut_post_width').value) || 0;
+            order.services.push({ name: 'cutting', type: 'пост печать', length: len, width: wid });
+          } else if (val === 'both') {
+            const lenPre = parseFloat(document.getElementById('cut_both_pre_length').value) || 0;
+            const widPre = parseFloat(document.getElementById('cut_both_pre_width').value) || 0;
+            const lenPost = parseFloat(document.getElementById('cut_both_post_length').value) || 0;
+            const widPost = parseFloat(document.getElementById('cut_both_post_width').value) || 0;
+            order.services.push({
+              name: 'cutting', type: 'оба',
+              details: [
+                { type: 'до печать', length: lenPre, width: widPre },
+                { type: 'пост печать', length: lenPost, width: widPost }
+              ]
+            });
+          }
+        } else if (key === 'flot_cutting') {
+          const resultVal = document.getElementById('flotDividedResult').value || '0';
+          order.services.push({ name: 'flot_cutting', result: resultVal });
+        } else {
+          const sel = document.getElementById('sel_' + key);
+          order.services.push({ name: key, type: sel ? sel.value : '' });
+        }
+      }
+    }
+    let orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
+    const index = orders.findIndex(o => o.id === order.id);
+    if (index >= 0) orders[index] = order;
+    else orders.push(order);
+    localStorage.setItem('pp_orders', JSON.stringify(orders));
+    loadOrders();
+    showList();
+    alert('Заказ сохранён!');
+  });
+
+  const SERVICE_TYPES = {
+    vd_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
+    lamination: ['Глянцевый','Матовый','Золота','Серебро','Голограмма'],
+    embossing: ['Золота','Серебро','Голограмма'],
+    die_cut: ['автомат'],
+    kongrev: ['автомат'],
+    gluing: ['1','2','3','4 и более'],
+    uv_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
+    cutting: [],
+    flot_cutting: [],
+  };
+  const SERVICE_LABELS = {
+    vd_lak:'ВД лак', lamination:'Ламинация',
+    embossing:'Тиснение', cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
+    die_cut:'Высечка', kongrev: 'Конгрев',
+    flot_cutting:'✂️ Флоторезка / Резка'
+  };
+
+  function buildServicesBlock() {
+    const container = document.getElementById('servicesContainer');
+    container.innerHTML = '';
+    for (let key in SERVICE_TYPES) {
+      const div = document.createElement('div');
+      div.className = 'service-item';
+      if (key === 'flot_cutting') div.classList.add('flot-service');
+      const mainRow = document.createElement('div');
+      mainRow.className = 'service-main';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.id = 'chk_' + key;
+      cb.value = key;
+      const lbl = document.createElement('label');
+      lbl.htmlFor = 'chk_' + key;
+      lbl.textContent = SERVICE_LABELS[key];
+      mainRow.appendChild(cb);
+      mainRow.appendChild(lbl);
+      div.appendChild(mainRow);
+
+      if (key === 'flot_cutting') {
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'flot-actions';
+        actionsDiv.id = 'flotActions';
+        actionsDiv.style.display = 'none';
+        const containerInner = document.createElement('div');
+        containerInner.className = 'print-sheets-container';
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'print-sheets-info';
+        infoDiv.innerHTML = '<span>Резка: <strong id="flotCuttingResult">0</strong></span>';
+        const actionsInner = document.createElement('div');
+        actionsInner.className = 'print-sheets-actions';
+        const btn2 = document.createElement('button');
+        btn2.type = 'button';
+        btn2.className = 'btn btn-sm btn-secondary';
+        btn2.id = 'flotDivideBy2';
+        btn2.textContent = '÷2';
+        const btn4 = document.createElement('button');
+        btn4.type = 'button';
+        btn4.className = 'btn btn-sm btn-secondary';
+        btn4.id = 'flotDivideBy4';
+        btn4.textContent = '÷4';
+        const resultInput = document.createElement('input');
+        resultInput.type = 'number';
+        resultInput.id = 'flotDividedResult';
+        resultInput.readOnly = true;
+        resultInput.placeholder = 'Рез-т';
+        resultInput.value = '0';
+        actionsInner.appendChild(btn2);
+        actionsInner.appendChild(btn4);
+        actionsInner.appendChild(resultInput);
+        containerInner.appendChild(infoDiv);
+        containerInner.appendChild(actionsInner);
+        actionsDiv.appendChild(containerInner);
+        div.appendChild(actionsDiv);
+        const flotActions = actionsDiv;
+        cb.addEventListener('change', function() {
+          flotActions.style.display = this.checked ? 'flex' : 'none';
+          if (!this.checked) {
+            const res = document.getElementById('flotDividedResult');
+            if (res) res.value = '0';
+            const resSpan = document.getElementById('flotCuttingResult');
+            if (resSpan) resSpan.textContent = '0';
+          }
+        });
+      } else if (key === 'cutting') {
+        const detailsDiv = document.createElement('div');
+        detailsDiv.className = 'cutting-details';
+        detailsDiv.id = 'cuttingDetails';
+        detailsDiv.style.display = 'none';
+        const select = document.createElement('select');
+        select.id = 'cutting_type';
+        select.className = 'cutting-select';
+        select.innerHTML = `
+          <option value="pre" selected>до печать</option>
+          <option value="post">пост печать</option>
+          <option value="both">оба</option>
+        `;
+        detailsDiv.appendChild(select);
+        const fieldsPre = document.createElement('div');
+        fieldsPre.className = 'cutting-fields';
+        fieldsPre.id = 'fields_pre';
+        fieldsPre.style.display = 'flex';
+        fieldsPre.innerHTML = `
+          <input type="number" id="cut_pre_length" placeholder="Длина" min="0">
+          <input type="number" id="cut_pre_width" placeholder="Ширина" min="0">
+        `;
+        const fieldsPost = document.createElement('div');
+        fieldsPost.className = 'cutting-fields';
+        fieldsPost.id = 'fields_post';
+        fieldsPost.style.display = 'none';
+        fieldsPost.innerHTML = `
+          <input type="number" id="cut_post_length" placeholder="Длина" min="0">
+          <input type="number" id="cut_post_width" placeholder="Ширина" min="0">
+        `;
+        const fieldsBoth = document.createElement('div');
+        fieldsBoth.className = 'cutting-fields cutting-both';
+        fieldsBoth.id = 'fields_both';
+        fieldsBoth.style.display = 'none';
+        fieldsBoth.innerHTML = `
+          <div class="cutting-row-inline">
+            <label class="cutting-label">До:</label>
+            <input type="number" id="cut_both_pre_length" placeholder="Длина" min="0">
+            <input type="number" id="cut_both_pre_width" placeholder="Ширина" min="0">
+          </div>
+          <div class="cutting-row-inline">
+            <label class="cutting-label">Пост:</label>
+            <input type="number" id="cut_both_post_length" placeholder="Длина" min="0">
+            <input type="number" id="cut_both_post_width" placeholder="Ширина" min="0">
+          </div>
+        `;
+        detailsDiv.appendChild(fieldsPre);
+        detailsDiv.appendChild(fieldsPost);
+        detailsDiv.appendChild(fieldsBoth);
+        select.addEventListener('change', function() {
+          const val = this.value;
+          fieldsPre.style.display = (val === 'pre') ? 'flex' : 'none';
+          fieldsPost.style.display = (val === 'post') ? 'flex' : 'none';
+          fieldsBoth.style.display = (val === 'both') ? 'flex' : 'none';
+        });
+        cb.addEventListener('change', function() {
+          const isChecked = this.checked;
+          detailsDiv.style.display = isChecked ? 'flex' : 'none';
+          if (!isChecked) {
+            document.querySelectorAll('#cuttingDetails input[type="number"]').forEach(inp => inp.value = '');
+          } else {
+            const val = select.value;
+            fieldsPre.style.display = (val === 'pre') ? 'flex' : 'none';
+            fieldsPost.style.display = (val === 'post') ? 'flex' : 'none';
+            fieldsBoth.style.display = (val === 'both') ? 'flex' : 'none';
+          }
+        });
+        div.appendChild(detailsDiv);
+      } else {
+        const sel = document.createElement('select');
+        sel.id = 'sel_' + key;
+        SERVICE_TYPES[key].forEach(v => {
+          const o = document.createElement('option');
+          o.value = v;
+          o.textContent = v;
+          sel.appendChild(o);
+        });
+        cb.addEventListener('change', function() {
+          sel.style.display = this.checked ? 'block' : 'none';
+          if (!this.checked) sel.selectedIndex = 0;
+        });
+        mainRow.appendChild(sel);
+      }
+      container.appendChild(div);
+    }
+
+    const flotCheck = document.getElementById('chk_flot_cutting');
+    const flotResult = document.getElementById('flotCuttingResult');
+    const flotDividedInput = document.getElementById('flotDividedResult');
+    const btn2 = document.getElementById('flotDivideBy2');
+    const btn4 = document.getElementById('flotDivideBy4');
+    const printSheetsAuto = document.getElementById('printSheetsAuto');
+    if (flotCheck && btn2 && btn4) {
+      function getCurrentSheets() {
+        const raw = printSheetsAuto ? printSheetsAuto.textContent.trim() : '0';
+        const val = parseInt(raw, 10);
+        return isNaN(val) ? 0 : val;
+      }
+      function updateFlotResult(value) {
+        const num = Number(value);
+        if (isNaN(num) || num < 0) {
+          if (flotResult) flotResult.textContent = '0';
+          if (flotDividedInput) flotDividedInput.value = '0';
+          return;
+        }
+        const display = Math.floor(num);
+        if (flotResult) flotResult.textContent = display;
+        if (flotDividedInput) flotDividedInput.value = display;
+      }
+      function divideSheets(divisor) {
+        const base = getCurrentSheets();
+        if (base === 0) { updateFlotResult(0); return; }
+        const result = base / divisor;
+        updateFlotResult(result);
+      }
+      btn2.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (!flotCheck.checked) {
+          flotCheck.checked = true;
+          const actions = document.getElementById('flotActions');
+          if (actions) actions.style.display = 'flex';
+        }
+        divideSheets(2);
+      });
+      btn4.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (!flotCheck.checked) {
+          flotCheck.checked = true;
+          const actions = document.getElementById('flotActions');
+          if (actions) actions.style.display = 'flex';
+        }
+        divideSheets(4);
+      });
+      if (!flotCheck.checked) {
+        const actions = document.getElementById('flotActions');
+        if (actions) actions.style.display = 'none';
+      }
+    }
+  }
+
+  const pdfFileInput = document.getElementById('pdfFileInput');
+  const pdfFileNameInput = document.getElementById('pdfFileNameInput');
+  const clearPdfBtn = document.getElementById('clearPdfBtn');
+  if (pdfFileInput && pdfFileNameInput) {
+    pdfFileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      pdfFileNameInput.value = file.name;
+      if (clearPdfBtn) clearPdfBtn.style.display = 'inline-block';
+    });
+  }
+  if (clearPdfBtn) {
+    clearPdfBtn.addEventListener('click', function() {
+      if (pdfFileInput) pdfFileInput.value = '';
+      if (pdfFileNameInput) pdfFileNameInput.value = '';
+      clearPdfBtn.style.display = 'none';
+    });
+  }
+
+  const dropArea = document.getElementById('screenshotDropArea');
+  const previewImg = document.getElementById('screenshotPreview');
+  const screenshotData = document.getElementById('screenshotData');
+  const clearScreenshotBtn = document.getElementById('clearScreenshotBtn');
+
+  function handlePaste(e) {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let item of items) {
+      if (item.type.startsWith('image/')) {
+        const blob = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          const base64 = ev.target.result;
+          screenshotData.value = base64;
+          previewImg.src = base64;
+          dropArea.classList.add('has-image');
+          if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
+          const placeholder = dropArea.querySelector('.placeholder');
+          if (placeholder) placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(blob);
+        e.preventDefault();
+        break;
+      }
+    }
+  }
+
+  document.addEventListener('paste', function(e) {
+    const target = e.target;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+      if (target.closest('#screenshotDropArea')) { handlePaste(e); }
+      return;
+    }
+    handlePaste(e);
+  });
+
+  dropArea.addEventListener('dragover', function(e) { e.preventDefault(); dropArea.classList.add('dragover'); });
+  dropArea.addEventListener('dragleave', function(e) { dropArea.classList.remove('dragover'); });
+  dropArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropArea.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && files[0].type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const base64 = ev.target.result;
+        screenshotData.value = base64;
+        previewImg.src = base64;
+        dropArea.classList.add('has-image');
+        if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
+        const placeholder = dropArea.querySelector('.placeholder');
+        if (placeholder) placeholder.style.display = 'none';
+      };
+      reader.readAsDataURL(files[0]);
+    }
+  });
+
+  if (clearScreenshotBtn) {
+    clearScreenshotBtn.addEventListener('click', function() {
+      screenshotData.value = '';
+      previewImg.src = '';
+      dropArea.classList.remove('has-image');
+      clearScreenshotBtn.style.display = 'none';
+      const placeholder = dropArea.querySelector('.placeholder');
+      if (placeholder) placeholder.style.display = 'block';
+    });
+  }
+
+  function setupMediaTypeToggle() {
+    const roll = document.querySelector('input[name="media_type"][value="roll"]');
+    const sheet = document.querySelector('input[name="media_type"][value="sheet"]');
+    const row = document.getElementById('rollFormatRow');
+    const toggle = () => row.style.display = roll.checked ? '' : 'none';
+    roll.addEventListener('change', toggle);
+    sheet.addEventListener('change', toggle);
+    toggle();
+  }
+
+  // ========== ФОРМУЛА: (Кол-во заказ / Полос) + Приладка ==========
+  let currentWeightKg = 0;
+  let currentTotalSheets = 0;
+function recalc() {
+    const orderQty   = parseFloat(document.getElementById('orderQty').value) || 0;
+    const makeReady  = parseFloat(document.getElementById('makeReady').value) || 0;
+    const stripes    = parseFloat(document.getElementById('stripes').value) || 0;
+    const width      = parseFloat(document.getElementById('sizeWidth').value) || 0;
+    const length     = parseFloat(document.getElementById('sizeLength').value) || 0;
+    const gsm        = parseFloat(document.getElementById('gsm').value) || 0;
+
+    let totalSheets = 0;
+    if (stripes > 0) {
+      totalSheets = (orderQty / stripes) + makeReady;
+    }
+    currentTotalSheets = totalSheets;
+
+    let weightKg = 0;
+    if (width > 0 && length > 0 && gsm > 0 && orderQty > 0) {
+      weightKg = (width * length * gsm * orderQty) / 1_000_000_000;
+    }
+    currentWeightKg = weightKg;
+    updateUI(totalSheets, weightKg);
+}
+
+function updateUI(totalSheets, weightKg) {
+    const hidden = document.getElementById('printSheetsHidden');
+    if (hidden) hidden.value = totalSheets;
+    const autoSheets = document.getElementById('printSheetsAuto');
+    if (autoSheets) {
+      autoSheets.textContent = totalSheets > 0 ? totalSheets : '';
+    }
+    const weightEl = document.getElementById('weightResult');
+    if (weightEl) {
+      if (weightKg <= 0) {
+        weightEl.textContent = '— кг';
+      } else {
+        const truncated = Math.floor(weightKg * 1000) / 1000;
+        weightEl.textContent = truncated.toFixed(3).replace('.', ',') + ' кг';
+      }
+    }
+}
+
+  function setupCalcListeners() {
+    const selectors = ['orderQty', 'makeReady', 'stripes', 'sizeWidth', 'sizeLength', 'gsm'];
+    selectors.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', recalc);
+    });
+    document.querySelectorAll('input[name="calc_mode"]').forEach(radio => {
+      radio.addEventListener('change', recalc);
+    });
+  }
+
+  function loadClients() {
+    const datalist = document.getElementById('customerList');
+    let clients = [];
+    try {
+      const raw = localStorage.getItem('pp_clients');
+      if (raw) clients = JSON.parse(raw);
+    } catch(e) {}
+    if (!clients.length && typeof Storage !== 'undefined' && Storage.getClients) {
+      try { clients = Storage.getClients(); } catch(e) {}
+    }
+    datalist.innerHTML = '';
+    clients.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.name;
+      datalist.appendChild(opt);
+    });
+    if (!clients.length) {
+      const opt = document.createElement('option');
+      opt.value = '— Нет контрагентов —';
+      datalist.appendChild(opt);
+    }
+  }
+
+  function showIndex2ForDiyor() {
+    const user = sessionStorage.getItem('profitprint_user') || '';
+    const role = sessionStorage.getItem('profitprint_role') || '';
+    const link = document.getElementById('index2Link');
+    if (user === 'Diyor' || role === 'designer') {
+      link.classList.add('visible');
+    }
+  }
+
+  loadOrders();
+  loadClients();
+  buildServicesBlock();
+  setupMediaTypeToggle();
+  setupCalcListeners();
+  recalc();
+  renderOrders();
+  showIndex2ForDiyor();
+});
   </script>
   <script src="js/auth-check.js"></script>
   <script src="js/nav-filter.js"></script>
