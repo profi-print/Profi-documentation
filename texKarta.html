@@ -9,11 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-
   <style>
-    /* ============================================================
-       ПРИНУДИТЕЛЬНАЯ СВЕТЛАЯ ТЕМА
-       ============================================================ */
     :root {
       --bg-main: #f1f4f9;
       --bg-white: #ffffff;
@@ -25,9 +21,7 @@
       --accent-red: #dc2626;
       --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-
-    body.dark-theme,
-    body[data-theme="dark"] {
+    body.dark-theme, body[data-theme="dark"] {
       --bg-main: #f1f4f9 !important;
       --bg-white: #ffffff !important;
       --text-primary: #1e293b !important;
@@ -37,19 +31,14 @@
       --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
       --accent-red: #dc2626 !important;
     }
-
     .theme-switch-wrapper { display: none !important; }
 
-    /* ============================================================
-       Стили для печати
-       ============================================================ */
     @media print {
       body * { visibility: hidden; }
       #techCardContent, #techCardContent * { visibility: visible; }
       #techCardContent {
         position: absolute;
-        left: 0;
-        top: 0;
+        left: 0; top: 0;
         width: 100%;
         padding: 20px;
         margin: 0;
@@ -60,16 +49,10 @@
       }
       #techCardContent h2 { border-bottom: 2px solid #2563eb; }
       .action-bar, .back-link, .screenshot-modal { display: none !important; }
-      .tech-card .screenshot-container img {
-        max-width: 350px;
-        max-height: 350px;
-      }
+      .tech-card .screenshot-container img { max-width: 350px; max-height: 350px; }
       .tech-card .file-row { break-inside: avoid; }
     }
 
-    /* ============================================================
-       Стили для списка техкарт (с фильтром)
-       ============================================================ */
     .tech-list {
       background: var(--bg-white);
       border: 1px solid var(--border-color);
@@ -116,15 +99,8 @@
       border-color: var(--primary-blue);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
-    /* Убрали блок чекбоксов и кнопку сброса */
-    .tech-list .filter-bar .filter-actions {
-      display: none; /* скрываем кнопку сброса */
-    }
-    .tech-list table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
+    .tech-list .filter-bar .filter-actions { display: none; }
+    .tech-list table { width: 100%; border-collapse: collapse; font-size: 14px; }
     .tech-list th {
       text-align: left;
       padding: 10px 12px;
@@ -157,13 +133,7 @@
       font-style: italic;
     }
 
-    /* ============================================================
-       Стили для отображения одной техкарты (табличный вид)
-       ============================================================ */
-    .tech-card-container {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
+    .tech-card-container { max-width: 1100px; margin: 0 auto; }
     .tech-card-container .back-link {
       display: inline-block;
       margin-bottom: 16px;
@@ -189,7 +159,6 @@
       padding-bottom: 8px;
     }
 
-    /* Блок с заказчиком и описанием — увеличенные и жирные названия */
     .tech-card .order-meta {
       margin-bottom: 24px;
       padding-bottom: 20px;
@@ -200,20 +169,30 @@
       flex-wrap: wrap;
       gap: 12px 40px;
       align-items: baseline;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
     }
     .tech-card .order-meta .meta-row p {
       margin: 0;
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--text-primary);
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
     }
-    .tech-card .order-meta .meta-row p span {
+    .tech-card .order-meta .label {
+      font-weight: 400;           /* метка обычная */
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+    .tech-card .order-meta .label::after {
+      content: " —";
       font-weight: 400;
-      font-size: 15px;
+      color: var(--text-secondary);
+      margin-left: 2px;
+    }
+    .tech-card .order-meta .value {
+      font-weight: 700;           /* значение жирное */
       color: var(--text-primary);
     }
-    .tech-card .order-meta .meta-row .qty {
+    .tech-card .order-meta .value.qty {
       font-weight: 700;
       color: var(--primary-blue);
     }
@@ -228,18 +207,21 @@
       width: 100%;
     }
     .tech-card .order-meta .desc-row .desc-label {
-      font-weight: 700;
-      font-size: 16px;
+      font-weight: 400;           /* метка "Описание" обычная */
       color: var(--text-primary);
       flex-shrink: 0;
+    }
+    .tech-card .order-meta .desc-row .desc-label::after {
+      content: " —";
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin-left: 2px;
     }
     .tech-card .order-meta .desc-row .desc-value {
       flex: 1;
       text-align: center;
       color: var(--text-primary);
-      font-weight: 400;
-      font-size: 15px;
-      font-style: italic;
+      font-weight: 700;           /* описание жирное, без курсива */
     }
 
     .tech-card .section-title {
@@ -250,12 +232,7 @@
       border-bottom: 1px dashed var(--border-color);
       padding-bottom: 4px;
     }
-    .tech-card table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 6px 0 10px 0;
-      font-size: 13px;
-    }
+    .tech-card table { width: 100%; border-collapse: collapse; margin: 6px 0 10px 0; font-size: 13px; }
     .tech-card table th {
       background: var(--bg-main);
       padding: 8px 10px;
@@ -272,11 +249,7 @@
     }
     .tech-card table td:empty::before { content: ""; }
 
-    .tech-card .tech-op-table {
-      width: auto;
-      max-width: 100%;
-      table-layout: auto;
-    }
+    .tech-card .tech-op-table { width: auto; max-width: 100%; table-layout: auto; }
     .tech-card .tech-op-table th,
     .tech-card .tech-op-table td {
       padding: 8px 14px;
@@ -320,13 +293,9 @@
       color: var(--text-secondary);
       margin-right: 4px;
     }
-    .tech-card .screenshot-container {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .tech-card .screenshot-container { display: inline-flex; align-items: center; gap: 8px; }
     .tech-card .screenshot-container img {
-      max-width: 400px; /* Увеличен размер */
+      max-width: 400px;
       max-height: 400px;
       border: 1px solid var(--border-color);
       border-radius: 6px;
@@ -346,60 +315,30 @@
       font-size: 13px;
     }
 
-    .action-bar {
-      margin-top: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-    }
+    .action-bar { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
     .hidden-input { display: none; }
 
     .screenshot-modal {
       display: none;
       position: fixed;
       z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
       background-color: rgba(0,0,0,0.8);
       justify-content: center;
       align-items: center;
     }
-    .screenshot-modal img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 8px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.5);
-    }
+    .screenshot-modal img { max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
     .screenshot-modal.visible { display: flex; }
-    .screenshot-modal .close-modal {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      font-size: 40px;
-      color: #fff;
-      cursor: pointer;
-    }
+    .screenshot-modal .close-modal { position: absolute; top: 20px; right: 30px; font-size: 40px; color: #fff; cursor: pointer; }
 
     @media screen and (max-width: 768px) {
       .tech-card { padding: 16px; }
       .tech-card table { font-size: 12px; }
-      .tech-card table th,
-      .tech-card table td { padding: 5px 6px; }
-      .tech-card .tech-op-table th,
-      .tech-card .tech-op-table td {
-        padding: 5px 8px;
-        white-space: normal;
-      }
-      .tech-card .order-meta .meta-row {
-        gap: 8px 20px;
-      }
-      .tech-card .screenshot-container img {
-        max-width: 250px;
-        max-height: 250px;
-      }
+      .tech-card table th, .tech-card table td { padding: 5px 6px; }
+      .tech-card .tech-op-table th, .tech-card .tech-op-table td { padding: 5px 8px; white-space: normal; }
+      .tech-card .order-meta .meta-row { gap: 8px 20px; }
+      .tech-card .screenshot-container img { max-width: 250px; max-height: 250px; }
     }
   </style>
 </head>
@@ -445,7 +384,6 @@
     </main>
   </div>
 
-  <!-- Модалка для просмотра скриншота -->
   <div id="screenshotModal" class="screenshot-modal" onclick="this.classList.remove('visible')">
     <span class="close-modal">&times;</span>
     <img id="modalImage" src="" alt="Скриншот">
@@ -464,26 +402,10 @@
       const actionBar = document.getElementById('actionBar');
       const downloadPdfBtn = document.getElementById('downloadPdfBtn');
       const viewOfficePdfBtn = document.getElementById('viewOfficePdfBtn');
-      const uploadLocalPdfBtn = document.getElementById('uploadLocalPdfBtn');
-      const localPdfInput = document.getElementById('localPdfInput');
       const toggleFilesBtn = document.getElementById('toggleFilesBtn');
       const printBtn = document.getElementById('printBtn');
-
       const urlParams = new URLSearchParams(window.location.search);
       const orderId = urlParams.get('id');
-
-      // SERVICE_LABELS оставлены только для отображения услуг внутри карты
-      const SERVICE_LABELS = {
-        vd_lak: 'ВД лак',
-        lamination: 'Ламинация',
-        embossing: 'Тиснение',
-        cutting: 'Резка',
-        gluing: 'Склейка',
-        uv_lak: 'УФ лак',
-        die_cut: 'Высечка',
-        kongrev: 'Конгрев',
-        flot_cutting: 'Флоторезка / Резка'
-      };
 
       function loadOrders() {
         let orders = [];
@@ -495,16 +417,14 @@
       }
 
       function renderTechCard(order) {
+        // Округлённый тираж для отображения в таблицах
+        const displaySheets = Math.ceil(order.print_sheets || 0);
+        // Количество продукции
+        const orderQty = order.order_qty || 0;
+
         const serviceMap = {
-          lamination: '',
-          vd_lak: '',
-          embossing: '',
-          kongrev: '',
-          die_cut: '',
-          gluing: '',
-          uv_lak: '',
-          cutting_pre: '',
-          cutting_post: ''
+          lamination: '', vd_lak: '', embossing: '', kongrev: '',
+          die_cut: '', gluing: '', uv_lak: '', cutting_pre: '', cutting_post: ''
         };
 
         if (order.services && Array.isArray(order.services)) {
@@ -518,15 +438,15 @@
             else if (s.name === 'uv_lak') serviceMap.uv_lak = s.type || 'есть';
             else if (s.name === 'cutting') {
               if (s.type === 'pre' || s.type === 'до печать') {
-                serviceMap.cutting_pre = s.length ? `${s.length}×${s.width}` : 'есть';
+                serviceMap.cutting_pre = (s.width && s.length) ? `${s.width}×${s.length}` : 'есть';
               } else if (s.type === 'post' || s.type === 'пост печать') {
-                serviceMap.cutting_post = s.length ? `${s.length}×${s.width}` : 'есть';
+                serviceMap.cutting_post = (s.width && s.length) ? `${s.width}×${s.length}` : 'есть';
               } else if (s.type === 'both' || s.type === 'оба') {
                 if (s.details) {
                   const pre = s.details.find(d => d.type === 'до печать');
                   const post = s.details.find(d => d.type === 'пост печать');
-                  if (pre) serviceMap.cutting_pre = `${pre.length}×${pre.width}`;
-                  if (post) serviceMap.cutting_post = `${post.length}×${post.width}`;
+                  if (pre && pre.width && pre.length) serviceMap.cutting_pre = `${pre.width}×${pre.length}`;
+                  if (post && post.width && post.length) serviceMap.cutting_post = `${post.width}×${post.length}`;
                 }
               }
             }
@@ -536,7 +456,6 @@
         const hasFlot = order.services && order.services.some(s => s.name === 'flot_cutting');
         const printType = order.print_type || 'A1';
         const printLabel = `Печать ${printType}`;
-        const printSheets = order.print_sheets || 0;
 
         const serviceList = [
           { key: 'lamination', label: 'ламинация' },
@@ -548,31 +467,34 @@
           { key: 'cutting_pre', label: 'Резка до печати' },
           { key: 'cutting_post', label: 'Резка пост печати' }
         ];
-
         const activeServices = serviceList.filter(item => serviceMap[item.key] !== '');
 
         let techOpHTML = '';
         if (activeServices.length > 0) {
-          const headers = activeServices.map(item => item.label);
           const techOpRow = activeServices.map(item => `<td>${item.label}</td>`).join('');
           const paramsRow = activeServices.map(item => {
             let val = serviceMap[item.key];
             if (item.key === 'die_cut' || item.key === 'gluing') val = 'есть';
             return `<td>${val}</td>`;
           }).join('');
+
+          // План: склейка – кол-во продукции, все остальные – округлённый тираж
           const planRow = activeServices.map(item => {
             let val = '';
-            if (item.key === 'die_cut' || item.key === 'gluing') val = printSheets;
+            if (item.key === 'gluing') {
+              val = orderQty;
+            } else {
+              val = displaySheets;
+            }
             return `<td>${val}</td>`;
           }).join('');
+
           const faktRow = activeServices.map(() => `<td></td>`).join('');
 
           techOpHTML = `
             <div class="section-title">Тех ОП</div>
             <table class="tech-op-table">
-              <thead>
-                
-              </thead>
+              <thead></thead>
               <tbody>
                 <tr><td class="row-label tech-op-header">Тех ОП</td>${techOpRow}</tr>
                 <tr><td class="row-label">Параметры</td>${paramsRow}</tr>
@@ -595,49 +517,42 @@
               <h2>Техкарта №${order.techcard_no || order.id}</h2>
               <div class="order-meta">
                 <div class="meta-row">
-                  <p><strong>Заказчик:</strong> <span>${order.customer || ''}</span></p>
-                  <p><strong>Название продукции:</strong> <span>${order.product_name || ''}</span></p>
-                  <p><strong>кол-во продукт:</strong> <span class="qty">${order.order_qty || 0}</span></p>
+                  <p><span class="label">Заказчик</span> <span class="value">${order.customer || ''}</span></p>
+                  <p><span class="label">Название продукции</span> <span class="value">${order.product_name || ''}</span></p>
+                  <p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQty}</span></p>
                 </div>
                 <div class="desc-row">
-                  <span class="desc-label">Описание:</span>
-                  <span class="desc-value">${order.description || ''}</span>
+                  <span class="desc-label label">Описание</span>
+                  <span class="desc-value value">${order.description || ''}</span>
                 </div>
               </div>
               ${hasFlot ? `
                 <div class="section-title">Флотарёзка</div>
                 <table>
                   <thead><tr><th>материал</th><th>формат рулона</th><th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th></tr></thead>
-                  <tbody><tr><td>${order.paper_type || ''}</td><td>${order.roll_format || ''}</td><td>${order.size_length || ''}×${order.size_width || ''}</td><td>${order.gsm || ''}</td><td>${order.print_sheets || 0}</td><td></td></tr></tbody>
+                  <tbody><tr><td>${order.paper_type || ''}</td><td>${order.roll_format || ''}</td><td>${order.size_width || ''}×${order.size_length || ''}</td><td>${order.gsm || ''}</td><td>${displaySheets}</td><td></td></tr></tbody>
                 </table>
               ` : ''}
               <div class="section-title">Листовой</div>
               <table>
                 <thead><tr><th>материал</th><th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th></tr></thead>
-                <tbody><tr><td>${order.paper_type || ''}</td><td>${order.size_length || ''}×${order.size_width || ''}</td><td>${order.gsm || ''}</td><td>${order.print_sheets || 0}</td><td></td></tr></tbody>
+                <tbody><tr><td>${order.paper_type || ''}</td><td>${order.size_width || ''}×${order.size_length || ''}</td><td>${order.gsm || ''}</td><td>${displaySheets}</td><td></td></tr></tbody>
               </table>
               <div class="section-title">${printLabel}</div>
               <table>
                 <thead>
                   <tr>
-                    <th>Размер листа</th>
-                    <th>цвет</th>
-                    <th>тираж</th>
-                    <th>приладка</th>
-                    <th>УФ лак</th>
-                    <th>брак</th>
-                    <th>факт печати</th>
+                    <th>Размер листа</th><th>цвет</th><th>тираж</th><th>приладка</th><th>УФ лак</th><th>брак</th><th>факт печати</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>${order.size_length || ''}×${order.size_width || ''}</td>
+                    <td>${order.size_width || ''}×${order.size_length || ''}</td>
                     <td>${order.color || ''}</td>
-                    <td>${order.print_sheets || 0}</td>
+                    <td>${displaySheets}</td>
                     <td>${order.make_ready || 0}</td>
                     <td>${serviceMap.vd_lak || ''}</td>
-                    <td></td>
-                    <td></td>
+                    <td></td><td></td>
                   </tr>
                 </tbody>
               </table>
@@ -705,13 +620,6 @@
           }
         };
 
-        uploadLocalPdfBtn.onclick = function() { localPdfInput.click(); };
-        localPdfInput.onchange = function(e) {
-          const file = e.target.files[0];
-          if (file) { alert(`Выбран файл: ${file.name}`); }
-          this.value = '';
-        };
-
         const modal = document.getElementById('screenshotModal');
         modal.onclick = function(e) {
           if (e.target === this) this.classList.remove('visible');
@@ -731,13 +639,10 @@
         return;
       }
 
-      // ---- Если ID нет – показываем список с фильтром (только поиск) ----
+      // ---- Если ID нет – показываем список с фильтром ----
       const allOrders = loadOrders();
-
-      // Сохраняем оригинальный список для фильтрации
       window._originalOrders = allOrders.slice();
 
-      // Функция рендеринга списка
       function renderList(orders) {
         const tableContainer = document.getElementById('tableContainer');
         if (!tableContainer) return;
@@ -756,7 +661,7 @@
             <td>${o.product_name || ''}</td>
             <td>${o.manager || ''}</td>
             <td>${o.order_qty || 0}</td>
-            <td>${o.print_sheets || 0}</td>
+            <td>${Math.ceil(o.print_sheets || 0)}</td>
             <td><a href="texKarta.html?id=${o.id}" class="btn-link">Открыть</a></td>
           </tr>
         `).join('');
@@ -765,13 +670,7 @@
           <table>
             <thead>
               <tr>
-                <th>№ техкарты</th>
-                <th>Заказчик</th>
-                <th>Продукция</th>
-                <th>Менеджер</th>
-                <th>Кол-во</th>
-                <th>Тираж</th>
-                <th>Действие</th>
+                <th>№ техкарты</th><th>Заказчик</th><th>Продукция</th><th>Менеджер</th><th>Кол-во</th><th>Тираж</th><th>Действие</th>
               </tr>
             </thead>
             <tbody>${tableRows}</tbody>
@@ -779,10 +678,8 @@
         `;
       }
 
-      // Функция фильтрации (только поиск по тексту)
       window.applyFilters = function() {
         const searchVal = document.getElementById('searchInput')?.value.toLowerCase().trim() || '';
-
         let filtered = window._originalOrders || [];
         if (searchVal) {
           filtered = filtered.filter(o => {
@@ -793,7 +690,6 @@
         renderList(filtered);
       };
 
-      // Сброс поиска (без кнопки, но оставим функцию на случай)
       window.resetFilters = function() {
         const searchInput = document.getElementById('searchInput');
         if (searchInput) searchInput.value = '';
@@ -808,15 +704,12 @@
               <div class="search-wrap">
                 <input type="text" id="searchInput" placeholder="🔍 Поиск по номеру, заказчику, продукции..." oninput="applyFilters()">
               </div>
-              <!-- Убраны чекбоксы и кнопка сброса -->
             </div>
             <div id="tableContainer"></div>
           </div>
         `;
-
         content.innerHTML = html;
         actionBar.style.display = 'none';
-        // Первоначальный рендер списка
         renderList(allOrders);
       }
 
