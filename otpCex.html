@@ -30,7 +30,6 @@
     }
     .theme-switch-wrapper { display: none !important; }
 
-    /* Список заказов */
     .orders-list {
       background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px;
       box-shadow: 0 1px 3px rgba(15,23,42,0.06); max-width: 1200px; margin: 0 auto;
@@ -105,12 +104,9 @@
 
     .form-actions { margin-top: 20px; display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border-color); padding-top: 16px; }
 
-    /* Убираем стрелки у number (на всякий случай) */
     input[type="number"] { -moz-appearance: textfield; }
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-    /* Отступы */
     .service-grid { margin-bottom: 30px; }
     .pdf-block { margin-top: 30px; padding-top: 20px; }
     .screenshot-block { margin-top: 30px; padding-top: 20px; }
@@ -119,11 +115,163 @@
       .form-columns { grid-template-columns: 1fr; }
       .service-grid { grid-template-columns: 1fr; }
     }
+    /* ============================================
+   УЛУЧШЕННЫЕ СТИЛИ ДЛЯ ФОРМЫ
+   ============================================ */
+
+/* Более мягкие карточки */
+.form-column,
+.choice-strip,
+.service-item {
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.form-column:hover,
+.choice-strip:hover,
+.service-item:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* Поля ввода и селекты */
+input[type="text"],
+input[type="number"],
+textarea,
+select,
+.masked-number {
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-white);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus,
+.masked-number:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+/* Кнопки */
+.btn {
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary-blue);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-secondary {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: #e4e7ec;
+  border-color: var(--primary-blue);
+}
+
+/* Кнопка "Передать формат" */
+#transferFormatBtn {
+  background: #f0f4ff;
+  color: var(--primary-blue);
+  border: 1px solid var(--primary-blue);
+  font-weight: 500;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+}
+
+#transferFormatBtn:hover {
+  background: var(--primary-blue);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+/* Радио-карточки выбора (Рулон / Листовой) */
+.choice-card {
+  border-radius: 12px;
+  background: var(--bg-white);
+  transition: all 0.2s ease;
+}
+
+.choice-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Плавное появление/скрытие полей рулона/листа */
+#rollFields,
+#sheetFields {
+  transition: opacity 0.2s ease, max-height 0.3s ease;
+}
+
+/* Блок информации о материале */
+#materialTypeCards + div {
+  margin-top: 12px;
+}
+
+/* Улучшенные отступы в таблице параметров */
+.data-table td {
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+.data-table td:first-child {
+  font-weight: 500;
+  color: var(--text-secondary);
+  width: 40%;
+}
+
+/* Заголовки секций */
+.form-column-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--primary-blue);
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+
+/* Блок с результатами расчёта */
+.print-sheets-info strong {
+  background: rgba(37, 99, 235, 0.08);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+/* Мелкие доработки */
+.screenshot-drop-area {
+  border-radius: 12px;
+}
+
+/* Адаптивность уже учтена, но можно добавить плавности */
+@media (max-width: 768px) {
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
   </style>
 </head>
 <body>
   <div class="app-container">
-    <!-- ... меню ... -->
     <nav class="sidebar">
       <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PP</div><span>ProfitPrint</span></div></div>
       <ul class="nav-menu">
@@ -149,7 +297,6 @@
       <div class="top-bar"><h1>Отправка в цех</h1></div>
       <div class="content-section">
         <div id="listContainer" class="active">
-          <!-- список заказов как прежде -->
           <div class="orders-list">
             <div class="header-row">
               <h2>Производственные заказы</h2>
@@ -175,7 +322,6 @@
           </div>
           <form id="orderForm">
             <input type="hidden" name="edit_id" id="editId" value="">
-            <!-- поля формы с типом text и маской -->
             <div class="form-row">
               <div class="form-group"><label>Техкарта №</label><input type="text" name="techcard_no" id="techcardNo" readonly></div>
               <div class="form-group"><label>Менеджер</label><select name="manager" id="managerSelect" required><option value="Муниса">Муниса</option><option value="Расул">Расул</option><option value="Руслан">Руслан</option></select></div>
@@ -195,20 +341,42 @@
                     <div class="choice-card"><input type="radio" name="print_type" value="A2" id="printA2"><label for="printA2">🖨️ Печать А2</label></div>
                   </div>
                 </div>
+
+                <!-- ИНФОРМАЦИЯ О МАТЕРИАЛЕ -->
                 <div class="choice-strip">
-                  <div class="choice-cards">
-                    <div class="choice-card"><input type="radio" name="media_type" value="roll" id="mediaRoll" checked><label for="mediaRoll">📜 Рулон</label></div>
-                    <div class="choice-card"><input type="radio" name="media_type" value="sheet" id="mediaSheet"><label for="mediaSheet">📄 Листовой</label></div>
+                  <div class="form-column-title" style="margin-top:0; margin-bottom:10px;">Информация о материале</div>
+                  <div class="choice-cards" id="materialTypeCards">
+                    <div class="choice-card">
+                      <input type="radio" name="material_type" value="roll" id="matRoll" checked>
+                      <label for="matRoll">📜 Рулон</label>
+                    </div>
+                    <div class="choice-card">
+                      <input type="radio" name="material_type" value="sheet" id="matSheet">
+                      <label for="matSheet">📄 Листовой</label>
+                    </div>
                   </div>
+                  <div id="rollFields" style="margin-top:12px;">
+                    <label style="display:block; font-size:13px; font-weight:500; margin-bottom:4px;">Формат флоторезки</label>
+                    <input type="text" inputmode="numeric" class="masked-number" id="rollWidth" placeholder="Формат флоторезки">
+                    <label style="display:block; font-size:13px; font-weight:500; margin-top:8px; margin-bottom:4px;">Формат рулона</label>
+                    <input type="text" inputmode="numeric" class="masked-number" id="flotLength" placeholder="Формат рулона">
+                  </div>
+                  <div id="sheetFields" style="margin-top:12px; display:none;">
+                    <label style="display:block; font-size:13px; font-weight:500; margin-bottom:4px;">Ширина листа</label>
+                    <input type="text" inputmode="numeric" class="masked-number" id="sheetWidth" placeholder="Ширина листа">
+                    <label style="display:block; font-size:13px; font-weight:500; margin-top:8px; margin-bottom:4px;">Длина листа</label>
+                    <input type="text" inputmode="numeric" class="masked-number" id="sheetLength" placeholder="Длина листа">
+                  </div>
+                  <button type="button" class="btn btn-secondary" id="transferFormatBtn" style="margin-top:12px;">Передать формат в печатный формат</button>
                 </div>
+
                 <div class="calc-mode-switch"><label><input type="radio" name="calc_mode" value="warehouse" checked> Параметры</label></div>
                 <table class="data-table">
                   <tr><td>Тип бумаги</td><td><select name="paper_type" id="paperType" required><option value="картон">картон</option><option value="Меловка">Меловка</option><option value="Офсет">Офсет</option></select></td></tr>
                   <tr><td>гр/м²</td><td><input type="text" inputmode="numeric" class="masked-number" id="gsm" required></td></tr>
-                  <tr id="rollFormatRow"><td>Формат рулона</td><td><input type="text" inputmode="numeric" class="masked-number" id="rollFormat"></td></tr>
                   <tr><td>Кол-во продукции</td><td><input type="text" inputmode="numeric" class="masked-number" id="orderQty" required></td></tr>
-                  <tr><td>Ширина печатного формата</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeWidth" required></td></tr>
-                  <tr><td>Длина печатного формата</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeLength" required></td></tr>
+                  <tr><td>Печатный формат (Ширина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeWidth" required></td></tr>
+                  <tr><td>Печатный формат (Длина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeLength" required></td></tr>
                   <tr><td>Приладка</td><td><input type="text" inputmode="numeric" class="masked-number" id="makeReady" required></td></tr>
                   <tr><td>Доля</td><td><input type="text" inputmode="numeric" class="masked-number" id="stripes" required></td></tr>
                   <tr><td>Цвет</td><td><input type="text" name="color" id="color" required></td></tr>
@@ -317,14 +485,10 @@
       window.showList = showList;
       window.showForm = showForm;
 
-      // ----------------- Маска чисел с пробелами -----------------
       function formatWithSpaces(value) {
-        // Удаляем всё, кроме цифр
         let digits = value.replace(/\D/g, '');
         if (digits === '') return '';
-        // Разбиваем на группы по 3 цифры справа
-        let formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-        return formatted;
+        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
       }
 
       function applyMask(input) {
@@ -333,7 +497,6 @@
         let oldVal = input.value;
         let newVal = formatWithSpaces(oldVal);
         if (newVal !== oldVal) {
-          // Корректируем позицию курсора
           let addedSpaces = 0;
           for (let i = 0; i < start; i++) {
             if (oldVal[i] === ' ' && newVal[i] !== ' ') addedSpaces--;
@@ -347,7 +510,6 @@
         }
       }
 
-      // Навешиваем обработчик на все поля с классом masked-number
       function setupMasks() {
         document.querySelectorAll('.masked-number').forEach(inp => {
           inp.removeEventListener('input', maskHandler);
@@ -357,16 +519,47 @@
 
       function maskHandler(e) {
         applyMask(e.target);
-        recalc(); // пересчёт при вводе
+        recalc();
       }
 
-      // Получение "чистого" числа из поля
       function getCleanNumber(id) {
         let el = document.getElementById(id);
         if (!el) return 0;
-        let val = el.value.replace(/\s/g, ''); // убираем пробелы
-        return parseFloat(val) || 0;
+        return parseFloat(el.value.replace(/\s/g, '')) || 0;
       }
+
+      // Переключение материала
+      const matRoll = document.getElementById('matRoll');
+      const matSheet = document.getElementById('matSheet');
+      const rollFields = document.getElementById('rollFields');
+      const sheetFields = document.getElementById('sheetFields');
+      const transferBtn = document.getElementById('transferFormatBtn');
+
+      function toggleMaterialFields() {
+        if (matRoll.checked) {
+          rollFields.style.display = 'block';
+          sheetFields.style.display = 'none';
+        } else {
+          rollFields.style.display = 'none';
+          sheetFields.style.display = 'block';
+        }
+      }
+      matRoll.addEventListener('change', toggleMaterialFields);
+      matSheet.addEventListener('change', toggleMaterialFields);
+
+      transferBtn.addEventListener('click', function() {
+        const sizeWidth = document.getElementById('sizeWidth');
+        const sizeLength = document.getElementById('sizeLength');
+        if (matRoll.checked) {
+          sizeWidth.value = document.getElementById('rollWidth').value;
+          sizeLength.value = document.getElementById('flotLength').value;
+        } else {
+          sizeWidth.value = document.getElementById('sheetWidth').value;
+          sizeLength.value = document.getElementById('sheetLength').value;
+        }
+        [sizeWidth, sizeLength].forEach(inp => applyMask(inp));
+        recalc();
+      });
 
       function fillForm(order) {
         document.getElementById('editId').value = order.id;
@@ -376,17 +569,22 @@
         document.getElementById('productNameInput').value = order.product_name || '';
         document.getElementById('descriptionInput').value = order.description || '';
         document.querySelector('input[name="print_type"][value="'+(order.print_type||'A1')+'"]').checked = true;
-        document.querySelector('input[name="media_type"][value="'+(order.media_type||'roll')+'"]').checked = true;
+
+        const materialType = order.material_type || 'roll';
+        document.getElementById(materialType === 'roll' ? 'matRoll' : 'matSheet').checked = true;
+        toggleMaterialFields();
+
         document.getElementById('paperType').value = order.paper_type || 'картон';
-        
-        // Устанавливаем значения в маскированные поля
+        setMaskedValue('gsm', order.gsm);
         setMaskedValue('orderQty', order.order_qty);
-        setMaskedValue('makeReady', order.make_ready);
-        setMaskedValue('rollFormat', order.roll_format);
         setMaskedValue('sizeWidth', order.size_width);
         setMaskedValue('sizeLength', order.size_length);
+        setMaskedValue('makeReady', order.make_ready);
         setMaskedValue('stripes', order.stripes);
-        setMaskedValue('gsm', order.gsm);
+        setMaskedValue('rollWidth', order.roll_width);
+        setMaskedValue('flotLength', order.flot_length);
+        setMaskedValue('sheetWidth', order.sheet_width);
+        setMaskedValue('sheetLength', order.sheet_length);
         document.getElementById('color').value = order.color || '';
 
         if (order.pdf_filename) {
@@ -402,7 +600,6 @@
           if (placeholder) placeholder.style.display = 'none';
         }
 
-        // Услуги
         const services = order.services || [];
         document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb => {
           cb.checked = false;
@@ -449,7 +646,6 @@
           }
         });
         recalc();
-        document.getElementById('rollFormatRow').style.display = document.getElementById('mediaRoll').checked ? '' : 'none';
       }
 
       function setMaskedValue(id, value) {
@@ -467,15 +663,19 @@
         document.getElementById('productNameInput').value = '';
         document.getElementById('descriptionInput').value = '';
         document.getElementById('printA1').checked = true;
-        document.getElementById('mediaRoll').checked = true;
+        document.getElementById('matRoll').checked = true;
+        toggleMaterialFields();
         document.getElementById('paperType').value = 'картон';
+        setMaskedValue('gsm', '');
         setMaskedValue('orderQty', '');
-        setMaskedValue('makeReady', '');
-        setMaskedValue('rollFormat', '');
         setMaskedValue('sizeWidth', '');
         setMaskedValue('sizeLength', '');
+        setMaskedValue('makeReady', '');
         setMaskedValue('stripes', '');
-        setMaskedValue('gsm', '');
+        setMaskedValue('rollWidth', '');
+        setMaskedValue('flotLength', '');
+        setMaskedValue('sheetWidth', '');
+        setMaskedValue('sheetLength', '');
         document.getElementById('color').value = '';
         document.getElementById('pdfFileNameInput').value = '';
         document.getElementById('clearPdfBtn').style.display = 'none';
@@ -493,7 +693,6 @@
         });
         document.querySelectorAll('#cuttingDetails input[type="number"]').forEach(inp => inp.value = '');
         recalc();
-        document.getElementById('rollFormatRow').style.display = '';
       }
 
       function renderOrders() {
@@ -571,13 +770,16 @@
           product_name: document.getElementById('productNameInput').value,
           description: document.getElementById('descriptionInput').value,
           print_type: document.querySelector('input[name="print_type"]:checked').value,
-          media_type: document.querySelector('input[name="media_type"]:checked').value,
+          material_type: document.getElementById('matRoll').checked ? 'roll' : 'sheet',
           paper_type: document.getElementById('paperType').value,
           order_qty: getCleanNumber('orderQty'),
           make_ready: getCleanNumber('makeReady'),
-          roll_format: getCleanNumber('rollFormat') || null,
           size_width: getCleanNumber('sizeWidth'),
           size_length: getCleanNumber('sizeLength'),
+          roll_width: getCleanNumber('rollWidth') || null,
+          flot_length: getCleanNumber('flotLength') || null,
+          sheet_width: getCleanNumber('sheetWidth') || null,
+          sheet_length: getCleanNumber('sheetLength') || null,
           stripes: getCleanNumber('stripes'),
           gsm: getCleanNumber('gsm'),
           color: document.getElementById('color').value,
@@ -657,7 +859,6 @@
           const itemDiv = document.createElement('div');
           itemDiv.className = 'service-item';
           if (key === 'flot_cutting') itemDiv.classList.add('flot-service');
-
           const mainRow = document.createElement('div');
           mainRow.className = 'service-main';
           const cb = document.createElement('input');
@@ -665,14 +866,11 @@
           const lbl = document.createElement('label');
           lbl.htmlFor = 'chk_' + key;
           lbl.textContent = SERVICE_LABELS[key];
-          mainRow.appendChild(cb);
-          mainRow.appendChild(lbl);
+          mainRow.appendChild(cb); mainRow.appendChild(lbl);
           itemDiv.appendChild(mainRow);
-
           const optionsDiv = document.createElement('div');
           optionsDiv.className = 'service-options';
           optionsDiv.style.display = 'none';
-
           if (key === 'flot_cutting') {
             optionsDiv.innerHTML = '<div class="flot-result">Результат: <strong id="flotDivideResult">0</strong></div>';
           } else if (key === 'cutting') {
@@ -704,15 +902,11 @@
           } else {
             const selId = 'sel_' + key;
             let optionsHTML = `<select id="${selId}">`;
-            SERVICE_TYPES[key].forEach(v => {
-              optionsHTML += `<option value="${v}">${v}</option>`;
-            });
+            SERVICE_TYPES[key].forEach(v => { optionsHTML += `<option value="${v}">${v}</option>`; });
             optionsHTML += '</select>';
             optionsDiv.innerHTML = optionsHTML;
           }
-
           itemDiv.appendChild(optionsDiv);
-
           cb.addEventListener('change', function() {
             if (this.checked) {
               if (key === 'cutting') {
@@ -726,7 +920,6 @@
             }
             recalc();
           });
-
           if (key === 'cutting') {
             optionsDiv.querySelector('select').addEventListener('change', function() {
               const val = this.value;
@@ -735,12 +928,10 @@
               document.getElementById('fields_both').style.display = (val === 'both') ? 'flex' : 'none';
             });
           }
-
           container.appendChild(itemDiv);
         }
       }
 
-      // PDF, скриншот, формат рулона
       const pdfFileInput = document.getElementById('pdfFileInput');
       const pdfFileNameInput = document.getElementById('pdfFileNameInput');
       const clearPdfBtn = document.getElementById('clearPdfBtn');
@@ -828,17 +1019,6 @@
         });
       }
 
-      function setupMediaTypeToggle() {
-        const roll = document.getElementById('mediaRoll');
-        const sheet = document.getElementById('mediaSheet');
-        const row = document.getElementById('rollFormatRow');
-        function toggle() { row.style.display = roll.checked ? '' : 'none'; }
-        roll.addEventListener('change', toggle);
-        sheet.addEventListener('change', toggle);
-        toggle();
-      }
-
-      // Расчёт
       let currentWeightKg = 0, currentTotalSheets = 0, currentFlotDivide = 0;
       function recalc() {
         const orderQty  = getCleanNumber('orderQty');
@@ -862,29 +1042,25 @@
       }
 
       function updateUI() {
-  document.getElementById('printSheetsHidden').value = currentTotalSheets;
-  document.getElementById('printSheetsAuto').textContent =
-    currentTotalSheets > 0 ? currentTotalSheets.toLocaleString('ru-RU') : '';
+        document.getElementById('printSheetsHidden').value = currentTotalSheets;
+        document.getElementById('printSheetsAuto').textContent = currentTotalSheets > 0 ? currentTotalSheets.toLocaleString('ru-RU') : '';
+        const wEl = document.getElementById('weightResult');
+        if (wEl) {
+          if (currentWeightKg <= 0) wEl.textContent = '— кг';
+          else wEl.textContent = Math.round(currentWeightKg).toLocaleString('ru-RU') + ' кг';
+        }
+        const flotEl = document.getElementById('flotDivideResult');
+        if (flotEl) flotEl.textContent = currentFlotDivide.toLocaleString('ru-RU');
+      }
 
-  const wEl = document.getElementById('weightResult');
-  if (wEl) {
-    if (currentWeightKg <= 0) {
-      wEl.textContent = '— кг';
-    } else {
-      const rounded = Math.round(currentWeightKg);
-      wEl.textContent = rounded.toLocaleString('ru-RU') + ' кг';
-    }
-  }
+      ['orderQty','makeReady','stripes','sizeWidth','sizeLength','gsm','rollWidth','flotLength','sheetWidth','sheetLength'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', recalc);
+      });
 
-  const flotEl = document.getElementById('flotDivideResult');
-  if (flotEl) flotEl.textContent = currentFlotDivide.toLocaleString('ru-RU');
-}
-
-      // Инициализация масок
       setupMasks();
       recalc();
 
-      // Клиенты
       function loadClients() {
         const datalist = document.getElementById('customerList');
         let clients = [];
@@ -902,7 +1078,6 @@
       loadOrders();
       loadClients();
       buildServicesBlock();
-      setupMediaTypeToggle();
       recalc();
       renderOrders();
       showIndex2ForDiyor();
