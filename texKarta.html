@@ -91,7 +91,6 @@
     .tech-card table { width: 100%; border-collapse: collapse; margin: 6px 0 10px 0; font-size: 13px; }
     .tech-card table th { background: var(--bg-main); padding: 8px 10px; border: 1px solid var(--border-color); text-align: center; font-weight: 600; color: var(--text-secondary); }
     .tech-card table td { padding: 7px 10px; border: 1px solid var(--border-color); text-align: center; color: var(--text-primary); }
-    /* Данные внутри ячеек жирные, пустые ячейки останутся обычными */
     .tech-card table td strong { font-weight: 700; color: var(--text-primary); }
 
     .tech-card .tech-op-table { width: auto; max-width: 100%; table-layout: auto; }
@@ -202,13 +201,13 @@
       }
 
       function renderTechCard(order) {
-  const displaySheets = Math.ceil(order.print_sheets || 0);
-  const displaySheetsFormatted = displaySheets.toLocaleString('ru-RU');
-  const orderQty = order.order_qty || 0;
-  const orderQtyFormatted = orderQty.toLocaleString('ru-RU');
-  const makeReadyFormatted = (order.make_ready || 0).toLocaleString('ru-RU');
-  const gsmFormatted = (order.gsm || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  const rollFormatFormatted = (order.roll_format || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        const displaySheets = Math.ceil(order.print_sheets || 0);
+        const displaySheetsFormatted = displaySheets.toLocaleString('ru-RU');
+        const orderQty = order.order_qty || 0;
+        const orderQtyFormatted = orderQty.toLocaleString('ru-RU');
+        const makeReadyFormatted = (order.make_ready || 0).toLocaleString('ru-RU');
+        const gsmFormatted = (order.gsm || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        const rollFormatFormatted = (order.roll_format || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
         const serviceMap = {
           lamination: '', vd_lak: '', embossing: '', kongrev: '',
@@ -266,11 +265,11 @@
             return `<td><strong>${val}</strong></td>`;
           }).join('');
           const planRow = activeServices.map(item => {
-  let val = '';
-  if (item.key === 'gluing') val = orderQtyFormatted;   // кол-во продукции
-  else val = displaySheetsFormatted;                     // тираж
-  return `<td><strong>${val}</strong></td>`;
-}).join('');
+            let val = '';
+            if (item.key === 'gluing') val = orderQtyFormatted;
+            else val = displaySheetsFormatted;
+            return `<td><strong>${val}</strong></td>`;
+          }).join('');
           const faktRow = activeServices.map(() => `<td></td>`).join('');
 
           techOpHTML = `
@@ -293,76 +292,76 @@
         }
 
         let html = `
-  <div class="tech-card-container">
-    <a href="texKarta.html" class="back-link">← Назад к списку</a>
-    <div class="tech-card" id="techCardContent">
-      <h2>Техкарта №${order.techcard_no || order.id}</h2>
-      <div class="order-meta">
-        <div class="meta-row">
-          <p><span class="label">Заказчик</span> <span class="value">${order.customer || ''}</span></p>
-          <p><span class="label">Название продукции</span> <span class="value">${order.product_name || ''}</span></p>
-          <p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>
-        </div>
-        <div class="desc-row">
-          <span class="desc-label label">Описание</span>
-          <span class="desc-value value">${order.description || ''}</span>
-        </div>
-      </div>
-      ${hasFlot ? `
-        <div class="section-title">Флотарёзка</div>
-        <table>
-          <thead><tr><th>материал</th><th>формат рулона</th><th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th></tr></thead>
-          <tbody><tr>
-            <td><strong>${order.paper_type || ''}</strong></td>
-            <td><strong>${rollFormatFormatted}</strong></td>
-            <td><strong>${order.size_width || ''}×${order.size_length || ''}</strong></td>
-            <td><strong>${gsmFormatted}</strong></td>
-            <td><strong>${displaySheetsFormatted}</strong></td>
-            <td></td>
-          </tr></tbody>
-        </table>
-      ` : ''}
-      <div class="section-title">Листовой</div>
-      <table>
-        <thead><tr><th>материал</th><th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th></tr></thead>
-        <tbody><tr>
-          <td><strong>${order.paper_type || ''}</strong></td>
-          <td><strong>${order.size_width || ''}×${order.size_length || ''}</strong></td>
-          <td><strong>${gsmFormatted}</strong></td>
-          <td><strong>${displaySheetsFormatted}</strong></td>
-          <td></td>
-        </tr></tbody>
-      </table>
-      <div class="section-title">${printLabel}</div>
-      <table>
-        <thead>
-          <tr>
-            <th>Размер листа</th><th>цвет</th><th>тираж</th><th>приладка</th><th>УФ лак</th><th>брак</th><th>факт печати</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>${order.size_width || ''}×${order.size_length || ''}</strong></td>
-            <td><strong>${order.color || ''}</strong></td>
-            <td><strong>${displaySheetsFormatted}</strong></td>
-            <td><strong>${makeReadyFormatted}</strong></td>
-            <td><strong>${serviceMap.vd_lak || ''}</strong></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
-      ${techOpHTML}
-      ${(order.pdf_filename || order.screenshot_base64) ? `
-        <div class="section-title files-title">Файлы</div>
-        <div class="file-block">
-          ${order.pdf_filename ? `<div class="file-row"><span class="label">Имя PDF:</span> <span class="pdf-name"><strong>${order.pdf_filename}</strong></span></div>` : ''}
-          ${order.screenshot_base64 ? `<div class="file-row"><span class="label">Скриншот:</span> <div class="screenshot-container"><img src="${order.screenshot_base64}" alt="Скриншот" onclick="..."></div></div>` : ''}
-        </div>
-      ` : ''}
-    </div>
-  </div>
-`;
+          <div class="tech-card-container">
+            <a href="texKarta.html" class="back-link">← Назад к списку</a>
+            <div class="tech-card" id="techCardContent">
+              <h2>Техкарта №${order.techcard_no || order.id}</h2>
+              <div class="order-meta">
+                <div class="meta-row">
+                  <p><span class="label">Заказчик</span> <span class="value">${order.customer || ''}</span></p>
+                  <p><span class="label">Название продукции</span> <span class="value">${order.product_name || ''}</span></p>
+                  <p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>
+                </div>
+                <div class="desc-row">
+                  <span class="desc-label label">Описание</span>
+                  <span class="desc-value value">${order.description || ''}</span>
+                </div>
+              </div>
+              ${hasFlot ? `
+                <div class="section-title">Флотарёзка</div>
+                <table>
+                  <thead><tr><th>материал</th><th>формат рулона</th><th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th></tr></thead>
+                  <tbody><tr>
+                    <td><strong>${order.paper_type || ''}</strong></td>
+                    <td><strong>${rollFormatFormatted}</strong></td>
+                    <td><strong>${order.size_width || ''}×${order.size_length || ''}</strong></td>
+                    <td><strong>${gsmFormatted}</strong></td>
+                    <td><strong>${displaySheetsFormatted}</strong></td>
+                    <td></td>
+                  </tr></tbody>
+                </table>
+              ` : ''}
+              <div class="section-title">Листовой</div>
+              <table>
+                <thead><tr><th>материал</th><th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th></tr></thead>
+                <tbody><tr>
+                  <td><strong>${order.paper_type || ''}</strong></td>
+                  <td><strong>${order.size_width || ''}×${order.size_length || ''}</strong></td>
+                  <td><strong>${gsmFormatted}</strong></td>
+                  <td><strong>${displaySheetsFormatted}</strong></td>
+                  <td></td>
+                </tr></tbody>
+              </table>
+              <div class="section-title">${printLabel}</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Размер листа</th><th>цвет</th><th>тираж</th><th>приладка</th><th>УФ лак</th><th>брак</th><th>факт печати</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>${order.size_width || ''}×${order.size_length || ''}</strong></td>
+                    <td><strong>${order.color || ''}</strong></td>
+                    <td><strong>${displaySheetsFormatted}</strong></td>
+                    <td><strong>${makeReadyFormatted}</strong></td>
+                    <td><strong>${serviceMap.vd_lak || ''}</strong></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              ${techOpHTML}
+              ${(order.pdf_filename || order.screenshot_base64) ? `
+                <div class="section-title files-title">Файлы</div>
+                <div class="file-block">
+                  ${order.pdf_filename ? `<div class="file-row"><span class="label">Имя PDF:</span> <span class="pdf-name"><strong>${order.pdf_filename}</strong></span></div>` : ''}
+                  ${order.screenshot_base64 ? `<div class="file-row"><span class="label">Скриншот:</span> <div class="screenshot-container"><img src="${order.screenshot_base64}" alt="Скриншот" onclick="event.stopPropagation(); document.getElementById('screenshotModal').classList.add('visible'); document.getElementById('modalImage').src='${order.screenshot_base64}';"></div></div>` : ''}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
 
         content.innerHTML = html;
         actionBar.style.display = 'flex';
@@ -419,7 +418,6 @@
         };
       }
 
-      // ---- Если есть ID – показываем одну техкарту ----
       if (orderId) {
         const orders = loadOrders();
         const order = orders.find(o => String(o.id) === String(orderId));
@@ -432,7 +430,6 @@
         return;
       }
 
-      // ---- Если ID нет – показываем список ----
       const allOrders = loadOrders();
       window._originalOrders = allOrders.slice();
 
@@ -450,8 +447,8 @@
             <td>${o.customer || ''}</td>
             <td>${o.product_name || ''}</td>
             <td>${o.manager || ''}</td>
-            <td>${o.order_qty || 0}</td>
-            <td>${Math.ceil(o.print_sheets || 0)}</td>
+            <td>${(o.order_qty || 0).toLocaleString('ru-RU')}</td>
+            <td>${Math.ceil(o.print_sheets || 0).toLocaleString('ru-RU')}</td>
             <td><a href="texKarta.html?id=${o.id}" class="btn-link">Открыть</a></td>
           </tr>
         `).join('');
