@@ -208,6 +208,17 @@
         const makeReadyFormatted = (order.make_ready || 0).toLocaleString('ru-RU');
         const gsmFormatted = (order.gsm || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         const rollFormatFormatted = (order.roll_format || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        const hasRollFormat = order.roll_format && String(order.roll_format).trim() !== '';
+
+        // Размер листа (материала)
+        const sheetWidth = order.sheet_width || order.size_width || 0;
+        const sheetLength = order.sheet_length || order.size_length || 0;
+        const sheetSizeFormatted = `${sheetWidth}×${sheetLength}`;
+
+        // Печатный формат
+        const printWidth = order.size_width || 0;
+        const printLength = order.size_length || 0;
+        const printSizeFormatted = `${printWidth}×${printLength}`;
 
         const serviceMap = {
           lamination: '', vd_lak: '', embossing: '', kongrev: '',
@@ -273,11 +284,11 @@
           const faktRow = activeServices.map(() => `<td></td>`).join('');
 
           techOpHTML = `
-            <div class="section-title">Тех ОП</div>
+            <div class="section-title">Пост печать</div>
             <table class="tech-op-table">
               <thead></thead>
               <tbody>
-                <tr><td class="row-label tech-op-header">Тех ОП</td>${techOpRow}</tr>
+                <tr><td class="row-label tech-op-header">Пост печать</td>${techOpRow}</tr>
                 <tr><td class="row-label">Параметры</td>${paramsRow}</tr>
                 <tr><td class="row-label">План</td>${planRow}</tr>
                 <tr><td class="row-label">Факт</td>${faktRow}</tr>
@@ -286,7 +297,7 @@
           `;
         } else {
           techOpHTML = `
-            <div class="section-title">Тех ОП</div>
+            <div class="section-title">Пост печать</div>
             <p style="color: var(--text-secondary); font-style: italic; margin: 10px 0;">Нет дополнительных услуг</p>
           `;
         }
@@ -303,30 +314,41 @@
                   <p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>
                 </div>
                 <div class="desc-row">
-                  <span class="desc-label label">Описание</span>
+                  <span class="desc-label label">Примечание</span>
                   <span class="desc-value value">${order.description || ''}</span>
                 </div>
               </div>
               ${hasFlot ? `
                 <div class="section-title">Флотарёзка</div>
                 <table>
-                  <thead><tr><th>материал</th><th>формат рулона</th><th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th></tr></thead>
+                  <thead><tr>
+                    <th>материал</th>
+                    <th>Размер листа</th>
+                    ${hasRollFormat ? '<th>формат рулона</th>' : ''}
+                    <th>гр/м2</th><th>тираж листов</th><th>факт листов</th>
+                  </tr></thead>
                   <tbody><tr>
                     <td><strong>${order.paper_type || ''}</strong></td>
-                    <td><strong>${rollFormatFormatted}</strong></td>
-                    <td><strong>${order.size_width || ''}×${order.size_length || ''}</strong></td>
+                    <td><strong>${sheetSizeFormatted}</strong></td>
+                    ${hasRollFormat ? `<td><strong>${rollFormatFormatted}</strong></td>` : ''}
                     <td><strong>${gsmFormatted}</strong></td>
                     <td><strong>${displaySheetsFormatted}</strong></td>
                     <td></td>
                   </tr></tbody>
                 </table>
               ` : ''}
-              <div class="section-title">Листовой</div>
+              <div class="section-title">Информация о материале</div>
               <table>
-                <thead><tr><th>материал</th><th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th></tr></thead>
+                <thead><tr>
+                  <th>материал</th>
+                  <th>Размер листа</th>
+                  ${hasRollFormat ? '<th>формат рулона</th>' : ''}
+                  <th>гр/м2</th><th>тираж листов</th><th>факт листов</th>
+                </tr></thead>
                 <tbody><tr>
                   <td><strong>${order.paper_type || ''}</strong></td>
-                  <td><strong>${order.size_width || ''}×${order.size_length || ''}</strong></td>
+                  <td><strong>${sheetSizeFormatted}</strong></td>
+                  ${hasRollFormat ? `<td><strong>${rollFormatFormatted}</strong></td>` : ''}
                   <td><strong>${gsmFormatted}</strong></td>
                   <td><strong>${displaySheetsFormatted}</strong></td>
                   <td></td>
@@ -336,12 +358,12 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Размер листа</th><th>цвет</th><th>тираж</th><th>приладка</th><th>УФ лак</th><th>брак</th><th>факт печати</th>
+                    <th>Печатный формат</th><th>цвет</th><th>тираж</th><th>приладка</th><th>ВД лак</th><th>брак</th><th>факт печати</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>${order.size_width || ''}×${order.size_length || ''}</strong></td>
+                    <td><strong>${printSizeFormatted}</strong></td>
                     <td><strong>${order.color || ''}</strong></td>
                     <td><strong>${displaySheetsFormatted}</strong></td>
                     <td><strong>${makeReadyFormatted}</strong></td>
