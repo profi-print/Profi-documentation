@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Статусы техкарт — ProfitPrint</title>
 <link rel="stylesheet" href="css/theme.css">
 <link rel="stylesheet" href="css/style.css">
@@ -17,12 +17,10 @@
   --ink:#12181f;
   --ink-soft:#5b6470;
   --line:#dcdfd8;
-  --brand:#1f4d47;       /* глубокий типографский зелёно-чёрный — «краска» */
+  --brand:#1f4d47;
   --brand-soft:#e4ece9;
   --shadow: 0 1px 2px rgba(18,24,31,0.04), 0 8px 24px -12px rgba(18,24,31,0.18);
   --radius: 14px;
-
-  /* статусы этапов — фиксированная семантика */
   --st-waiting:#9aa1ab;
   --st-progress:#2f6fed;
   --st-done:#1f8a4c;
@@ -49,9 +47,72 @@ body{
 }
 .mono{ font-family:'IBM Plex Mono', monospace; }
 
+/* ---------- Бургер‑меню ---------- */
+.burger-btn {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1100;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  color: var(--ink);
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1040;
+}
+.sidebar-overlay.show { display: block; }
+
+/* Мобильная версия сайдбара */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100%;
+    transition: left 0.3s ease;
+    z-index: 1050;
+    background: var(--surface);
+    box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    padding-top: 16px;
+  }
+  .sidebar.open { left: 0; }
+  .burger-btn { display: block; }
+  .main-content {
+    margin-left: 0 !important;
+    padding: 60px 12px 20px;
+    width: 100%;
+  }
+  /* Видимость пунктов меню в бургере */
+  .sidebar .nav-menu li a {
+    color: var(--ink) !important;
+    background: transparent !important;
+    font-weight: 500;
+  }
+  .sidebar .nav-menu li a:hover {
+    background: var(--surface-2) !important;
+  }
+  .sidebar .nav-menu li a.active {
+    background: var(--brand) !important;
+    color: #fff !important;
+  }
+}
+
+/* ---------- Контент статусов ---------- */
 .status-wrapper{ max-width:1320px; margin:0 auto; padding:28px 20px 70px; }
 
-/* ---------- Заголовок ---------- */
 .page-header{
   display:flex; align-items:flex-end; justify-content:space-between;
   margin-bottom:22px; flex-wrap:wrap; gap:14px;
@@ -76,7 +137,6 @@ body{
 .btn:hover{ border-color:var(--brand); color:var(--brand); }
 body.dark .btn-primary{ color:#0f1418; }
 
-/* ---------- Легенда ---------- */
 .legend{
   display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;
   padding:12px 14px; background:var(--surface-2); border:1px solid var(--line); border-radius:11px;
@@ -87,7 +147,6 @@ body.dark .btn-primary{ color:#0f1418; }
 }
 .legend-chip .swatch{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
 
-/* ---------- Поиск и фильтр ---------- */
 .search-section{ display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
 .search-input{
   flex:1; min-width:220px; padding:11px 14px; border:1.5px solid var(--line); border-radius:9px;
@@ -99,7 +158,6 @@ body.dark .btn-primary{ color:#0f1418; }
   font-size:13px; background:var(--surface); color:var(--ink); font-weight:600;
 }
 
-/* ---------- Таблица / список ---------- */
 .table-container{
   background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
 }
@@ -126,7 +184,6 @@ body.dark .btn-primary{ color:#0f1418; }
   color:var(--ink-soft); background:var(--surface-2); border-bottom:1px solid var(--line);
 }
 
-/* ---------- Конвейер-степпер (сигнатурный элемент) ---------- */
 .pipeline{ display:flex; align-items:center; }
 .pipeline-node{
   width:22px; height:22px; border-radius:50%; flex-shrink:0;
@@ -149,7 +206,6 @@ body.dark .btn-primary{ color:#0f1418; }
 .empty-state a{ color:var(--brand); font-weight:700; text-decoration:none; }
 .empty-state a:hover{ text-decoration:underline; }
 
-/* ---------- Страница техкарты ---------- */
 .card-page{ display:none; }
 .card-page.active{ display:block; }
 
@@ -178,7 +234,6 @@ body.dark .btn-primary{ color:#0f1418; }
 .card-page-status.paused{ background:var(--st-paused); }
 .card-page-status.error{ background:var(--st-error); }
 
-/* Компактная таблица этапов на странице техкарты — без лишней прокрутки */
 .stage-table{
   background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
 }
@@ -242,7 +297,6 @@ body.dark .btn-primary{ color:#0f1418; }
   .stage-row{ grid-template-columns: 30px 1fr; grid-auto-rows:auto; row-gap:6px; }
   .stage-progress{ max-width:none; }
 }
-
 @media (max-width: 760px){
   .row-head{ display:none; }
   .order-row{ grid-template-columns: 1fr; gap:8px; }
@@ -253,7 +307,12 @@ body.dark .btn-primary{ color:#0f1418; }
 </head>
 <body>
 <div class="app-container">
-  <nav class="sidebar">
+
+  <!-- Бургер‑кнопка и оверлей -->
+  <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <nav class="sidebar" id="sidebar">
     <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PP</div><span>ProfitPrint</span></div></div>
     <ul class="nav-menu">
       <li><a href="index.html">📊 Главная</a></li>
@@ -275,7 +334,6 @@ body.dark .btn-primary{ color:#0f1418; }
 
   <main class="main-content">
     <div class="status-wrapper">
-
       <!-- Экран 1: список -->
       <div id="listView">
         <div class="page-header">
@@ -324,12 +382,21 @@ body.dark .btn-primary{ color:#0f1418; }
         </div>
         <div class="stage-table" id="cardContent"></div>
       </div>
-
     </div>
   </main>
 </div>
 
 <script>
+// ---------- Бургер‑меню ----------
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
 // ---------- Тема ----------
 (function(){
   const body=document.body;
@@ -362,7 +429,6 @@ const STATUS_META = {
 };
 const STATUS_ORDER = ['waiting','progress','done','paused','error'];
 
-// ---------- Этапы (нормативы в минутах) ----------
 const STAGES = [
   { id:'print',   label:'Печать',      norm:120 },
   { id:'stp',     label:'СТП',         norm:60 },
@@ -372,7 +438,6 @@ const STAGES = [
   { id:'diecut',  label:'Высечка',     norm:50 }
 ];
 
-// ---------- Хранилище: техкарты общие для всего приложения ----------
 function loadOrders(){
   try{
     const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
@@ -426,7 +491,6 @@ function overallStatus(order){
   return 'waiting';
 }
 
-// ---------- Список: рендер конвейера в строке ----------
 function renderPipeline(order){
   let html = '<div class="pipeline">';
   STAGES.forEach((s, i) => {
@@ -483,7 +547,6 @@ function renderTable(){
   container.innerHTML = html;
 }
 
-// ---------- Страница техкарты: вертикальный таймлайн ----------
 function renderCardPage(order){
   initTimeline(order);
   document.getElementById('cardTitle').textContent = `Техкарта №${order.techcard_no || order.id}`;
@@ -584,12 +647,11 @@ window.resetFilters = function(){
   renderTable();
 };
 
-// ---------- Запуск ----------
 route();
 window.addEventListener('storage', route);
 </script>
 
-  <script src="js/auth-check.js"></script>
-  <script src="js/nav-filter.js"></script>
+<script src="js/auth-check.js"></script>
+<script src="js/nav-filter.js"></script>
 </body>
 </html>
