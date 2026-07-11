@@ -2,11 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ProfitPrint — Вход</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             margin: 0;
             background: var(--bg-main);
@@ -16,19 +19,21 @@
             min-height: 100vh;
             font-family: var(--font-main, system-ui, -apple-system, sans-serif);
             transition: background 0.3s;
+            padding: 16px;
         }
         .login-card {
             background: var(--bg-white);
-            border-radius: 32px;
-            padding: 44px 36px;
-            width: 380px;
+            border-radius: 24px;
+            padding: 32px 24px;
+            width: 100%;
+            max-width: 400px;
             box-shadow: 0 20px 40px -12px rgba(0,0,0,0.08);
             text-align: center;
             transition: background 0.3s;
         }
         .login-logo {
-            width: 56px;
-            height: 56px;
+            width: 64px;
+            height: 64px;
             background: var(--primary-blue, #2563eb);
             color: #fff;
             border-radius: 18px;
@@ -36,31 +41,32 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 26px;
-            margin-bottom: 20px;
+            font-size: 28px;
+            margin-bottom: 16px;
         }
         .login-card h1 {
             margin: 0 0 4px;
-            font-size: 24px;
+            font-size: clamp(22px, 5vw, 28px);
             color: var(--text-primary);
             font-weight: 700;
         }
         .login-card p {
-            margin: 0 0 28px;
+            margin: 0 0 24px;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 15px;
         }
         .login-card input {
             width: 100%;
-            padding: 14px 16px;
+            padding: 16px;
             margin-bottom: 16px;
             border: 1.5px solid var(--border-color);
             border-radius: 14px;
-            font-size: 15px;
+            font-size: 16px;
             background: var(--bg-main);
             color: var(--text-primary);
-            box-sizing: border-box;
             transition: 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
         }
         .login-card input:focus {
             outline: none;
@@ -69,24 +75,50 @@
         }
         .login-error {
             color: #dc2626;
-            font-size: 13px;
+            font-size: 14px;
             margin-bottom: 12px;
-            min-height: 18px;
+            min-height: 20px;
         }
         .btn-login {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             border: none;
             border-radius: 14px;
             background: var(--primary-blue);
             color: #fff;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 700;
             cursor: pointer;
             transition: 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .btn-login:active {
+            transform: scale(0.97);
         }
         .btn-login:hover {
             background: #1d4ed8;
+        }
+
+        /* Адаптация для очень маленьких экранов */
+        @media (max-width: 400px) {
+            .login-card {
+                padding: 28px 20px;
+                border-radius: 20px;
+            }
+            .login-logo {
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+            }
+            .login-card input {
+                padding: 14px;
+                font-size: 16px;
+            }
+            .btn-login {
+                padding: 14px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -95,7 +127,7 @@
     <div class="login-logo">PP</div>
     <h1>ProfitPrint</h1>
     <p>Войдите в свою учётную запись</p>
-    <input type="text" id="loginInput" placeholder="Логин" autocomplete="username">
+    <input type="text" id="loginInput" placeholder="Логин" autocomplete="username" inputmode="text">
     <input type="password" id="passwordInput" placeholder="Пароль" autocomplete="current-password">
     <div class="login-error" id="loginError"></div>
     <button class="btn-login" id="btnLogin">Войти</button>
@@ -124,28 +156,28 @@
     const btnLogin = document.getElementById('btnLogin');
 
     function doLogin() {
-    const l = loginInput.value.trim();
-    const p = passwordInput.value.trim();
-    if (!l || !p) {
-        loginError.textContent = 'Заполните все поля';
-        return;
-    }
-    const acc = ACCOUNTS.find(a => a.login === l && a.password === p);
-    if (acc) {
-        sessionStorage.setItem('profitprint_user', acc.login);
-        sessionStorage.setItem('profitprint_role', acc.role);
-        // Редирект в зависимости от роли
-        if (acc.role === 'manager') {
-            window.location.href = 'index.html';    // Bekzod – полный доступ
-        } else if (acc.role === 'designer') {
-            window.location.href = 'index2.html';   // Diyor – производственный раздел
-        } else {
-            window.location.href = 'index.html';    // на случай неизвестной роли
+        const l = loginInput.value.trim();
+        const p = passwordInput.value.trim();
+        if (!l || !p) {
+            loginError.textContent = 'Заполните все поля';
+            return;
         }
-    } else {
-        loginError.textContent = 'Неверный логин или пароль';
+        const acc = ACCOUNTS.find(a => a.login === l && a.password === p);
+        if (acc) {
+            sessionStorage.setItem('profitprint_user', acc.login);
+            sessionStorage.setItem('profitprint_role', acc.role);
+            // Редирект в зависимости от роли
+            if (acc.role === 'manager') {
+                window.location.href = 'index.html';    // Bekzod – полный доступ
+            } else if (acc.role === 'designer') {
+                window.location.href = 'index2.html';   // Diyor – производственный раздел
+            } else {
+                window.location.href = 'index.html';    // на случай неизвестной роли
+            }
+        } else {
+            loginError.textContent = 'Неверный логин или пароль';
+        }
     }
-}
 
     btnLogin.addEventListener('click', doLogin);
     passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
@@ -153,9 +185,9 @@
 
     // Если уже вошли — сразу на дашборд
     if (sessionStorage.getItem('profitprint_user')) {
-        window.location.href = 'dashboard.html';
+        const role = sessionStorage.getItem('profitprint_role');
+        window.location.href = role === 'designer' ? 'index2.html' : 'index.html';
     }
 </script>
-<script src="js/nav-filter.js"></script>
 </body>
 </html>
