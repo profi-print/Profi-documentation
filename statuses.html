@@ -1,547 +1,594 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Статусы техкарт — ProfitPrint</title>
-  <link rel="stylesheet" href="css/theme.css">
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* ============================================================
-       ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ СТРАНИЦЫ СТАТУСОВ
-       ============================================================ */
-    :root {
-      --bg-main: #f1f4f9;
-      --bg-white: #ffffff;
-      --text-primary: #1e293b;
-      --text-secondary: #64748b;
-      --border-color: #e2e8f0;
-      --primary-blue: #2563eb;
-      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-      --accent-red: #dc2626;
-      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Статусы техкарт — ProfitPrint</title>
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#eef0ec;
+  --surface:#ffffff;
+  --surface-2:#f6f7f4;
+  --ink:#12181f;
+  --ink-soft:#5b6470;
+  --line:#dcdfd8;
+  --brand:#1f4d47;       /* глубокий типографский зелёно-чёрный — «краска» */
+  --brand-soft:#e4ece9;
+  --shadow: 0 1px 2px rgba(18,24,31,0.04), 0 8px 24px -12px rgba(18,24,31,0.18);
+  --radius: 14px;
 
-    body.dark-theme,
-    body[data-theme="dark"] {
-      --bg-main: #f1f4f9 !important;
-      --bg-white: #ffffff !important;
-      --text-primary: #1e293b !important;
-      --text-secondary: #64748b !important;
-      --border-color: #e2e8f0 !important;
-      --primary-blue: #2563eb !important;
-      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-      --accent-red: #dc2626 !important;
-    }
+  /* статусы этапов — фиксированная семантика */
+  --st-waiting:#9aa1ab;
+  --st-progress:#2f6fed;
+  --st-done:#1f8a4c;
+  --st-paused:#c8791a;
+  --st-error:#d1352b;
+}
+body.dark{
+  --paper:#0f1418;
+  --surface:#171d23;
+  --surface-2:#1c2329;
+  --ink:#e7ebee;
+  --ink-soft:#8b95a1;
+  --line:#2a323a;
+  --brand:#59b8a6;
+  --brand-soft:#1a2b28;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+}
+*{box-sizing:border-box;}
+body{
+  background:var(--paper);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  color:var(--ink);
+  margin:0;
+}
+.mono{ font-family:'IBM Plex Mono', monospace; }
 
-    .theme-switch-wrapper { display: none !important; }
+.status-wrapper{ max-width:1320px; margin:0 auto; padding:28px 20px 70px; }
 
-    /* --- Общие --- */
-    .status-page {
-      background: var(--bg-white);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-      max-width: 1400px;
-      margin: 0 auto;
-      overflow-x: auto;
-    }
-    .status-page h2 {
-      margin: 0 0 16px 0;
-      color: var(--text-primary);
-      font-size: 20px;
-      border-bottom: 2px solid var(--primary-blue);
-      padding-bottom: 8px;
-    }
-    .status-page .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px 20px;
-      margin-bottom: 20px;
-      padding: 12px 16px;
-      background: var(--bg-main);
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      align-items: center;
-    }
-    .status-page .filter-bar .search-wrap {
-      flex: 1 1 250px;
-      min-width: 180px;
-    }
-    .status-page .filter-bar .search-wrap input {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1.5px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 13px;
-      background: var(--bg-white);
-      color: var(--text-primary);
-      transition: border-color 0.2s;
-    }
-    .status-page .filter-bar .search-wrap input:focus {
-      outline: none;
-      border-color: var(--primary-blue);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-    .status-page table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      min-width: 800px;
-    }
-    .status-page th {
-      text-align: left;
-      padding: 10px 12px;
-      background: var(--bg-main);
-      border-bottom: 2px solid var(--border-color);
-      font-weight: 600;
-      color: var(--text-secondary);
-      white-space: nowrap;
-      position: sticky;
-      top: 0;
-      z-index: 5;
-    }
-    .status-page td {
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border-color);
-      color: var(--text-primary);
-      vertical-align: middle;
-    }
-    .status-page tr:hover td {
-      background: var(--bg-main);
-    }
-    .status-page .stage-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 4px 0;
-    }
-    .status-page .stage-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-    }
-    .status-page .stage-row select {
-      padding: 4px 8px;
-      border: 1.5px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 12px;
-      background: var(--bg-white);
-      color: var(--text-primary);
-      cursor: pointer;
-      min-width: 100px;
-      transition: border-color 0.2s;
-    }
-    .status-page .stage-row select:focus {
-      outline: none;
-      border-color: var(--primary-blue);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-    .status-page .stage-row .time-info {
-      font-size: 12px;
-      color: var(--text-secondary);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px 10px;
-      align-items: center;
-    }
-    .status-page .stage-row .time-info .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 600;
-      background: var(--bg-main);
-      border: 1px solid var(--border-color);
-    }
-    .status-page .stage-row .time-info .badge.done {
-      background: #d1fae5;
-      border-color: #10b981;
-      color: #065f46;
-    }
-    .status-page .stage-row .time-info .badge.progress {
-      background: #fef3c7;
-      border-color: #f59e0b;
-      color: #92400e;
-    }
-    .status-page .stage-row .time-info .badge.waiting {
-      background: #f1f5f9;
-      border-color: #94a3b8;
-      color: #475569;
-    }
-    .status-page .tech-link {
-      color: var(--primary-blue);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .status-page .tech-link:hover {
-      text-decoration: underline;
-    }
-    .status-page .empty-msg {
-      padding: 30px;
-      text-align: center;
-      color: var(--text-secondary);
-      font-style: italic;
-    }
-    .status-page .action-bar {
-      margin-top: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-    }
+/* ---------- Заголовок ---------- */
+.page-header{
+  display:flex; align-items:flex-end; justify-content:space-between;
+  margin-bottom:22px; flex-wrap:wrap; gap:14px;
+}
+.page-header .eyebrow{
+  font-family:'Space Grotesk',sans-serif; font-size:12px; font-weight:600;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--brand); margin:0 0 4px;
+}
+.page-header h1{
+  font-family:'Space Grotesk',sans-serif; font-size:28px; font-weight:700; margin:0;
+  letter-spacing:-0.01em;
+}
+.actions{ display:flex; gap:10px; }
+.btn{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:10px 18px; border-radius:9px; font-size:13px; font-weight:600;
+  cursor:pointer; border:1px solid var(--line); background:var(--surface); color:var(--ink);
+  transition:all .15s;
+}
+.btn-primary{ background:var(--brand); color:#fff; border-color:var(--brand); }
+.btn-primary:hover{ filter:brightness(1.12); }
+.btn:hover{ border-color:var(--brand); color:var(--brand); }
+body.dark .btn-primary{ color:#0f1418; }
 
-    @media screen and (max-width: 768px) {
-      .status-page table { font-size: 12px; min-width: 600px; }
-      .status-page th,
-      .status-page td { padding: 6px 8px; }
-      .status-page .stage-row select { min-width: 80px; font-size: 11px; }
-      .status-page .stage-row .stage-label { min-width: 50px; font-size: 11px; }
-      .status-page .stage-row .time-info { font-size: 10px; }
-    }
-  </style>
+/* ---------- Легенда ---------- */
+.legend{
+  display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;
+  padding:12px 14px; background:var(--surface-2); border:1px solid var(--line); border-radius:11px;
+}
+.legend-chip{
+  display:flex; align-items:center; gap:7px; font-size:12px; font-weight:600; color:var(--ink-soft);
+  padding:4px 10px 4px 6px; border-radius:999px; background:var(--surface);
+}
+.legend-chip .swatch{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+
+/* ---------- Поиск и фильтр ---------- */
+.search-section{ display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.search-input{
+  flex:1; min-width:220px; padding:11px 14px; border:1.5px solid var(--line); border-radius:9px;
+  font-size:14px; background:var(--surface); color:var(--ink);
+}
+.search-input:focus{ outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
+.filter-select{
+  padding:11px 14px; border:1.5px solid var(--line); border-radius:9px;
+  font-size:13px; background:var(--surface); color:var(--ink); font-weight:600;
+}
+
+/* ---------- Таблица / список ---------- */
+.table-container{
+  background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
+}
+.row-list{ display:flex; flex-direction:column; }
+.order-row{
+  display:grid;
+  grid-template-columns: 110px 1fr 1fr 300px;
+  gap:18px;
+  align-items:center;
+  padding:16px 20px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+  transition:background .12s;
+}
+.order-row:last-child{ border-bottom:none; }
+.order-row:hover{ background:var(--surface-2); }
+.order-no{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14px; color:var(--brand); }
+.order-customer{ font-size:13.5px; font-weight:600; }
+.order-product{ font-size:13px; color:var(--ink-soft); }
+.row-head{
+  display:grid; grid-template-columns: 110px 1fr 1fr 300px; gap:18px;
+  padding:12px 20px; font-family:'Space Grotesk',sans-serif;
+  font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--ink-soft); background:var(--surface-2); border-bottom:1px solid var(--line);
+}
+
+/* ---------- Конвейер-степпер (сигнатурный элемент) ---------- */
+.pipeline{ display:flex; align-items:center; }
+.pipeline-node{
+  width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; color:#fff; font-weight:700;
+  background:var(--st-waiting);
+  border:2px solid var(--surface);
+  box-shadow:0 0 0 1.5px var(--line);
+  position:relative;
+}
+.pipeline-node.waiting{ background:var(--surface); box-shadow:0 0 0 1.5px var(--line); }
+.pipeline-node.progress{ background:var(--st-progress); box-shadow:0 0 0 3px rgba(47,111,237,0.22); }
+.pipeline-node.done{ background:var(--st-done); }
+.pipeline-node.paused{ background:var(--st-paused); }
+.pipeline-node.error{ background:var(--st-error); box-shadow:0 0 0 3px rgba(209,53,43,0.2); }
+.pipeline-connector{ flex:1; height:2px; background:var(--line); min-width:8px; }
+.pipeline-connector.filled{ background:var(--st-done); }
+
+.empty-state{ text-align:center; padding:56px 20px; color:var(--ink-soft); }
+.empty-state a{ color:var(--brand); font-weight:700; text-decoration:none; }
+.empty-state a:hover{ text-decoration:underline; }
+
+/* ---------- Страница техкарты ---------- */
+.card-page{ display:none; }
+.card-page.active{ display:block; }
+
+.breadcrumb{ margin-bottom:16px; }
+.breadcrumb a{
+  color:var(--brand); text-decoration:none; font-weight:600; font-size:13.5px;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.breadcrumb a:hover{ text-decoration:underline; }
+
+.card-page-header{
+  background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:22px 24px; margin-bottom:20px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;
+}
+.card-page-header h2{
+  font-family:'Space Grotesk',sans-serif; margin:0 0 4px; font-size:22px; font-weight:700;
+}
+.card-page-sub{ font-size:13px; color:var(--ink-soft); }
+.card-page-status{
+  display:inline-flex; align-items:center; gap:7px; padding:7px 16px; border-radius:999px;
+  font-size:12.5px; font-weight:700; color:#fff; background:var(--st-waiting);
+}
+.card-page-status.progress{ background:var(--st-progress); }
+.card-page-status.done{ background:var(--st-done); }
+.card-page-status.paused{ background:var(--st-paused); }
+.card-page-status.error{ background:var(--st-error); }
+
+/* Компактная таблица этапов на странице техкарты — без лишней прокрутки */
+.stage-table{
+  background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
+}
+.stage-row{
+  display:grid;
+  grid-template-columns: 34px 1.1fr 90px 90px 80px 150px 150px;
+  gap:12px;
+  align-items:center;
+  padding:11px 18px;
+  border-bottom:1px solid var(--line);
+}
+.stage-row:last-child{ border-bottom:none; }
+.stage-row-head{
+  display:grid;
+  grid-template-columns: 34px 1.1fr 90px 90px 80px 150px 150px;
+  gap:12px;
+  padding:10px 18px;
+  font-family:'Space Grotesk',sans-serif; font-size:10.5px; font-weight:600;
+  letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-soft);
+  background:var(--surface-2); border-bottom:1px solid var(--line);
+}
+.stage-icon{
+  width:26px; height:26px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;
+  background:var(--surface-2); border:2px solid var(--st-waiting); color:var(--st-waiting);
+}
+.stage-icon.waiting{ border-color:var(--st-waiting); color:var(--st-waiting); }
+.stage-icon.progress{ border-color:var(--st-progress); color:var(--st-progress); background:rgba(47,111,237,0.08); }
+.stage-icon.done{ border-color:var(--st-done); color:#fff; background:var(--st-done); }
+.stage-icon.paused{ border-color:var(--st-paused); color:#fff; background:var(--st-paused); }
+.stage-icon.error{ border-color:var(--st-error); color:#fff; background:var(--st-error); }
+.stage-name{ font-size:13.5px; font-weight:700; display:flex; flex-direction:column; gap:4px; }
+.stage-progress{ height:4px; background:var(--line); border-radius:2px; overflow:hidden; width:100%; max-width:140px; }
+.stage-progress .fill{ height:100%; background:var(--st-done); border-radius:2px; }
+.stage-progress .fill.overdue{ background:var(--st-error); }
+.stage-cell-label{ font-size:11px; color:var(--ink-soft); }
+.stage-cell-value{ font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; }
+.status-badge{
+  display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:999px;
+  font-size:10.5px; font-weight:700; color:#fff; background:var(--st-waiting); width:fit-content;
+}
+.status-badge.progress{ background:var(--st-progress); }
+.status-badge.done{ background:var(--st-done); }
+.status-badge.paused{ background:var(--st-paused); }
+.status-badge.error{ background:var(--st-error); }
+
+.status-select-wrap{ position:relative; }
+.status-select{
+  width:100%; appearance:none; -webkit-appearance:none;
+  padding:7px 28px 7px 10px; border-radius:7px; font-size:12px; font-weight:600;
+  border:1.5px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer;
+}
+.status-select:focus{ outline:none; border-color:var(--brand); }
+.status-select-wrap::after{
+  content:'▾'; position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  color:var(--ink-soft); pointer-events:none; font-size:10px;
+}
+
+@media (max-width: 900px){
+  .stage-row-head{ display:none; }
+  .stage-row{ grid-template-columns: 30px 1fr; grid-auto-rows:auto; row-gap:6px; }
+  .stage-progress{ max-width:none; }
+}
+
+@media (max-width: 760px){
+  .row-head{ display:none; }
+  .order-row{ grid-template-columns: 1fr; gap:8px; }
+  .pipeline{ margin-top:4px; }
+  .timeline-item{ grid-template-columns: 30px 1fr; }
+}
+</style>
 </head>
 <body>
-  <div class="app-container">
-    <nav class="sidebar">
-      <div class="sidebar-header">
-        <div class="logo-small"><div class="logo-icon">PP</div><span>ProfitPrint</span></div>
-      </div>
-      <ul class="nav-menu">
-        <li><a href="index.html">📊 Главная</a></li>
-        <li><a href="index2.html">📊 Главная</a></li>
+<div class="app-container">
+  <nav class="sidebar">
+    <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PP</div><span>ProfitPrint</span></div></div>
+    <ul class="nav-menu">
+      <li><a href="index.html">📊 Главная</a></li>
+      <li><a href="orders.html">📋 Заказы контрагентов</a></li>
+      <li><a href="production.html">🏭 Заказы на производство</a></li>
+      <li><a href="invoices.html">📦 Накладные</a></li>
+      <li><a href="clients.html">👥 Контрагенты</a></li>
+      <li><a href="products.html">📁 Продукты</a></li>
+      <li><a href="reconciliations.html">📑 Акты сверки</a></li>
+      <li><a href="backups.html">🗑️ Резервные копии</a></li>
+      <li><a href="otpCex.html">⚙️ На производство</a></li>
+      <li><a href="texKarta.html">⚙️ Техкарта</a></li>
+      <li><a href="statuses.html" class="active">📊 Статусы</a></li>
+    </ul>
+    <div class="theme-switch-wrapper">
+      <button id="themeToggle"><span id="themeIcon">🌙</span> <span id="themeLabel">Тёмная тема</span></button>
+    </div>
+  </nav>
 
-        <li><a href="orders.html">📋 Заказы контрагентов</a></li>
-        <li><a href="production.html">🏭 Заказы на производство</a></li>
-        <li><a href="invoices.html">📦 Накладные</a></li>
-        <li><a href="clients.html">👥 Контрагенты</a></li>
-        <li><a href="products.html">📁 Продукты</a></li>
-        <li><a href="reconciliations.html">📑 Акты сверки</a></li>
-        <li><a href="backups.html">🗑️ Резервные копии</a></li>
-        <li><a href="otpCex.html">⚙️ На производство</a></li>
-        <li><a href="texKarta.html">⚙️ Техкарта</a></li>
-        <li><a href="statuses.html" class="active">📊 Статусы</a></li>
-      </ul>
-      <div class="theme-switch-wrapper">
-        <button id="themeToggle" class="btn btn-secondary" style="display:none;">
-          <span id="themeIcon">🌙</span> <span id="themeLabel">Тёмная тема</span>
-        </button>
-      </div>
-    </nav>
+  <main class="main-content">
+    <div class="status-wrapper">
 
-    <main class="main-content">
-      <div class="top-bar"><h1>Статусы техкарт</h1></div>
-      <div class="content-section">
-        <div id="content">Загрузка...</div>
-        <div id="actionBar" class="action-bar" style="display:none;">
-          <button id="saveAllBtn" class="btn btn-primary">💾 Сохранить все статусы</button>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <script>
-    (function() {
-      document.body.classList.remove('dark-theme', 'dark');
-      document.body.removeAttribute('data-theme');
-      document.documentElement.classList.remove('dark-theme', 'dark');
-      document.documentElement.removeAttribute('data-theme');
-    })();
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const content = document.getElementById('content');
-      const actionBar = document.getElementById('actionBar');
-      const saveAllBtn = document.getElementById('saveAllBtn');
-
-      // ---- Список этапов и их нормативов (в минутах) ----
-      const STAGES = [
-        { id: 'print', label: 'Печать', norm: 120 },
-        { id: 'stp', label: 'СТП', norm: 60 },
-        { id: 'gluing', label: 'Склейка', norm: 90 },
-        { id: 'cutting', label: 'Резка', norm: 45 },
-        { id: 'flot', label: 'Флоторезка', norm: 30 },
-        { id: 'diecut', label: 'Высечка', norm: 50 }
-      ];
-
-      // ---- Загрузка заказов ----
-      function loadOrders() {
-        let orders = [];
-        try {
-          const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
-          if (raw) orders = JSON.parse(raw);
-        } catch (e) { console.error('Ошибка загрузки заказов:', e); }
-        return orders;
-      }
-
-      // ---- Сохранение заказов ----
-      function saveOrders(orders) {
-        try {
-          localStorage.setItem('pp_orders', JSON.stringify(orders));
-        } catch (e) { console.error('Ошибка сохранения заказов:', e); }
-      }
-
-      // ---- Получение/инициализация таймлайна ----
-      function getTimeline(order) {
-        if (!order.timeline) {
-          order.timeline = {};
-          STAGES.forEach(stage => {
-            order.timeline[stage.id] = {
-              status: 'waiting',
-              start: null,
-              end: null,
-              duration: 0
-            };
-          });
-        }
-        STAGES.forEach(stage => {
-          const data = order.timeline[stage.id];
-          if (!data) {
-            order.timeline[stage.id] = { status: 'waiting', start: null, end: null, duration: 0 };
-            return;
-          }
-          // Корректировка
-          if (data.status === 'progress' && !data.start) data.start = Date.now();
-          if (data.status === 'done' && !data.end && data.start) {
-            data.end = Date.now();
-            data.duration = Math.round((data.end - data.start) / 60000);
-          }
-        });
-        return order.timeline;
-      }
-
-      // ---- Форматирование времени ----
-      function formatDuration(minutes) {
-        if (!minutes || minutes <= 0) return '—';
-        const h = Math.floor(minutes / 60);
-        const m = minutes % 60;
-        if (h > 0) return `${h}ч ${m}м`;
-        return `${m}м`;
-      }
-
-      function formatDate(ts) {
-        if (!ts) return '—';
-        const d = new Date(ts);
-        return d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-      }
-
-      // ---- Рендер таблицы ----
-      function renderStatuses() {
-        const orders = loadOrders();
-        if (!orders.length) {
-          content.innerHTML = `
-            <div class="status-page">
-              <h2>📊 Статусы техкарт</h2>
-              <div class="empty-msg">Нет техкарт. Создайте заказ на странице <a href="otpCex.html">«Отправка в цех»</a>.</div>
-            </div>
-          `;
-          actionBar.style.display = 'none';
-          return;
-        }
-
-        orders.sort((a, b) => b.id - a.id);
-
-        const searchVal = document.getElementById('searchInput')?.value.toLowerCase().trim() || '';
-        let filtered = orders;
-        if (searchVal) {
-          filtered = filtered.filter(o => {
-            const fields = [o.techcard_no, o.customer, o.product_name].map(f => String(f || '').toLowerCase());
-            return fields.some(f => f.includes(searchVal));
-          });
-        }
-
-        if (!filtered.length) {
-          content.innerHTML = `
-            <div class="status-page">
-              <h2>📊 Статусы техкарт</h2>
-              <div class="filter-bar">
-                <div class="search-wrap">
-                  <input type="text" id="searchInput" placeholder="🔍 Поиск по номеру, заказчику, продукции..." oninput="renderStatuses()">
-                </div>
-              </div>
-              <div class="empty-msg">Нет заказов, соответствующих поиску.</div>
-            </div>
-          `;
-          actionBar.style.display = 'flex';
-          return;
-        }
-
-        let html = `
-          <div class="status-page">
-            <h2>📊 Статусы техкарт (${filtered.length})</h2>
-            <div class="filter-bar">
-              <div class="search-wrap">
-                <input type="text" id="searchInput" placeholder="🔍 Поиск по номеру, заказчику, продукции..." oninput="renderStatuses()" value="${searchVal}">
-              </div>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>№ техкарты</th>
-                  <th>Заказчик</th>
-                  <th>Продукция</th>
-                  ${STAGES.map(s => `<th>${s.label}</th>`).join('')}
-                </tr>
-              </thead>
-              <tbody>
-        `;
-
-        filtered.forEach(order => {
-          const timeline = getTimeline(order);
-          const stagesHtml = STAGES.map(stage => {
-            const data = timeline[stage.id];
-            const status = data.status || 'waiting';
-            const start = data.start;
-            const end = data.end;
-            const duration = data.duration || 0;
-            const norm = stage.norm;
-
-            let selectHtml = `
-              <select class="stage-select" data-order-id="${order.id}" data-stage="${stage.id}">
-                <option value="waiting" ${status === 'waiting' ? 'selected' : ''}>Не начат</option>
-                <option value="progress" ${status === 'progress' ? 'selected' : ''}>В процессе</option>
-                <option value="done" ${status === 'done' ? 'selected' : ''}>Завершён</option>
-              </select>
-            `;
-
-            let timeInfo = '';
-            if (status === 'progress') {
-              const elapsed = start ? Math.round((Date.now() - start) / 60000) : 0;
-              timeInfo = `
-                <div class="time-info">
-                  <span class="badge progress">⏳ ${formatDuration(elapsed)}</span>
-                  <span>с ${formatDate(start)}</span>
-                  ${norm ? `<span>норма: ${formatDuration(norm)}</span>` : ''}
-                </div>
-              `;
-            } else if (status === 'done') {
-              const dur = duration || (start && end ? Math.round((end - start) / 60000) : 0);
-              timeInfo = `
-                <div class="time-info">
-                  <span class="badge done">✅ ${formatDuration(dur)}</span>
-                  <span>начало: ${formatDate(start)}</span>
-                  <span>конец: ${formatDate(end)}</span>
-                  ${norm ? `<span>норма: ${formatDuration(norm)}</span>` : ''}
-                </div>
-              `;
-            } else {
-              timeInfo = `
-                <div class="time-info">
-                  <span class="badge waiting">⏸ ожидание</span>
-                  ${norm ? `<span>норма: ${formatDuration(norm)}</span>` : ''}
-                </div>
-              `;
-            }
-
-            return `
-              <td>
-                <div class="stage-group">
-                  <div class="stage-row">
-                    ${selectHtml}
-                  </div>
-                  <div class="stage-row">
-                    ${timeInfo}
-                  </div>
-                </div>
-              </td>
-            `;
-          }).join('');
-
-          html += `
-            <tr>
-              <td><a href="texKarta.html?id=${order.id}" class="tech-link">${order.techcard_no || order.id}</a></td>
-              <td>${order.customer || ''}</td>
-              <td>${order.product_name || ''}</td>
-              ${stagesHtml}
-            </tr>
-          `;
-        });
-
-        html += `
-              </tbody>
-            </table>
+      <!-- Экран 1: список -->
+      <div id="listView">
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">Производство · Трекинг этапов</p>
+            <h1>Статусы техкарт</h1>
           </div>
-        `;
+          <div class="actions">
+            <button class="btn" onclick="resetFilters()">Сброс</button>
+            <button class="btn btn-primary" onclick="saveAll()">Сохранить</button>
+          </div>
+        </div>
 
-        content.innerHTML = html;
-        actionBar.style.display = 'flex';
+        <div class="legend">
+          <div class="legend-chip"><span class="swatch" style="background:var(--st-waiting)"></span>В очереди</div>
+          <div class="legend-chip"><span class="swatch" style="background:var(--st-progress)"></span>В процессе</div>
+          <div class="legend-chip"><span class="swatch" style="background:var(--st-done)"></span>Завершено</div>
+          <div class="legend-chip"><span class="swatch" style="background:var(--st-paused)"></span>Приостановлено</div>
+          <div class="legend-chip"><span class="swatch" style="background:var(--st-error)"></span>Проблема</div>
+        </div>
 
-        // Привязываем события к select
-        document.querySelectorAll('.stage-select').forEach(sel => {
-          sel.addEventListener('change', function(e) {
-            const orderId = this.dataset.orderId;
-            const stageId = this.dataset.stage;
-            const newStatus = this.value;
-            updateStageStatus(orderId, stageId, newStatus);
-          });
-        });
-      }
+        <div class="search-section">
+          <input type="text" class="search-input" id="searchInput" placeholder="Поиск по номеру, заказчику, продукции..." oninput="renderTable()">
+          <select class="filter-select" id="statusFilter" onchange="renderTable()">
+            <option value="">Все статусы</option>
+            <option value="waiting">В очереди</option>
+            <option value="progress">В процессе</option>
+            <option value="done">Завершено</option>
+            <option value="paused">Приостановлено</option>
+            <option value="error">Проблема</option>
+          </select>
+        </div>
 
-      // ---- Обновление статуса этапа и времени ----
-      function updateStageStatus(orderId, stageId, newStatus) {
-        const orders = loadOrders();
-        const order = orders.find(o => String(o.id) === String(orderId));
-        if (!order) return;
+        <div class="table-container" id="tableContainer"></div>
+      </div>
 
-        const timeline = getTimeline(order);
-        const data = timeline[stageId];
-        const oldStatus = data.status;
+      <!-- Экран 2: страница техкарты -->
+      <div id="cardPage" class="card-page">
+        <div class="breadcrumb"><a href="#" onclick="goToList(); return false;">← К списку техкарт</a></div>
+        <div class="card-page-header">
+          <div>
+            <h2 id="cardTitle">Техкарта</h2>
+            <div class="card-page-sub" id="cardSub"></div>
+          </div>
+          <span class="card-page-status" id="cardOverallStatus"></span>
+        </div>
+        <div class="stage-table" id="cardContent"></div>
+      </div>
 
-        // Защита от изменения завершённого
-        if (oldStatus === 'done' && newStatus !== 'done') {
-          if (!confirm('Вы уверены, что хотите изменить уже завершённый этап?')) {
-            renderStatuses();
-            return;
-          }
-        }
+    </div>
+  </main>
+</div>
 
-        const now = Date.now();
-        if (newStatus === 'progress' && oldStatus !== 'progress') {
-          data.start = now;
-          data.end = null;
-          data.duration = 0;
-        } else if (newStatus === 'done' && oldStatus !== 'done') {
-          if (!data.start) data.start = now;
-          data.end = now;
-          data.duration = Math.round((data.end - data.start) / 60000);
-        } else if (newStatus === 'waiting') {
-          if (oldStatus !== 'done') {
-            data.start = null;
-            data.end = null;
-            data.duration = 0;
-          } else {
-            if (confirm('Сбросить завершённый этап в ожидание? Время будет потеряно.')) {
-              data.start = null;
-              data.end = null;
-              data.duration = 0;
-            } else {
-              renderStatuses();
-              return;
-            }
-          }
-        }
+<script>
+// ---------- Тема ----------
+(function(){
+  const body=document.body;
+  const themeToggle=document.getElementById('themeToggle');
+  const themeIcon=document.getElementById('themeIcon');
+  const themeLabel=document.getElementById('themeLabel');
+  const saved=localStorage.getItem('theme')||'light';
+  body.className = saved==='dark' ? 'dark' : '';
+  updateThemeUI();
+  themeToggle.addEventListener('click',()=>{
+    const next = body.classList.contains('dark') ? 'light' : 'dark';
+    body.className = next==='dark' ? 'dark' : '';
+    localStorage.setItem('theme', next);
+    updateThemeUI();
+  });
+  function updateThemeUI(){
+    const isDark=body.classList.contains('dark');
+    themeIcon.textContent = isDark ? '☀️' : '🌙';
+    themeLabel.textContent = isDark ? 'Светлая тема' : 'Тёмная тема';
+  }
+})();
 
-        data.status = newStatus;
-        saveOrders(orders);
-        renderStatuses();
-      }
+// ---------- Статусы ----------
+const STATUS_META = {
+  waiting:  { label:'В очереди',     icon:'○' },
+  progress: { label:'В процессе',    icon:'▶' },
+  done:     { label:'Завершено',     icon:'✓' },
+  paused:   { label:'Приостановлено',icon:'❚❚' },
+  error:    { label:'Проблема',      icon:'!' }
+};
+const STATUS_ORDER = ['waiting','progress','done','paused','error'];
 
-      // ---- Сохранение всех статусов (кнопка) ----
-      function saveAllStatuses() {
-        const orders = loadOrders();
-        saveOrders(orders);
-        alert('Все статусы сохранены!');
-        renderStatuses();
-      }
+// ---------- Этапы (нормативы в минутах) ----------
+const STAGES = [
+  { id:'print',   label:'Печать',      norm:120 },
+  { id:'stp',     label:'СТП',         norm:60 },
+  { id:'gluing',  label:'Склейка',     norm:90 },
+  { id:'cutting', label:'Резка',       norm:45 },
+  { id:'flot',    label:'Флоторезка',  norm:30 },
+  { id:'diecut',  label:'Высечка',     norm:50 }
+];
 
-      saveAllBtn.addEventListener('click', saveAllStatuses);
+// ---------- Хранилище: техкарты общие для всего приложения ----------
+function loadOrders(){
+  try{
+    const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){ return []; }
+}
+function saveOrders(orders){ localStorage.setItem('pp_orders', JSON.stringify(orders)); }
 
-      // ---- Инициализация ----
-      renderStatuses();
-    });
-  </script>
+function initTimeline(order){
+  if(!order.timeline) order.timeline={};
+  STAGES.forEach(s=>{
+    if(!order.timeline[s.id]) order.timeline[s.id]={status:'waiting',start:null,end:null,duration:0};
+    if(!STATUS_ORDER.includes(order.timeline[s.id].status)) order.timeline[s.id].status='waiting';
+  });
+}
+
+function setStageStatus(order, stageId, newStatus){
+  initTimeline(order);
+  const data=order.timeline[stageId];
+  const now=Date.now();
+  if(newStatus==='progress' && data.status!=='progress'){
+    if(!data.start) data.start=now;
+    data.end=null;
+  } else if(newStatus==='done'){
+    if(!data.start) data.start=now;
+    data.end=now;
+    data.duration=Math.round((data.end-data.start)/60000);
+  } else if(newStatus==='waiting'){
+    data.start=null; data.end=null; data.duration=0;
+  } else if(newStatus==='paused' || newStatus==='error'){
+    if(data.start && !data.end) data.duration=Math.round((now-data.start)/60000);
+  }
+  data.status=newStatus;
+}
+
+function formatDuration(min){
+  if(!min || min<=0) return '—';
+  const h=Math.floor(min/60), m=min%60;
+  return h ? `${h}ч ${m}м` : `${m}м`;
+}
+function formatDate(ts){
+  if(!ts) return '—';
+  return new Date(ts).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function overallStatus(order){
+  const statuses = STAGES.map(s=>order.timeline[s.id]?.status || 'waiting');
+  if(statuses.includes('error')) return 'error';
+  if(statuses.every(s=>s==='done')) return 'done';
+  if(statuses.includes('paused')) return 'paused';
+  if(statuses.includes('progress')) return 'progress';
+  return 'waiting';
+}
+
+// ---------- Список: рендер конвейера в строке ----------
+function renderPipeline(order){
+  let html = '<div class="pipeline">';
+  STAGES.forEach((s, i) => {
+    const status = order.timeline[s.id]?.status || 'waiting';
+    const meta = STATUS_META[status];
+    const glyph = status === 'waiting' ? '' : meta.icon;
+    html += `<div class="pipeline-node ${status}" title="${s.label}: ${meta.label}">${glyph}</div>`;
+    if(i < STAGES.length-1){
+      const nextDone = (order.timeline[s.id]?.status === 'done');
+      html += `<div class="pipeline-connector ${nextDone ? 'filled' : ''}"></div>`;
+    }
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderTable(){
+  const orders = loadOrders();
+  const container = document.getElementById('tableContainer');
+  if(!orders.length){
+    container.innerHTML = '<div class="empty-state">Нет техкарт. <a href="otpCex.html">Создать заказ</a></div>';
+    return;
+  }
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const statusFilter = document.getElementById('statusFilter').value;
+
+  orders.forEach(initTimeline);
+
+  let filtered = orders.filter(o=>{
+    if(search){
+      const hit = [o.techcard_no, o.customer, o.product_name].some(f=>String(f||'').toLowerCase().includes(search));
+      if(!hit) return false;
+    }
+    if(statusFilter && overallStatus(o) !== statusFilter) return false;
+    return true;
+  });
+  filtered.sort((a,b)=>b.id-a.id);
+
+  if(!filtered.length){
+    container.innerHTML = '<div class="empty-state">Ничего не найдено по заданным фильтрам.</div>';
+    return;
+  }
+
+  let html = `<div class="row-head"><div>№</div><div>Заказчик</div><div>Продукция</div><div>Прогресс</div></div><div class="row-list">`;
+  filtered.forEach(order=>{
+    html += `<div class="order-row" onclick="openCard('${order.id}')">
+      <div class="order-no mono">№${order.techcard_no || order.id}</div>
+      <div class="order-customer">${order.customer || '—'}</div>
+      <div class="order-product">${order.product_name || '—'}</div>
+      <div>${renderPipeline(order)}</div>
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ---------- Страница техкарты: вертикальный таймлайн ----------
+function renderCardPage(order){
+  initTimeline(order);
+  document.getElementById('cardTitle').textContent = `Техкарта №${order.techcard_no || order.id}`;
+  document.getElementById('cardSub').textContent = `${order.customer || 'Без заказчика'} · ${order.product_name || ''}`;
+
+  const overall = overallStatus(order);
+  const overallEl = document.getElementById('cardOverallStatus');
+  overallEl.className = `card-page-status ${overall}`;
+  overallEl.textContent = `${STATUS_META[overall].label}`;
+
+  let html = `<div class="stage-row-head"><div></div><div>Этап</div><div>Начало</div><div>Конец</div><div>Затрач.</div><div>Прогресс</div><div>Статус</div></div>`;
+  STAGES.forEach(stage=>{
+    const data = order.timeline[stage.id];
+    const status = data.status || 'waiting';
+    const meta = STATUS_META[status];
+    const start = data.start, end = data.end;
+    const duration = data.duration || (start && end ? Math.round((end-start)/60000) : 0);
+    const elapsed = status==='progress' && start ? Math.round((Date.now()-start)/60000) : 0;
+    const remaining = status==='progress' ? Math.max(0, stage.norm-elapsed) : null;
+
+    let progressPercent=0;
+    if(status==='done') progressPercent=100;
+    else if(status==='progress' && stage.norm>0) progressPercent=Math.min(100, Math.round((elapsed/stage.norm)*100));
+    else if((status==='paused'||status==='error') && stage.norm>0) progressPercent=Math.min(100, Math.round(((duration||elapsed)/stage.norm)*100));
+
+    const started = status !== 'waiting';
+
+    html += `
+      <div class="stage-row">
+        <div class="stage-icon ${status}">${status==='waiting' ? '' : meta.icon}</div>
+        <div class="stage-name">
+          ${stage.label}
+          <span class="stage-cell-label">Норматив ${formatDuration(stage.norm)}${status==='progress' && remaining!==null ? ` · осталось ${formatDuration(remaining)}` : ''}</span>
+        </div>
+        <div class="stage-cell-value">${started ? formatDate(start).split(', ')[1] || formatDate(start) : '—'}</div>
+        <div class="stage-cell-value">${end ? formatDate(end).split(', ')[1] || formatDate(end) : '—'}</div>
+        <div class="stage-cell-value">${started ? formatDuration(duration||elapsed) : '—'}</div>
+        <div class="stage-progress"><div class="fill ${(status==='progress' && elapsed>stage.norm)||status==='error' ? 'overdue' : ''}" style="width:${progressPercent}%"></div></div>
+        <div class="status-select-wrap">
+          <select class="status-select" onchange="changeStatus('${order.id}','${stage.id}', this.value)">
+            ${STATUS_ORDER.map(st=>`<option value="${st}" ${status===st?'selected':''}>${STATUS_META[st].label}</option>`).join('')}
+          </select>
+        </div>
+      </div>`;
+  });
+  document.getElementById('cardContent').innerHTML = html;
+}
+
+function showListScreen(){
+  document.getElementById('listView').style.display='';
+  document.getElementById('cardPage').classList.remove('active');
+  renderTable();
+}
+function showCardScreen(orderId){
+  const orders = loadOrders();
+  const order = orders.find(o=>String(o.id)===String(orderId));
+  if(!order){ showListScreen(); return; }
+  document.getElementById('listView').style.display='none';
+  document.getElementById('cardPage').classList.add('active');
+  renderCardPage(order);
+  window.scrollTo(0,0);
+}
+
+window.openCard = function(orderId){
+  history.pushState({card:orderId}, '', `?card=${encodeURIComponent(orderId)}`);
+  showCardScreen(orderId);
+};
+window.goToList = function(){
+  history.pushState({}, '', location.pathname);
+  showListScreen();
+};
+function route(){
+  const params = new URLSearchParams(location.search);
+  const cardId = params.get('card');
+  if(cardId) showCardScreen(cardId); else showListScreen();
+}
+window.addEventListener('popstate', route);
+
+window.changeStatus = function(orderId, stageId, newStatus){
+  const orders = loadOrders();
+  const order = orders.find(o=>String(o.id)===String(orderId));
+  if(!order) return;
+  setStageStatus(order, stageId, newStatus);
+  saveOrders(orders);
+  showCardScreen(orderId);
+};
+
+window.saveAll = function(){
+  const orders = loadOrders();
+  saveOrders(orders);
+  alert('Все статусы сохранены');
+  renderTable();
+};
+
+window.resetFilters = function(){
+  document.getElementById('searchInput').value='';
+  document.getElementById('statusFilter').value='';
+  renderTable();
+};
+
+// ---------- Запуск ----------
+route();
+window.addEventListener('storage', route);
+</script>
+
   <script src="js/auth-check.js"></script>
   <script src="js/nav-filter.js"></script>
 </body>

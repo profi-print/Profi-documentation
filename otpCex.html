@@ -5,6 +5,8 @@
   <title>Отправка в цех — ProfitPrint</title>
   <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#2563eb">
   <style>
     :root {
       --bg-main: #f1f4f9;
@@ -82,10 +84,6 @@
     .service-options .cutting-fields { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
     .service-options .cutting-fields input { flex: 1; }
 
-    .flot-service { border-left: 3px solid #dc2626; }
-    .flot-service .service-main label { color: #dc2626; }
-    .flot-result { margin-top: 6px; font-weight: 600; color: var(--accent-red); }
-
     .data-table select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; background: linear-gradient(135deg, var(--bg-white), rgba(240,244,250,0.5)); color: var(--text-primary); -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,..."); background-repeat: no-repeat; background-position: right 12px center; padding-right: 2.5rem; }
     .print-sheets-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .print-sheets-info { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; }
@@ -111,347 +109,46 @@
     .pdf-block { margin-top: 30px; padding-top: 20px; }
     .screenshot-block { margin-top: 30px; padding-top: 20px; }
 
+    .material-fields-row {
+      display: flex; align-items: flex-end; gap: 12px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .material-fields-row .field-group {
+      flex: 1 1 0; min-width: 130px;
+    }
+    .material-fields-row .field-group label {
+      font-size: 12px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 4px;
+    }
+    .material-fields-row .field-group input {
+      width: 100%; padding: 8px 10px; border: 1.5px solid var(--border-color); border-radius: 6px;
+      font-size: 13px; background: var(--bg-white); color: var(--text-primary);
+    }
+    .material-fields-row .field-group input:focus {
+      outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    .btn-transfer {
+      display: block; width: 100%; background: #f0f4ff; color: var(--primary-blue);
+      border: 1px solid var(--primary-blue); font-weight: 500; padding: 10px 14px; border-radius: 6px;
+      cursor: pointer; transition: all 0.2s ease; font-size: 13px; margin-top: 12px; text-align: center;
+    }
+    .btn-transfer:hover {
+      background: var(--primary-blue); color: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-divide-toggle {
+      background: var(--bg-white); color: var(--text-secondary); border: 1.5px solid var(--border-color);
+      border-radius: 6px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-divide-toggle.active {
+      background: var(--primary-blue); color: #fff; border-color: var(--primary-blue);
+    }
+
     @media (max-width: 768px) {
       .form-columns { grid-template-columns: 1fr; }
       .service-grid { grid-template-columns: 1fr; }
+      .material-fields-row { flex-direction: column; align-items: stretch; }
     }
-    /* ============================================
-   УЛУЧШЕННЫЕ СТИЛИ ДЛЯ ФОРМЫ
-   ============================================ */
-
-/* Более мягкие карточки */
-.form-column,
-.choice-strip,
-.service-item {
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.form-column:hover,
-.choice-strip:hover,
-.service-item:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-}
-
-/* Поля ввода и селекты */
-input[type="text"],
-input[type="number"],
-textarea,
-select,
-.masked-number {
-  border-radius: 8px;
-  padding: 10px 14px;
-  border: 1.5px solid var(--border-color);
-  background: var(--bg-white);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-input[type="text"]:focus,
-input[type="number"]:focus,
-textarea:focus,
-select:focus,
-.masked-number:focus {
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-  outline: none;
-}
-
-/* Кнопки */
-.btn {
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-primary {
-  background: var(--primary-blue);
-  color: #fff;
-}
-
-.btn-primary:hover {
-  background: #1d4ed8;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}
-
-.btn-secondary {
-  background: var(--bg-main);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-}
-
-.btn-secondary:hover {
-  background: #e4e7ec;
-  border-color: var(--primary-blue);
-}
-
-/* Кнопка "Передать формат" */
-#transferFormatBtn {
-  background: #f0f4ff;
-  color: var(--primary-blue);
-  border: 1px solid var(--primary-blue);
-  font-weight: 500;
-  margin-top: 10px;
-  transition: all 0.2s ease;
-}
-
-#transferFormatBtn:hover {
-  background: var(--primary-blue);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-}
-
-/* Радио-карточки выбора (Рулон / Листовой) */
-.choice-card {
-  border-radius: 12px;
-  background: var(--bg-white);
-  transition: all 0.2s ease;
-}
-
-.choice-card:hover {
-  transform: translateY(-2px);
-}
-
-/* Плавное появление/скрытие полей рулона/листа */
-#rollFields,
-#sheetFields {
-  transition: opacity 0.2s ease, max-height 0.3s ease;
-}
-
-/* Блок информации о материале */
-#materialTypeCards + div {
-  margin-top: 12px;
-}
-
-/* Улучшенные отступы в таблице параметров */
-.data-table td {
-  padding: 10px 12px;
-  vertical-align: middle;
-}
-
-.data-table td:first-child {
-  font-weight: 500;
-  color: var(--text-secondary);
-  width: 40%;
-}
-
-/* Заголовки секций */
-.form-column-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-  border-bottom: 2px solid var(--primary-blue);
-  padding-bottom: 8px;
-  margin-bottom: 16px;
-}
-
-/* Блок с результатами расчёта */
-.print-sheets-info strong {
-  background: rgba(37, 99, 235, 0.08);
-  padding: 3px 10px;
-  border-radius: 6px;
-  font-size: 15px;
-}
-
-/* Мелкие доработки */
-.screenshot-drop-area {
-  border-radius: 12px;
-}
-
-/* Адаптивность уже учтена, но можно добавить плавности */
-@media (max-width: 768px) {
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* Компактный блок материала */
-.material-fields-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-.material-fields-row .field-group {
-  flex: 1 1 0;
-  min-width: 130px;
-}
-.material-fields-row .field-group label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  display: block;
-  margin-bottom: 4px;
-}
-.material-fields-row .field-group input {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1.5px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 13px;
-  background: var(--bg-white);
-  color: var(--text-primary);
-}
-.material-fields-row .field-group input:focus {
-  outline: none;
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-}
-
-/* Кнопка "Передать формат" */
-.btn-transfer {
-  display: inline-block;
-  background: #f0f4ff;
-  color: var(--primary-blue);
-  border: 1px solid var(--primary-blue);
-  font-weight: 500;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 13px;
-  margin-top: 12px;
-  white-space: nowrap;
-}
-.btn-transfer:hover {
-  background: var(--primary-blue);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-}
-
-/* Мобильная адаптация (столбик) */
-@media (max-width: 768px) {
-  .material-fields-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-/* Компактный блок материала */
-.material-fields-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-.material-fields-row .field-group {
-  flex: 1 1 0;
-  min-width: 130px;
-}
-.material-fields-row .field-group label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  display: block;
-  margin-bottom: 4px;
-}
-.material-fields-row .field-group input {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1.5px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 13px;
-  background: var(--bg-white);
-  color: var(--text-primary);
-}
-.material-fields-row .field-group input:focus {
-  outline: none;
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-}
-
-/* Кнопка "Передать формат" */
-.btn-transfer {
-  display: inline-block;
-  background: #f0f4ff;
-  color: var(--primary-blue);
-  border: 1px solid var(--primary-blue);
-  font-weight: 500;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 13px;
-  margin-top: 12px;
-  white-space: nowrap;
-}
-.btn-transfer:hover {
-  background: var(--primary-blue);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-}
-
-/* Мобильная адаптация (столбик) */
-@media (max-width: 768px) {
-  .material-fields-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-.material-fields-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-.material-fields-row .field-group {
-  flex: 1 1 0;
-  min-width: 130px;
-}
-.material-fields-row .field-group label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  display: block;
-  margin-bottom: 4px;
-}
-.material-fields-row .field-group input {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1.5px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 13px;
-  background: var(--bg-white);
-  color: var(--text-primary);
-}
-.material-fields-row .field-group input:focus {
-  outline: none;
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-}
-
-.btn-transfer {
-  display: block;
-  width: 100%;
-  background: #f0f4ff;
-  color: var(--primary-blue);
-  border: 1px solid var(--primary-blue);
-  font-weight: 500;
-  padding: 10px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 13px;
-  margin-top: 12px;
-}
-.btn-transfer:hover {
-  background: var(--primary-blue);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-}
-
-@media (max-width: 768px) {
-  .material-fields-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
   </style>
 </head>
 <body>
@@ -525,47 +222,27 @@ select:focus,
                     <div class="choice-card"><input type="radio" name="print_type" value="A2" id="printA2"><label for="printA2">🖨️ Печать А2</label></div>
                   </div>
                 </div>
-<!-- ИНФОРМАЦИЯ О МАТЕРИАЛЕ (компактная) -->
-<div class="choice-strip">
-  <div class="form-column-title" style="margin-top:0; margin-bottom:10px;">Информация о материале</div>
-  <div class="choice-cards" id="materialTypeCards">
-    <div class="choice-card">
-      <input type="radio" name="material_type" value="roll" id="matRoll" checked>
-      <label for="matRoll">📜 Рулон</label>
-    </div>
-    <div class="choice-card">
-      <input type="radio" name="material_type" value="sheet" id="matSheet">
-      <label for="matSheet">📄 Листовой</label>
-    </div>
-  </div>
 
-  <!-- Поля в одной строке: Формат рулона, затем Формат флоторезки -->
-  <div id="rollFields" class="material-fields-row">
-    <div class="field-group">
-      <label for="flotLength">Формат рулона</label>
-      <input type="text" inputmode="numeric" class="masked-number" id="flotLength" placeholder="мм">
-    </div>
-    <div class="field-group">
-      <label for="rollWidth">Формат флоторезки</label>
-      <input type="text" inputmode="numeric" class="masked-number" id="rollWidth" placeholder="мм">
-    </div>
-  </div>
+                <div class="choice-strip">
+                  <div class="form-column-title" style="margin-top:0; margin-bottom:10px;">Информация о материале</div>
+                  <div class="choice-cards" id="materialTypeCards">
+                    <div class="choice-card"><input type="radio" name="material_type" value="roll" id="matRoll" checked><label for="matRoll">📜 Рулон</label></div>
+                    <div class="choice-card"><input type="radio" name="material_type" value="sheet" id="matSheet"><label for="matSheet">📄 Листовой</label></div>
+                  </div>
+                  <div id="rollFields" class="material-fields-row">
+                    <div class="field-group"><label for="flotLength">Формат рулона</label><input type="text" inputmode="numeric" class="masked-number" id="flotLength" placeholder="мм"></div>
+                    <div class="field-group"><label for="rollWidth">Формат флоторезки</label><input type="text" inputmode="numeric" class="masked-number" id="rollWidth" placeholder="мм"></div>
+                  </div>
+                  <div id="sheetFields" class="material-fields-row" style="display:none;">
+                    <div class="field-group"><label for="sheetLength">Длина листа</label><input type="text" inputmode="numeric" class="masked-number" id="sheetLength" placeholder="мм"></div>
+                    <div class="field-group"><label for="sheetWidth">Ширина листа</label><input type="text" inputmode="numeric" class="masked-number" id="sheetWidth" placeholder="мм"></div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px;">
+                    <button type="button" class="btn-divide-toggle" id="divideToggleBtn" title="Включить половинный формат для флоторезки">½ формата</button>
+                    <button type="button" class="btn-transfer" id="transferFormatBtn">Передать формат в печатный формат</button>
+                  </div>
+                </div>
 
-  <!-- Поля для листа (тоже в одной строке, но с другими названиями) -->
-  <div id="sheetFields" class="material-fields-row" style="display:none;">
-    <div class="field-group">
-      <label for="sheetLength">Длина листа</label>
-      <input type="text" inputmode="numeric" class="masked-number" id="sheetLength" placeholder="мм">
-    </div>
-    <div class="field-group">
-      <label for="sheetWidth">Ширина листа</label>
-      <input type="text" inputmode="numeric" class="masked-number" id="sheetWidth" placeholder="мм">
-    </div>
-  </div>
-
-  <!-- Кнопка на всю ширину -->
-  <button type="button" class="btn-transfer" id="transferFormatBtn">Передать формат в печатный формат</button>
-</div>
                 <div class="calc-mode-switch"><label><input type="radio" name="calc_mode" value="warehouse" checked> Параметры</label></div>
                 <table class="data-table">
                   <tr><td>Тип бумаги</td><td><select name="paper_type" id="paperType" required><option value="картон">картон</option><option value="Меловка">Меловка</option><option value="Офсет">Офсет</option></select></td></tr>
@@ -724,36 +401,48 @@ select:focus,
         return parseFloat(el.value.replace(/\s/g, '')) || 0;
       }
 
-      // Переключение материала
       const matRoll = document.getElementById('matRoll');
       const matSheet = document.getElementById('matSheet');
       const rollFields = document.getElementById('rollFields');
       const sheetFields = document.getElementById('sheetFields');
       const transferBtn = document.getElementById('transferFormatBtn');
+      const divideToggleBtn = document.getElementById('divideToggleBtn');
+      let divideByTwo = false;
 
       function toggleMaterialFields() {
         if (matRoll.checked) {
-          rollFields.style.display = 'block';
+          rollFields.style.display = 'flex';
           sheetFields.style.display = 'none';
         } else {
           rollFields.style.display = 'none';
-          sheetFields.style.display = 'block';
+          sheetFields.style.display = 'flex';
         }
       }
       matRoll.addEventListener('change', toggleMaterialFields);
       matSheet.addEventListener('change', toggleMaterialFields);
 
+      divideToggleBtn.addEventListener('click', function() {
+        divideByTwo = !divideByTwo;
+        if (divideByTwo) {
+          divideToggleBtn.classList.add('active');
+        } else {
+          divideToggleBtn.classList.remove('active');
+        }
+      });
+
       transferBtn.addEventListener('click', function() {
         const sizeWidth = document.getElementById('sizeWidth');
         const sizeLength = document.getElementById('sizeLength');
+        let w = 0, l = 0;
         if (matRoll.checked) {
-          sizeWidth.value = document.getElementById('rollWidth').value;
-          sizeLength.value = document.getElementById('flotLength').value;
+          w = getCleanNumber('rollWidth');
+          l = getCleanNumber('flotLength');
         } else {
-          sizeWidth.value = document.getElementById('sheetWidth').value;
-          sizeLength.value = document.getElementById('sheetLength').value;
+          w = getCleanNumber('sheetWidth');
+          l = getCleanNumber('sheetLength');
         }
-        [sizeWidth, sizeLength].forEach(inp => applyMask(inp));
+        sizeWidth.value = formatWithSpaces(Math.round(w).toString());
+        sizeLength.value = formatWithSpaces(Math.round(l).toString());
         recalc();
       });
 
@@ -782,6 +471,13 @@ select:focus,
         setMaskedValue('sheetWidth', order.sheet_width);
         setMaskedValue('sheetLength', order.sheet_length);
         document.getElementById('color').value = order.color || '';
+
+        divideByTwo = order.divide_by_two === true;
+        if (divideByTwo) {
+          divideToggleBtn.classList.add('active');
+        } else {
+          divideToggleBtn.classList.remove('active');
+        }
 
         if (order.pdf_filename) {
           document.getElementById('pdfFileNameInput').value = order.pdf_filename;
@@ -888,6 +584,8 @@ select:focus,
           if (optionsDiv) optionsDiv.style.display = 'none';
         });
         document.querySelectorAll('#cuttingDetails input[type="number"]').forEach(inp => inp.value = '');
+        divideByTwo = false;
+        divideToggleBtn.classList.remove('active');
         recalc();
       }
 
@@ -966,7 +664,7 @@ select:focus,
           product_name: document.getElementById('productNameInput').value,
           description: document.getElementById('descriptionInput').value,
           print_type: document.querySelector('input[name="print_type"]:checked').value,
-          material_type: document.getElementById('matRoll').checked ? 'roll' : 'sheet',
+          material_type: matRoll.checked ? 'roll' : 'sheet',
           paper_type: document.getElementById('paperType').value,
           order_qty: getCleanNumber('orderQty'),
           make_ready: getCleanNumber('makeReady'),
@@ -981,6 +679,7 @@ select:focus,
           color: document.getElementById('color').value,
           print_sheets: currentTotalSheets,
           weight_kg: currentWeightKg,
+          divide_by_two: divideByTwo,
           pdf_filename: document.getElementById('pdfFileNameInput').value.trim() || null,
           screenshot_base64: document.getElementById('screenshotData').value || null,
           services: []
@@ -1012,8 +711,6 @@ select:focus,
                   ]
                 });
               }
-            } else if (key === 'flot_cutting') {
-              order.services.push({ name:'flot_cutting', result: currentFlotDivide });
             } else {
               const sel = document.getElementById('sel_' + key);
               order.services.push({ name: key, type: sel ? sel.value : '' });
@@ -1039,14 +736,12 @@ select:focus,
         kongrev: ['автомат'],
         gluing: ['1','2','3','4 и более'],
         cutting: [],
-        uv_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
-        // flot_cutting: []
+        uv_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый']
       };
       const SERVICE_LABELS = {
         vd_lak:'ВД лак', lamination:'Ламинация', embossing:'Тиснение',
         cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
-        die_cut:'Высечка', kongrev:'Конгрев', 
-        // flot_cutting:' Флоторезка / 2'
+        die_cut:'Высечка', kongrev:'Конгрев'
       };
 
       function buildServicesBlock() {
@@ -1055,7 +750,6 @@ select:focus,
         for (let key in SERVICE_TYPES) {
           const itemDiv = document.createElement('div');
           itemDiv.className = 'service-item';
-          if (key === 'flot_cutting') itemDiv.classList.add('flot-service');
           const mainRow = document.createElement('div');
           mainRow.className = 'service-main';
           const cb = document.createElement('input');
@@ -1068,9 +762,7 @@ select:focus,
           const optionsDiv = document.createElement('div');
           optionsDiv.className = 'service-options';
           optionsDiv.style.display = 'none';
-          if (key === 'flot_cutting') {
-            optionsDiv.innerHTML = '<div class="flot-result">Результат: <strong id="flotDivideResult">0</strong></div>';
-          } else if (key === 'cutting') {
+          if (key === 'cutting') {
             optionsDiv.innerHTML = `
               <select id="cutting_type" class="cutting-select">
                 <option value="pre" selected>до печать</option>
@@ -1216,7 +908,7 @@ select:focus,
         });
       }
 
-      let currentWeightKg = 0, currentTotalSheets = 0, currentFlotDivide = 0;
+      let currentWeightKg = 0, currentTotalSheets = 0;
       function recalc() {
         const orderQty  = getCleanNumber('orderQty');
         const makeReady = getCleanNumber('makeReady');
@@ -1234,7 +926,6 @@ select:focus,
           weightKg = (width * length * gsm * totalSheets) / 1_000_000_000;
         }
         currentWeightKg = weightKg;
-        currentFlotDivide = currentTotalSheets > 0 ? Math.floor(currentTotalSheets / 2) : 0;
         updateUI();
       }
 
@@ -1246,8 +937,6 @@ select:focus,
           if (currentWeightKg <= 0) wEl.textContent = '— кг';
           else wEl.textContent = Math.round(currentWeightKg).toLocaleString('ru-RU') + ' кг';
         }
-        const flotEl = document.getElementById('flotDivideResult');
-        if (flotEl) flotEl.textContent = currentFlotDivide.toLocaleString('ru-RU');
       }
 
       ['orderQty','makeReady','stripes','sizeWidth','sizeLength','gsm','rollWidth','flotLength','sheetWidth','sheetLength'].forEach(id => {

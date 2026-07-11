@@ -9,6 +9,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#2563eb">
   <style>
     :root {
       --bg-main: #f1f4f9;
@@ -118,6 +120,15 @@
     .screenshot-modal.visible { display: flex; }
     .screenshot-modal .close-modal { position: absolute; top: 20px; right: 30px; font-size: 40px; color: #fff; cursor: pointer; }
 
+    .info-title {
+      display: flex; justify-content: space-between; align-items: baseline; width: 100%;
+    }
+    .material-type-badge {
+      font-size: 1.1em; font-weight: 800; background: rgba(37, 99, 235, 0.1);
+      color: var(--primary-blue); padding: 2px 10px; border-radius: 6px;
+      margin-left: auto; white-space: nowrap;
+    }
+
     @media screen and (max-width: 768px) {
       .tech-card { padding: 16px; }
       .tech-card table { font-size: 12px; }
@@ -126,21 +137,6 @@
       .tech-card .order-meta .meta-row { gap: 8px 20px; }
       .tech-card .screenshot-container img { max-width: 250px; max-height: 250px; }
     }
-    .info-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-.material-type-badge {
-  font-size: 1.1em;
-  font-weight: 1000;
-  background: rgba(37, 99, 235, 0.1);
-  color: var(--primary-blue);
-  padding: 2px 10px;
-  border-radius: 6px;
-  margin-left: 720px;
-  white-space: nowrap;
-}
   </style>
 </head>
 <body>
@@ -225,16 +221,21 @@
         const rollFormatFormatted = (order.roll_format || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         const hasRollFormat = order.roll_format && String(order.roll_format).trim() !== '';
 
-        // Размер листа (материала)
-        const sheetWidth = order.sheet_width || order.size_width || 0;
-        const sheetLength = order.sheet_length || order.size_length || 0;
+        const materialType = order.material_type || 'roll';
+        let sheetWidth, sheetLength;
+        if (materialType === 'roll') {
+          sheetWidth = order.roll_width || order.size_width || 0;
+          sheetLength = order.flot_length || order.size_length || 0;
+        } else {
+          sheetWidth = order.sheet_width || order.size_width || 0;
+          sheetLength = order.sheet_length || order.size_length || 0;
+        }
         const sheetSizeFormatted = `${sheetWidth}×${sheetLength}`;
-
-        // Печатный формат
         const printWidth = order.size_width || 0;
         const printLength = order.size_length || 0;
         const printSizeFormatted = `${printWidth}×${printLength}`;
-        const materialType = order.material_type || 'roll';
+
+        const isDivideByTwo = order.divide_by_two === true;
 
         const serviceMap = {
           lamination: '', vd_lak: '', embossing: '', kongrev: '',
@@ -267,7 +268,6 @@
           });
         }
 
-        const hasFlot = order.services && order.services.some(s => s.name === 'flot_cutting');
         const printType = order.print_type || 'A1';
         const printLabel = `Печать ${printType}`;
 
@@ -334,26 +334,28 @@
                   <span class="desc-value value">${order.description || ''}</span>
                 </div>
               </div>
-              ${hasFlot ? `
-                <div class="section-title">Флотарезка</div>
+              ${isDivideByTwo ? `
+                <div class="section-title">Флоторезка (½ формата)</div>
                 <table>
                   <thead><tr>
                     <th>материал</th>
-                    <th>Размер листа</th>
                     ${hasRollFormat ? '<th>формат рулона</th>' : ''}
-                    <th>гр/м2</th><th>тираж листов</th><th>факт листов</th>
+                    <th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th>
                   </tr></thead>
                   <tbody><tr>
                     <td><strong>${order.paper_type || ''}</strong></td>
-                    <td><strong>${sheetSizeFormatted}</strong></td>
-                    ${hasRollFormat ? `<td><strong>${rollFormatFormatted}</strong></td>` : ''}
+                    ${hasRollFormat ? `<td><strong>${(order.roll_format/2 || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}</strong></td>` : ''}
+                    <td><strong>${Math.round(sheetWidth/2)}×${Math.round(sheetLength/2)}</strong></td>
                     <td><strong>${gsmFormatted}</strong></td>
-                    <td><strong>${displaySheetsFormatted}</strong></td>
+                    <td><strong>${Math.floor(displaySheets / 2).toLocaleString('ru-RU')}</strong></td>
                     <td></td>
                   </tr></tbody>
                 </table>
               ` : ''}
-              <div class="section-title">Информация о материале <span class="material-type-badge">${materialType === 'roll' ? 'Рулон' : 'Листовой'}</span></div>
+              <div class="section-title info-title">
+                <span>Информация о материале</span>
+                <span class="material-type-badge">${materialType === 'roll' ? 'Рулон' : 'Листовой'}</span>
+              </div>
               <table>
                 <thead><tr>
                   <th>материал</th>
