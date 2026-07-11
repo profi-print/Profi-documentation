@@ -313,6 +313,19 @@
     }
     .btn-divide-toggle.active { background: var(--primary-blue); color: #fff; border-color: var(--primary-blue); }
 
+    /* Контрастность пунктов меню */
+    .sidebar .nav-menu li a {
+      color: var(--text-primary) !important;
+      background: transparent !important;
+    }
+    .sidebar .nav-menu li a:hover {
+      background: var(--bg-main) !important;
+    }
+    .sidebar .nav-menu li a.active {
+      background: var(--primary-blue) !important;
+      color: #fff !important;
+    }
+
     @media (max-width: 768px) {
       .form-columns { grid-template-columns: 1fr; }
       .service-grid { grid-template-columns: 1fr; }
@@ -928,7 +941,82 @@
         die_cut:'Высечка', kongrev:'Конгрев'
       };
 
-      function buildServicesBlock() { /* ... без изменений */ }
+      function buildServicesBlock() {
+        const container = document.getElementById('servicesContainer');
+        container.innerHTML = '';
+        for (let key in SERVICE_TYPES) {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'service-item';
+          const mainRow = document.createElement('div');
+          mainRow.className = 'service-main';
+          const cb = document.createElement('input');
+          cb.type = 'checkbox'; cb.id = 'chk_' + key; cb.value = key;
+          const lbl = document.createElement('label');
+          lbl.htmlFor = 'chk_' + key;
+          lbl.textContent = SERVICE_LABELS[key];
+          mainRow.appendChild(cb); mainRow.appendChild(lbl);
+          itemDiv.appendChild(mainRow);
+          const optionsDiv = document.createElement('div');
+          optionsDiv.className = 'service-options';
+          optionsDiv.style.display = 'none';
+          if (key === 'cutting') {
+            optionsDiv.innerHTML = `
+              <select id="cutting_type" class="cutting-select">
+                <option value="pre" selected>до печать</option>
+                <option value="post">пост печать</option>
+                <option value="both">оба</option>
+              </select>
+              <div id="fields_pre" class="cutting-fields" style="display:flex;">
+                <input type="number" id="cut_pre_width" placeholder="Ширина" min="0">
+                <input type="number" id="cut_pre_length" placeholder="Длина" min="0">
+              </div>
+              <div id="fields_post" class="cutting-fields" style="display:none;">
+                <input type="number" id="cut_post_width" placeholder="Ширина" min="0">
+                <input type="number" id="cut_post_length" placeholder="Длина" min="0">
+              </div>
+              <div id="fields_both" class="cutting-fields cutting-both" style="display:none;">
+                <div class="cutting-row-inline">
+                  <label>До печать:</label><input type="number" id="cut_both_pre_width" placeholder="Ширина" min="0">
+                  <label>До печать:</label><input type="number" id="cut_both_pre_length" placeholder="Длина" min="0">
+                </div>
+                <div class="cutting-row-inline">
+                  <label>Пост печать:</label><input type="number" id="cut_both_post_width" placeholder="Ширина" min="0">
+                  <label>Пост печать:</label><input type="number" id="cut_both_post_length" placeholder="Длина" min="0">
+                </div>
+              </div>
+            `;
+          } else {
+            const selId = 'sel_' + key;
+            let optionsHTML = `<select id="${selId}">`;
+            SERVICE_TYPES[key].forEach(v => { optionsHTML += `<option value="${v}">${v}</option>`; });
+            optionsHTML += '</select>';
+            optionsDiv.innerHTML = optionsHTML;
+          }
+          itemDiv.appendChild(optionsDiv);
+          cb.addEventListener('change', function() {
+            if (this.checked) {
+              if (key === 'cutting') {
+                optionsDiv.style.display = 'block';
+                document.getElementById('cutting_type').dispatchEvent(new Event('change'));
+              } else {
+                optionsDiv.style.display = 'block';
+              }
+            } else {
+              optionsDiv.style.display = 'none';
+            }
+            recalc();
+          });
+          if (key === 'cutting') {
+            optionsDiv.querySelector('select').addEventListener('change', function() {
+              const val = this.value;
+              document.getElementById('fields_pre').style.display = (val === 'pre') ? 'flex' : 'none';
+              document.getElementById('fields_post').style.display = (val === 'post') ? 'flex' : 'none';
+              document.getElementById('fields_both').style.display = (val === 'both') ? 'flex' : 'none';
+            });
+          }
+          container.appendChild(itemDiv);
+        }
+      }
 
       const pdfFileInput = document.getElementById('pdfFileInput');
       const pdfFileNameInput = document.getElementById('pdfFileNameInput');
@@ -960,12 +1048,13 @@
         e.preventDefault();
         fileInput.click();
       });
+      let tapTimer = null;
       dropArea.addEventListener('touchstart', function(e) {
-        if (!dropArea.tapTimer) {
-          dropArea.tapTimer = setTimeout(() => { dropArea.tapTimer = null; }, 300);
+        if (!tapTimer) {
+          tapTimer = setTimeout(() => { tapTimer = null; }, 300);
         } else {
-          clearTimeout(dropArea.tapTimer);
-          dropArea.tapTimer = null;
+          clearTimeout(tapTimer);
+          tapTimer = null;
           e.preventDefault();
           fileInput.click();
         }
@@ -987,11 +1076,57 @@
         this.value = '';
       });
 
-      function handlePaste(e) { /* ... */ }
-      document.addEventListener('paste', function(e) { /* ... */ });
+      function handlePaste(e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let item of items) {
+          if (item.type.startsWith('image/')) {
+            const blob = item.getAsFile();
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+              const base64 = ev.target.result;
+              screenshotData.value = base64;
+              previewImg.src = base64;
+              dropArea.classList.add('has-image');
+              if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
+              const placeholder = dropArea.querySelector('.placeholder');
+              if (placeholder) placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(blob);
+            e.preventDefault();
+            break;
+          }
+        }
+      }
+
+      document.addEventListener('paste', function(e) {
+        const target = e.target;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+          if (target.closest('#screenshotDropArea')) { handlePaste(e); }
+          return;
+        }
+        handlePaste(e);
+      });
+
       dropArea.addEventListener('dragover', function(e) { e.preventDefault(); dropArea.classList.add('dragover'); });
       dropArea.addEventListener('dragleave', function(e) { dropArea.classList.remove('dragover'); });
-      dropArea.addEventListener('drop', function(e) { /* ... */ });
+      dropArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            const base64 = ev.target.result;
+            screenshotData.value = base64;
+            previewImg.src = base64;
+            dropArea.classList.add('has-image');
+            if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
+            const placeholder = dropArea.querySelector('.placeholder');
+            if (placeholder) placeholder.style.display = 'none';
+          };
+          reader.readAsDataURL(files[0]);
+        }
+      });
 
       if (clearScreenshotBtn) {
         clearScreenshotBtn.addEventListener('click', function() {
@@ -1005,8 +1140,35 @@
       }
 
       let currentWeightKg = 0, currentTotalSheets = 0;
-      function recalc() { /* ... */ }
-      function updateUI() { /* ... */ }
+      function recalc() {
+        const orderQty  = getCleanNumber('orderQty');
+        const makeReady = getCleanNumber('makeReady');
+        const stripes   = getCleanNumber('stripes');
+        const width     = getCleanNumber('sizeWidth');
+        const length    = getCleanNumber('sizeLength');
+        const gsm       = getCleanNumber('gsm');
+
+        let totalSheets = 0;
+        if (stripes > 0) totalSheets = (orderQty / stripes) + makeReady;
+        currentTotalSheets = Math.ceil(totalSheets);
+
+        let weightKg = 0;
+        if (width > 0 && length > 0 && gsm > 0 && totalSheets > 0) {
+          weightKg = (width * length * gsm * totalSheets) / 1_000_000_000;
+        }
+        currentWeightKg = weightKg;
+        updateUI();
+      }
+
+      function updateUI() {
+        document.getElementById('printSheetsHidden').value = currentTotalSheets;
+        document.getElementById('printSheetsAuto').textContent = currentTotalSheets > 0 ? currentTotalSheets.toLocaleString('ru-RU') : '';
+        const wEl = document.getElementById('weightResult');
+        if (wEl) {
+          if (currentWeightKg <= 0) wEl.textContent = '— кг';
+          else wEl.textContent = Math.round(currentWeightKg).toLocaleString('ru-RU') + ' кг';
+        }
+      }
 
       ['orderQty','makeReady','stripes','sizeWidth','sizeLength','gsm','rollWidth','flotLength','sheetWidth','sheetLength'].forEach(id => {
         const el = document.getElementById(id);
@@ -1016,8 +1178,19 @@
       setupMasks();
       recalc();
 
-      function loadClients() { /* ... */ }
-      function showIndex2ForDiyor() { /* ... */ }
+      function loadClients() {
+        const datalist = document.getElementById('customerList');
+        let clients = [];
+        try { clients = JSON.parse(localStorage.getItem('pp_clients') || '[]'); } catch(e) {}
+        datalist.innerHTML = clients.map(c => `<option value="${c.name}">`).join('');
+      }
+
+      function showIndex2ForDiyor() {
+        const user = sessionStorage.getItem('profitprint_user') || '';
+        const role = sessionStorage.getItem('profitprint_role') || '';
+        const link = document.getElementById('index2Link');
+        if (user === 'Diyor' || role === 'designer') link.classList.add('visible');
+      }
 
       loadOrders();
       loadClients();
