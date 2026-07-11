@@ -72,8 +72,16 @@ app.post('/api/data', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// Мобильное приложение
+app.get('/mobile', (req, res) => {
+  res.sendFile(path.join(__dirname, '../mobile/index.html'));
+});
+
 // Обработка 404 - редирект на index.html для SPA
 app.use((req, res) => {
+  if (req.path.startsWith('/mobile')) {
+    return res.sendFile(path.join(__dirname, '../mobile/index.html'));
+  }
   res.sendFile(path.join(__dirname, '../index.html'));
 });
 

@@ -126,6 +126,21 @@
       .tech-card .order-meta .meta-row { gap: 8px 20px; }
       .tech-card .screenshot-container img { max-width: 250px; max-height: 250px; }
     }
+    .info-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.material-type-badge {
+  font-size: 1.1em;
+  font-weight: 1000;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--primary-blue);
+  padding: 2px 10px;
+  border-radius: 6px;
+  margin-left: 720px;
+  white-space: nowrap;
+}
   </style>
 </head>
 <body>
@@ -219,6 +234,7 @@
         const printWidth = order.size_width || 0;
         const printLength = order.size_length || 0;
         const printSizeFormatted = `${printWidth}×${printLength}`;
+        const materialType = order.material_type || 'roll';
 
         const serviceMap = {
           lamination: '', vd_lak: '', embossing: '', kongrev: '',
@@ -337,7 +353,7 @@
                   </tr></tbody>
                 </table>
               ` : ''}
-              <div class="section-title">Информация о материале</div>
+              <div class="section-title">Информация о материале <span class="material-type-badge">${materialType === 'roll' ? 'Рулон' : 'Листовой'}</span></div>
               <table>
                 <thead><tr>
                   <th>материал</th>
@@ -358,7 +374,7 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Печатный формат</th><th>Цветной</th><th>тираж</th><th>приладка</th><th>ВД лак</th><th>Кол-во брака</th><th>Кол-во факта печати</th>
+                    <th>Печатный формат</th><th>Красочность</th><th>тираж</th><th>приладка</th><th>ВД лак</th><th>Кол-во брака</th><th>Кол-во факта печати</th>
                   </tr>
                 </thead>
                 <tbody>

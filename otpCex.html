@@ -268,6 +268,190 @@ select:focus,
     justify-content: center;
   }
 }
+
+/* Компактный блок материала */
+.material-fields-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.material-fields-row .field-group {
+  flex: 1 1 0;
+  min-width: 130px;
+}
+.material-fields-row .field-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 4px;
+}
+.material-fields-row .field-group input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--bg-white);
+  color: var(--text-primary);
+}
+.material-fields-row .field-group input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+/* Кнопка "Передать формат" */
+.btn-transfer {
+  display: inline-block;
+  background: #f0f4ff;
+  color: var(--primary-blue);
+  border: 1px solid var(--primary-blue);
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  margin-top: 12px;
+  white-space: nowrap;
+}
+.btn-transfer:hover {
+  background: var(--primary-blue);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+/* Мобильная адаптация (столбик) */
+@media (max-width: 768px) {
+  .material-fields-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* Компактный блок материала */
+.material-fields-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.material-fields-row .field-group {
+  flex: 1 1 0;
+  min-width: 130px;
+}
+.material-fields-row .field-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 4px;
+}
+.material-fields-row .field-group input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--bg-white);
+  color: var(--text-primary);
+}
+.material-fields-row .field-group input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+/* Кнопка "Передать формат" */
+.btn-transfer {
+  display: inline-block;
+  background: #f0f4ff;
+  color: var(--primary-blue);
+  border: 1px solid var(--primary-blue);
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  margin-top: 12px;
+  white-space: nowrap;
+}
+.btn-transfer:hover {
+  background: var(--primary-blue);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+/* Мобильная адаптация (столбик) */
+@media (max-width: 768px) {
+  .material-fields-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+.material-fields-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.material-fields-row .field-group {
+  flex: 1 1 0;
+  min-width: 130px;
+}
+.material-fields-row .field-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 4px;
+}
+.material-fields-row .field-group input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--bg-white);
+  color: var(--text-primary);
+}
+.material-fields-row .field-group input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.btn-transfer {
+  display: block;
+  width: 100%;
+  background: #f0f4ff;
+  color: var(--primary-blue);
+  border: 1px solid var(--primary-blue);
+  font-weight: 500;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  margin-top: 12px;
+}
+.btn-transfer:hover {
+  background: var(--primary-blue);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+@media (max-width: 768px) {
+  .material-fields-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
   </style>
 </head>
 <body>
@@ -341,35 +525,47 @@ select:focus,
                     <div class="choice-card"><input type="radio" name="print_type" value="A2" id="printA2"><label for="printA2">🖨️ Печать А2</label></div>
                   </div>
                 </div>
+<!-- ИНФОРМАЦИЯ О МАТЕРИАЛЕ (компактная) -->
+<div class="choice-strip">
+  <div class="form-column-title" style="margin-top:0; margin-bottom:10px;">Информация о материале</div>
+  <div class="choice-cards" id="materialTypeCards">
+    <div class="choice-card">
+      <input type="radio" name="material_type" value="roll" id="matRoll" checked>
+      <label for="matRoll">📜 Рулон</label>
+    </div>
+    <div class="choice-card">
+      <input type="radio" name="material_type" value="sheet" id="matSheet">
+      <label for="matSheet">📄 Листовой</label>
+    </div>
+  </div>
 
-                <!-- ИНФОРМАЦИЯ О МАТЕРИАЛЕ -->
-                <div class="choice-strip">
-                  <div class="form-column-title" style="margin-top:0; margin-bottom:10px;">Информация о материале</div>
-                  <div class="choice-cards" id="materialTypeCards">
-                    <div class="choice-card">
-                      <input type="radio" name="material_type" value="roll" id="matRoll" checked>
-                      <label for="matRoll">📜 Рулон</label>
-                    </div>
-                    <div class="choice-card">
-                      <input type="radio" name="material_type" value="sheet" id="matSheet">
-                      <label for="matSheet">📄 Листовой</label>
-                    </div>
-                  </div>
-                  <div id="rollFields" style="margin-top:12px;">
-                    <label style="display:block; font-size:13px; font-weight:500; margin-bottom:4px;">Формат флоторезки</label>
-                    <input type="text" inputmode="numeric" class="masked-number" id="rollWidth" placeholder="Формат флоторезки">
-                    <label style="display:block; font-size:13px; font-weight:500; margin-top:8px; margin-bottom:4px;">Формат рулона</label>
-                    <input type="text" inputmode="numeric" class="masked-number" id="flotLength" placeholder="Формат рулона">
-                  </div>
-                  <div id="sheetFields" style="margin-top:12px; display:none;">
-                    <label style="display:block; font-size:13px; font-weight:500; margin-bottom:4px;">Ширина листа</label>
-                    <input type="text" inputmode="numeric" class="masked-number" id="sheetWidth" placeholder="Ширина листа">
-                    <label style="display:block; font-size:13px; font-weight:500; margin-top:8px; margin-bottom:4px;">Длина листа</label>
-                    <input type="text" inputmode="numeric" class="masked-number" id="sheetLength" placeholder="Длина листа">
-                  </div>
-                  <button type="button" class="btn btn-secondary" id="transferFormatBtn" style="margin-top:12px;">Передать формат в печатный формат</button>
-                </div>
+  <!-- Поля в одной строке: Формат рулона, затем Формат флоторезки -->
+  <div id="rollFields" class="material-fields-row">
+    <div class="field-group">
+      <label for="flotLength">Формат рулона</label>
+      <input type="text" inputmode="numeric" class="masked-number" id="flotLength" placeholder="мм">
+    </div>
+    <div class="field-group">
+      <label for="rollWidth">Формат флоторезки</label>
+      <input type="text" inputmode="numeric" class="masked-number" id="rollWidth" placeholder="мм">
+    </div>
+  </div>
 
+  <!-- Поля для листа (тоже в одной строке, но с другими названиями) -->
+  <div id="sheetFields" class="material-fields-row" style="display:none;">
+    <div class="field-group">
+      <label for="sheetLength">Длина листа</label>
+      <input type="text" inputmode="numeric" class="masked-number" id="sheetLength" placeholder="мм">
+    </div>
+    <div class="field-group">
+      <label for="sheetWidth">Ширина листа</label>
+      <input type="text" inputmode="numeric" class="masked-number" id="sheetWidth" placeholder="мм">
+    </div>
+  </div>
+
+  <!-- Кнопка на всю ширину -->
+  <button type="button" class="btn-transfer" id="transferFormatBtn">Передать формат в печатный формат</button>
+</div>
                 <div class="calc-mode-switch"><label><input type="radio" name="calc_mode" value="warehouse" checked> Параметры</label></div>
                 <table class="data-table">
                   <tr><td>Тип бумаги</td><td><select name="paper_type" id="paperType" required><option value="картон">картон</option><option value="Меловка">Меловка</option><option value="Офсет">Офсет</option></select></td></tr>
@@ -849,7 +1045,8 @@ select:focus,
       const SERVICE_LABELS = {
         vd_lak:'ВД лак', lamination:'Ламинация', embossing:'Тиснение',
         cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
-        die_cut:'Высечка', kongrev:'Конгрев', flot_cutting:' Флоторезка / 2'
+        die_cut:'Высечка', kongrev:'Конгрев', 
+        // flot_cutting:' Флоторезка / 2'
       };
 
       function buildServicesBlock() {
