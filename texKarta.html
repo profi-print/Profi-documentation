@@ -39,12 +39,18 @@
 
     * { box-sizing: border-box; }
 
+    body {
+      background: var(--bg-main);
+      font-family: var(--font-main);
+      margin: 0;
+    }
+
     /* Бургер-кнопка */
     .burger-btn {
       display: none;
       position: fixed;
-      top: 16px;
-      left: 16px;
+      top: 12px;
+      left: 12px;
       z-index: 1100;
       background: var(--bg-white);
       border: 1px solid var(--border-color);
@@ -90,7 +96,35 @@
       }
       .main-content {
         margin-left: 0 !important;
-        padding: 16px;
+        padding: 60px 12px 20px;
+        width: 100%;
+      }
+      .tech-card-container {
+        width: 100%;
+        padding: 0;
+      }
+      .tech-card {
+        padding: 16px !important;
+      }
+      .tech-card h2 {
+        font-size: 20px !important;
+      }
+      /* Таблицы внутри карточки прокручиваются */
+      .tech-card table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      .tech-card .order-meta .meta-row {
+        flex-direction: column;
+        gap: 8px !important;
+      }
+      .action-bar {
+        flex-direction: column;
+      }
+      .action-bar button {
+        width: 100%;
       }
     }
 
@@ -119,11 +153,14 @@
     .tech-list .filter-bar .search-wrap input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; background: var(--bg-white); color: var(--text-primary); transition: border-color 0.2s; }
     .tech-list .filter-bar .search-wrap input:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
     .tech-list .filter-bar .filter-actions { display: none; }
+    .tech-list .table-responsive {
+      overflow-x: auto;
+    }
     .tech-list table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }
     .tech-list th { text-align: left; padding: 10px 12px; background: var(--bg-main); border-bottom: 2px solid var(--border-color); font-weight: 600; color: var(--text-secondary); }
     .tech-list td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); color: var(--text-primary); }
     .tech-list tr:hover { background: var(--bg-main); cursor: pointer; }
-    .tech-list .btn-link { padding: 6px 14px; border-radius: 6px; background: var(--primary-blue); color: #fff; text-decoration: none; font-size: 13px; border: none; cursor: pointer; }
+    .tech-list .btn-link { padding: 4px 12px; border-radius: 6px; background: var(--primary-blue); color: #fff; text-decoration: none; font-size: 13px; border: none; cursor: pointer; }
     .tech-list .btn-link:hover { opacity: 0.85; }
     .tech-list .empty-msg { padding: 30px; text-align: center; color: var(--text-secondary); font-style: italic; }
 
@@ -135,7 +172,7 @@
     .tech-card {
       background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px;
       padding: 24px 28px; box-shadow: 0 1px 3px rgba(15,23,42,0.06); font-size: 14px;
-      overflow-x: auto;
+      overflow-x: hidden;
     }
     .tech-card h2 { margin: 0 0 18px 0; color: var(--text-primary); font-size: 22px; border-bottom: 2px solid var(--primary-blue); padding-bottom: 8px; }
 
@@ -152,7 +189,11 @@
     .tech-card .order-meta .desc-row .desc-value { flex: 1; text-align: center; color: var(--text-primary); font-weight: 700; }
 
     .tech-card .section-title { font-weight: 700; font-size: 16px; margin: 24px 0 10px 0; color: var(--primary-blue); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
-    .tech-card table { width: 100%; border-collapse: collapse; margin: 6px 0 10px 0; font-size: 13px; min-width: 500px; }
+    .tech-card .table-responsive {
+      overflow-x: auto;
+      margin-bottom: 12px;
+    }
+    .tech-card table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
     .tech-card table th { background: var(--bg-main); padding: 10px 12px; border: 1px solid var(--border-color); text-align: center; font-weight: 600; color: var(--text-secondary); }
     .tech-card table td { padding: 10px 12px; border: 1px solid var(--border-color); text-align: center; color: var(--text-primary); }
     .tech-card table td strong { font-weight: 700; color: var(--text-primary); }
@@ -212,17 +253,36 @@
     }
 
     @media screen and (max-width: 768px) {
-      .tech-card { padding: 16px; }
-      .tech-card h2 { font-size: 20px; }
-      .tech-card table { font-size: 12px; }
-      .tech-card table th, .tech-card table td { padding: 8px 10px; }
-      .tech-card .tech-op-table th, .tech-card .tech-op-table td { padding: 8px 12px; white-space: normal; }
-      .tech-card .order-meta .meta-row { gap: 8px 20px; }
-      .tech-card .screenshot-container img { max-width: 100%; max-height: 250px; }
-      .tech-list { padding: 16px; }
-      .tech-list table { font-size: 13px; }
-      .action-bar button { flex: 1 1 auto; }
+      .tech-card {
+        padding: 12px !important;
+      }
+      .tech-card h2 {
+        font-size: 18px !important;
+      }
+      .tech-card .section-title {
+        font-size: 14px !important;
+        margin: 16px 0 6px !important;
+      }
+      .tech-card table th, .tech-card table td {
+        padding: 6px 8px !important;
+        font-size: 11px !important;
+      }
+      .tech-card .tech-op-table th,
+      .tech-card .tech-op-table td {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+      }
+      .tech-card .order-meta .meta-row {
+        gap: 4px 10px !important;
+      }
+      .tech-card .order-meta .label {
+        font-size: 13px !important;
+      }
+      .tech-card .order-meta .value {
+        font-size: 13px !important;
+      }
     }
+
   </style>
 </head>
 <body>
@@ -402,15 +462,17 @@
 
           techOpHTML = `
             <div class="section-title">Пост печать</div>
-            <table class="tech-op-table">
-              <thead></thead>
-              <tbody>
-                <tr><td class="row-label tech-op-header">Пост печать</td>${techOpRow}</tr>
-                <tr><td class="row-label">Параметры</td>${paramsRow}</tr>
-                <tr><td class="row-label">План</td>${planRow}</tr>
-                <tr><td class="row-label">Факт</td>${faktRow}</tr>
-              </tbody>
-            </table>
+            <div class="table-responsive">
+              <table class="tech-op-table">
+                <thead></thead>
+                <tbody>
+                  <tr><td class="row-label tech-op-header">Пост печать</td>${techOpRow}</tr>
+                  <tr><td class="row-label">Параметры</td>${paramsRow}</tr>
+                  <tr><td class="row-label">План</td>${planRow}</tr>
+                  <tr><td class="row-label">Факт</td>${faktRow}</tr>
+                </tbody>
+              </table>
+            </div>
           `;
         } else {
           techOpHTML = `
@@ -437,61 +499,67 @@
               </div>
               ${isDivideByTwo ? `
                 <div class="section-title">Флоторезка (½ формата)</div>
-                <table>
-                  <thead><tr>
-                    <th>материал</th>
-                    ${hasRollFormat ? '<th>формат рулона</th>' : ''}
-                    <th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th>
-                  </tr></thead>
-                  <tbody><tr>
-                    <td><strong>${order.paper_type || ''}</strong></td>
-                    ${hasRollFormat ? `<td><strong>${(order.roll_format/2 || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}</strong></td>` : ''}
-                    <td><strong>${Math.round(sheetWidth/2)}×${Math.round(sheetLength/2)}</strong></td>
-                    <td><strong>${gsmFormatted}</strong></td>
-                    <td><strong>${Math.floor(displaySheets / 2).toLocaleString('ru-RU')}</strong></td>
-                    <td></td>
-                  </tr></tbody>
-                </table>
+                <div class="table-responsive">
+                  <table>
+                    <thead><tr>
+                      <th>материал</th>
+                      ${hasRollFormat ? '<th>формат рулона</th>' : ''}
+                      <th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th>
+                    </tr></thead>
+                    <tbody><tr>
+                      <td><strong>${order.paper_type || ''}</strong></td>
+                      ${hasRollFormat ? `<td><strong>${(order.roll_format/2 || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}</strong></td>` : ''}
+                      <td><strong>${Math.round(sheetWidth/2)}×${Math.round(sheetLength/2)}</strong></td>
+                      <td><strong>${gsmFormatted}</strong></td>
+                      <td><strong>${Math.floor(displaySheets / 2).toLocaleString('ru-RU')}</strong></td>
+                      <td></td>
+                    </tr></tbody>
+                  </table>
+                </div>
               ` : ''}
               <div class="section-title info-title">
                 <span>Информация о материале</span>
                 <span class="material-type-badge">${materialType === 'roll' ? 'Рулон' : 'Листовой'}</span>
               </div>
-              <table>
-                <thead><tr>
-                  <th>материал</th>
-                  <th>Размер листа</th>
-                  ${hasRollFormat ? '<th>формат рулона</th>' : ''}
-                  <th>гр/м2</th><th>тираж листов</th><th>факт листов</th>
-                </tr></thead>
-                <tbody><tr>
-                  <td><strong>${order.paper_type || ''}</strong></td>
-                  <td><strong>${sheetSizeFormatted}</strong></td>
-                  ${hasRollFormat ? `<td><strong>${rollFormatFormatted}</strong></td>` : ''}
-                  <td><strong>${gsmFormatted}</strong></td>
-                  <td><strong>${displaySheetsFormatted}</strong></td>
-                  <td></td>
-                </tr></tbody>
-              </table>
-              <div class="section-title">${printLabel}</div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Печатный формат</th><th>Красочность</th><th>тираж</th><th>приладка</th><th>ВД лак</th><th>Кол-во брака</th><th>Кол-во факта печати</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><strong>${printSizeFormatted}</strong></td>
-                    <td><strong>${order.color || ''}</strong></td>
+              <div class="table-responsive">
+                <table>
+                  <thead><tr>
+                    <th>материал</th>
+                    <th>Размер листа</th>
+                    ${hasRollFormat ? '<th>формат рулона</th>' : ''}
+                    <th>гр/м2</th><th>тираж листов</th><th>факт листов</th>
+                  </tr></thead>
+                  <tbody><tr>
+                    <td><strong>${order.paper_type || ''}</strong></td>
+                    <td><strong>${sheetSizeFormatted}</strong></td>
+                    ${hasRollFormat ? `<td><strong>${rollFormatFormatted}</strong></td>` : ''}
+                    <td><strong>${gsmFormatted}</strong></td>
                     <td><strong>${displaySheetsFormatted}</strong></td>
-                    <td><strong>${makeReadyFormatted}</strong></td>
-                    <td><strong>${serviceMap.vd_lak || ''}</strong></td>
                     <td></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
+                  </tr></tbody>
+                </table>
+              </div>
+              <div class="section-title">${printLabel}</div>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Печатный формат</th><th>Красочность</th><th>тираж</th><th>приладка</th><th>ВД лак</th><th>Кол-во брака</th><th>Кол-во факта печати</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>${printSizeFormatted}</strong></td>
+                      <td><strong>${order.color || ''}</strong></td>
+                      <td><strong>${displaySheetsFormatted}</strong></td>
+                      <td><strong>${makeReadyFormatted}</strong></td>
+                      <td><strong>${serviceMap.vd_lak || ''}</strong></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               ${techOpHTML}
               ${(order.pdf_filename || order.screenshot_base64) ? `
                 <div class="section-title files-title">Файлы</div>
@@ -586,12 +654,14 @@
           </tr>
         `).join('');
         tableContainer.innerHTML = `
-          <table>
-            <thead>
-              <tr><th>№ техкарты</th><th>Заказчик</th><th>Продукция</th><th>Менеджер</th><th>Кол-во</th><th>Тираж</th><th>Действие</th></tr>
-            </thead>
-            <tbody>${tableRows}</tbody>
-          </table>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr><th>№ техкарты</th><th>Заказчик</th><th>Продукция</th><th>Менеджер</th><th>Кол-во</th><th>Тираж</th><th>Действие</th></tr>
+              </thead>
+              <tbody>${tableRows}</tbody>
+            </table>
+          </div>
         `;
       }
 
