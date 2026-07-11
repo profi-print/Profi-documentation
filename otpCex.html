@@ -85,6 +85,19 @@
         padding: 60px 12px 20px;
         width: 100%;
       }
+      /* Исправление видимости пунктов меню */
+      .sidebar .nav-menu li a {
+        color: var(--text-primary) !important;
+        background: transparent !important;
+        font-weight: 500;
+      }
+      .sidebar .nav-menu li a:hover {
+        background: var(--bg-main) !important;
+      }
+      .sidebar .nav-menu li a.active {
+        background: var(--primary-blue) !important;
+        color: #fff !important;
+      }
     }
 
     /* Список заказов */
@@ -313,7 +326,7 @@
     }
     .btn-divide-toggle.active { background: var(--primary-blue); color: #fff; border-color: var(--primary-blue); }
 
-    /* Контрастность пунктов меню */
+    /* Контрастность пунктов меню (десктоп) */
     .sidebar .nav-menu li a {
       color: var(--text-primary) !important;
       background: transparent !important;
@@ -467,18 +480,18 @@
                   </div>
                 </div>
                 <div class="screenshot-block">
-                  <div style="font-size:13px; font-weight:500; margin-bottom:6px;">🖼️ Скриншот (Ctrl+V или двойной тап)</div>
+                  <div style="font-size:13px; font-weight:500; margin-bottom:6px;">🖼️ Скриншот (Ctrl+V)</div>
                   <div id="screenshotDropArea" class="screenshot-drop-area" tabindex="0">
                     <div class="placeholder">
                       <div style="font-size:32px; margin-bottom:8px;">📷</div>
-                      <div>Вставьте скриншот или дважды нажмите</div>
-                      <div class="key-hint">Ctrl + V / двойной тап</div>
+                      <div>Вставьте скриншот из буфера обмена</div>
+                      <div class="key-hint">Ctrl + V</div>
                     </div>
                     <img id="screenshotPreview" alt="Скриншот">
                     <button type="button" id="clearScreenshotBtn" class="clear-screenshot" title="Удалить">✕</button>
                   </div>
                   <input type="hidden" id="screenshotData" name="screenshot_base64" value="">
-                  <input type="file" id="screenshotFileInput" accept="image/*" style="display:none">
+                  <!-- Убран input file и обработчики двойного тапа -->
                 </div>
               </div>
             </div>
@@ -1041,40 +1054,6 @@
       const previewImg = document.getElementById('screenshotPreview');
       const screenshotData = document.getElementById('screenshotData');
       const clearScreenshotBtn = document.getElementById('clearScreenshotBtn');
-      const fileInput = document.getElementById('screenshotFileInput');
-
-      // Двойной клик/тап открывает выбор файла
-      dropArea.addEventListener('dblclick', function(e) {
-        e.preventDefault();
-        fileInput.click();
-      });
-      let tapTimer = null;
-      dropArea.addEventListener('touchstart', function(e) {
-        if (!tapTimer) {
-          tapTimer = setTimeout(() => { tapTimer = null; }, 300);
-        } else {
-          clearTimeout(tapTimer);
-          tapTimer = null;
-          e.preventDefault();
-          fileInput.click();
-        }
-      });
-      fileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          const base64 = ev.target.result;
-          screenshotData.value = base64;
-          previewImg.src = base64;
-          dropArea.classList.add('has-image');
-          if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
-          const placeholder = dropArea.querySelector('.placeholder');
-          if (placeholder) placeholder.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-        this.value = '';
-      });
 
       function handlePaste(e) {
         const items = (e.clipboardData || e.originalEvent.clipboardData).items;
