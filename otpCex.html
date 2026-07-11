@@ -2,15 +2,16 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Отправка в цех — ProfitPrint</title>
   <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#2563eb">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="ProfitPrint">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ProfitPrint">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <style>
     :root {
       --bg-main: #f1f4f9;
@@ -25,16 +26,73 @@
     }
 
     body.dark-theme, body[data-theme="dark"] {
-      --bg-main: #f1f4f9 !important;
-      --bg-white: #ffffff !important;
-      --text-primary: #1e293b !important;
-      --text-secondary: #64748b !important;
-      --border-color: #e2e8f0 !important;
-      --primary-blue: #2563eb !important;
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.08) !important;
-      --accent-red: #dc2626 !important;
+      --bg-main: #1e293b !important;
+      --bg-white: #0f172a !important;
+      --text-primary: #e2e8f0 !important;
+      --text-secondary: #94a3b8 !important;
+      --border-color: #334155 !important;
+      --primary-blue: #3b82f6 !important;
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.4) !important;
+      --accent-red: #ef4444 !important;
     }
     .theme-switch-wrapper { display: none !important; }
+
+    * { box-sizing: border-box; }
+
+    /* Бургер-кнопка */
+    .burger-btn {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1100;
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: var(--text-primary);
+    }
+
+    /* Сайдбар – мобильная версия */
+    @media screen and (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 280px;
+        height: 100%;
+        transition: left 0.3s ease;
+        z-index: 1050;
+        background: var(--bg-white);
+        box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+        overflow-y: auto;
+        padding-top: 16px;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 1040;
+      }
+      .sidebar-overlay.show {
+        display: block;
+      }
+      .burger-btn {
+        display: block;
+      }
+      .main-content {
+        margin-left: 0 !important;
+        padding: 16px;
+      }
+    }
 
     .orders-list {
       background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px;
@@ -45,18 +103,18 @@
     }
     .orders-list .header-row h2 { margin: 0; color: var(--text-primary); font-size: 20px; border-bottom: 2px solid var(--primary-blue); padding-bottom: 4px; }
     .orders-list .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    .orders-list .controls input { padding: 8px 12px; border: 1.5px solid var(--border-color); border-radius: 6px; font-size: 13px; background: var(--bg-white); color: var(--text-primary); min-width: 200px; }
+    .orders-list .controls input { padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 6px; font-size: 14px; background: var(--bg-white); color: var(--text-primary); min-width: 200px; }
     .orders-list .controls input:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-    .orders-list table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    .orders-list th { text-align: left; padding: 10px 12px; background: var(--bg-main); border-bottom: 2px solid var(--border-color); font-weight: 600; color: var(--text-secondary); }
-    .orders-list td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); color: var(--text-primary); vertical-align: middle; }
+    .orders-list table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }
+    .orders-list th { text-align: left; padding: 12px 14px; background: var(--bg-main); border-bottom: 2px solid var(--border-color); font-weight: 600; color: var(--text-secondary); }
+    .orders-list td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); color: var(--text-primary); vertical-align: middle; }
     .orders-list tr:hover td { background: var(--bg-main); cursor: pointer; }
-    .orders-list .btn-link { padding: 4px 10px; border-radius: 6px; background: var(--primary-blue); color: #fff; text-decoration: none; font-size: 13px; border: none; cursor: pointer; margin-right: 4px; }
+    .orders-list .btn-link { padding: 8px 14px; border-radius: 6px; background: var(--primary-blue); color: #fff; text-decoration: none; font-size: 14px; border: none; cursor: pointer; margin-right: 4px; }
     .orders-list .btn-link:hover { opacity: 0.85; }
     .orders-list .btn-danger { background: var(--accent-red); }
     .orders-list .empty-msg { padding: 30px; text-align: center; color: var(--text-secondary); font-style: italic; }
     .pagination { display: flex; justify-content: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; }
-    .pagination button { padding: 6px 14px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-white); color: var(--text-primary); cursor: pointer; font-size: 13px; transition: all 0.15s; }
+    .pagination button { padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-white); color: var(--text-primary); cursor: pointer; font-size: 14px; transition: all 0.15s; }
     .pagination button:hover:not(:disabled) { background: var(--bg-main); border-color: var(--primary-blue); }
     .pagination button.active { background: var(--primary-blue); color: #fff; border-color: var(--primary-blue); }
     .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -66,13 +124,13 @@
 
     .form-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; margin-top: 16px; }
     .form-column { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; box-shadow: 0 1px 3px rgba(15,23,42,0.06); display: flex; flex-direction: column; }
-    .form-column-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 14px 0; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+    .form-column-title { font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0 0 14px 0; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
     .choice-strip { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 14px; }
     .choice-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .choice-card { position: relative; border: 1.5px solid var(--border-color); border-radius: 12px; padding: 16px 10px; text-align: center; cursor: pointer; background: var(--bg-white); transition: all 0.2s ease; user-select: none; }
     .choice-card:hover { border-color: var(--primary-blue); box-shadow: 0 2px 8px rgba(37,99,235,0.15); }
     .choice-card input { position: absolute; opacity: 0; width: 0; height: 0; }
-    .choice-card label { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text-primary); cursor: pointer; }
+    .choice-card label { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--text-primary); cursor: pointer; }
     .choice-card label::before { content: ''; display: inline-block; width: 18px; height: 18px; border: 2px solid var(--text-secondary); border-radius: 50%; margin-bottom: 2px; transition: 0.15s; }
     .choice-card input:checked+label::before { border-color: var(--primary-blue); background: var(--primary-blue); box-shadow: 0 0 0 4px rgba(37,99,235,0.2); }
     .choice-card:has(input:checked) { border-color: var(--primary-blue); background: rgba(37,99,235,0.06); }
@@ -80,31 +138,32 @@
     .service-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 12px; align-items: start; }
     .service-item { background: linear-gradient(135deg, var(--bg-main), var(--bg-white)); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(15,23,42,0.06); display: flex; flex-direction: column; position: relative; overflow: visible; }
     .service-main { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .service-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary-blue); flex-shrink: 0; }
-    .service-item label { font-size: 15px; font-weight: 600; color: var(--text-primary); cursor: pointer; }
+    .service-item input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--primary-blue); flex-shrink: 0; }
+    .service-item label { font-size: 16px; font-weight: 600; color: var(--text-primary); cursor: pointer; }
 
     .service-options { margin-top: 8px; display: none; }
-    .service-options select, .service-options input { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border-color); border-radius: 6px; font-size: 13px; background: var(--bg-white); color: var(--text-primary); margin-top: 4px; }
+    .service-options select, .service-options input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 6px; font-size: 14px; background: var(--bg-white); color: var(--text-primary); margin-top: 4px; }
     .service-options .cutting-fields { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
     .service-options .cutting-fields input { flex: 1; }
 
-    .data-table select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; background: linear-gradient(135deg, var(--bg-white), rgba(240,244,250,0.5)); color: var(--text-primary); -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,..."); background-repeat: no-repeat; background-position: right 12px center; padding-right: 2.5rem; }
+    .data-table select { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; background: linear-gradient(135deg, var(--bg-white), rgba(240,244,250,0.5)); color: var(--text-primary); -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,..."); background-repeat: no-repeat; background-position: right 12px center; padding-right: 2.5rem; }
     .print-sheets-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .print-sheets-info { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; }
+    .print-sheets-info { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
     .print-sheets-info strong { font-weight: 700; color: var(--primary-blue); background: rgba(37,99,235,0.08); padding: 2px 8px; border-radius: 6px; }
 
     .customer-autocomplete { position: relative; width: 100%; }
-    .customer-autocomplete input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; background: var(--bg-white); }
+    .customer-autocomplete input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; background: var(--bg-white); }
     .hidden-input { display: none; }
 
     .screenshot-drop-area { flex: 1; min-height: 180px; border: 2px dashed var(--border-color); border-radius: 8px; background: var(--bg-main); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; position: relative; cursor: default; }
     .screenshot-drop-area img { max-width: 100%; max-height: 100%; display: none; }
     .screenshot-drop-area.has-image img { display: block; }
     .screenshot-drop-area .placeholder { color: var(--text-secondary); text-align: center; }
-    .screenshot-drop-area .clear-screenshot { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 18px; cursor: pointer; display: none; }
+    .screenshot-drop-area .clear-screenshot { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 20px; cursor: pointer; display: none; }
     .screenshot-drop-area.has-image .clear-screenshot { display: flex; }
 
     .form-actions { margin-top: 20px; display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border-color); padding-top: 16px; }
+    .form-actions .btn { padding: 12px 24px; border-radius: 8px; font-size: 15px; font-weight: 600; }
 
     input[type="number"] { -moz-appearance: textfield; }
     input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -120,11 +179,11 @@
       flex: 1 1 0; min-width: 130px;
     }
     .material-fields-row .field-group label {
-      font-size: 12px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 4px;
+      font-size: 13px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 4px;
     }
     .material-fields-row .field-group input {
-      width: 100%; padding: 8px 10px; border: 1.5px solid var(--border-color); border-radius: 6px;
-      font-size: 13px; background: var(--bg-white); color: var(--text-primary);
+      width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 6px;
+      font-size: 14px; background: var(--bg-white); color: var(--text-primary);
     }
     .material-fields-row .field-group input:focus {
       outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
@@ -132,8 +191,8 @@
 
     .btn-transfer {
       display: block; width: 100%; background: #f0f4ff; color: var(--primary-blue);
-      border: 1px solid var(--primary-blue); font-weight: 500; padding: 10px 14px; border-radius: 6px;
-      cursor: pointer; transition: all 0.2s ease; font-size: 13px; margin-top: 12px; text-align: center;
+      border: 1px solid var(--primary-blue); font-weight: 500; padding: 12px 14px; border-radius: 8px;
+      cursor: pointer; transition: all 0.2s ease; font-size: 14px; margin-top: 12px; text-align: center;
     }
     .btn-transfer:hover {
       background: var(--primary-blue); color: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
@@ -141,7 +200,7 @@
 
     .btn-divide-toggle {
       background: var(--bg-white); color: var(--text-secondary); border: 1.5px solid var(--border-color);
-      border-radius: 6px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+      border-radius: 6px; padding: 10px 14px; font-size: 14px; font-weight: 600; cursor: pointer;
       transition: all 0.2s; white-space: nowrap;
     }
     .btn-divide-toggle.active {
@@ -152,12 +211,19 @@
       .form-columns { grid-template-columns: 1fr; }
       .service-grid { grid-template-columns: 1fr; }
       .material-fields-row { flex-direction: column; align-items: stretch; }
+      .btn-transfer { font-size: 14px; padding: 14px; }
+      .btn-divide-toggle { padding: 12px 16px; }
     }
   </style>
 </head>
 <body>
+  <!-- Бургер-кнопка -->
+  <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
+  <!-- Оверлей сайдбара -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
   <div class="app-container">
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebar">
       <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PP</div><span>ProfitPrint</span></div></div>
       <ul class="nav-menu">
         <li><a href="index.html">📊 Главная</a></li>
@@ -309,6 +375,18 @@
   </div>
 
   <script>
+    // Логика бургер-меню
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('show');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+
     (function() {
       document.body.classList.remove('dark-theme', 'dark');
       document.body.removeAttribute('data-theme');
