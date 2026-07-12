@@ -27,17 +27,6 @@
   --st-paused:#c8791a;
   --st-error:#d1352b;
 }
-body.dark{
-  --paper:#0f1418;
-  --surface:#171d23;
-  --surface-2:#1c2329;
-  --ink:#e7ebee;
-  --ink-soft:#8b95a1;
-  --line:#2a323a;
-  --brand:#59b8a6;
-  --brand-soft:#1a2b28;
-  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
-}
 *{box-sizing:border-box;}
 body{
   background:var(--paper);
@@ -63,6 +52,8 @@ body{
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   color: var(--ink);
+  align-items: center;
+  justify-content: center;
 }
 .sidebar-overlay {
   display: none;
@@ -89,13 +80,12 @@ body{
     padding-top: 16px;
   }
   .sidebar.open { left: 0; }
-  .burger-btn { display: block; }
+  .burger-btn { display: flex; }
   .main-content {
     margin-left: 0 !important;
     padding: 60px 12px 20px;
     width: 100%;
   }
-  /* Видимость пунктов меню в бургере */
   .sidebar .nav-menu li a {
     color: var(--ink) !important;
     background: transparent !important;
@@ -108,9 +98,27 @@ body{
     background: var(--brand) !important;
     color: #fff !important;
   }
+  /* Цепочка в списке становится вертикальной */
+  .pipeline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .pipeline-connector {
+    display: none;
+  }
+  .stage-row-head { display: none; }
+  .stage-row {
+    grid-template-columns: 30px 1fr;
+    row-gap: 6px;
+  }
+  .row-head { display: none; }
+  .order-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
 }
 
-/* ---------- Контент статусов ---------- */
 .status-wrapper{ max-width:1320px; margin:0 auto; padding:28px 20px 70px; }
 
 .page-header{
@@ -164,7 +172,7 @@ body.dark .btn-primary{ color:#0f1418; }
 .row-list{ display:flex; flex-direction:column; }
 .order-row{
   display:grid;
-  grid-template-columns: 110px 1fr 1fr 300px;
+  grid-template-columns: 110px 1fr 1fr 1fr;
   gap:18px;
   align-items:center;
   padding:16px 20px;
@@ -178,13 +186,13 @@ body.dark .btn-primary{ color:#0f1418; }
 .order-customer{ font-size:13.5px; font-weight:600; }
 .order-product{ font-size:13px; color:var(--ink-soft); }
 .row-head{
-  display:grid; grid-template-columns: 110px 1fr 1fr 300px; gap:18px;
+  display:grid; grid-template-columns: 110px 1fr 1fr 1fr; gap:18px;
   padding:12px 20px; font-family:'Space Grotesk',sans-serif;
   font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
   color:var(--ink-soft); background:var(--surface-2); border-bottom:1px solid var(--line);
 }
 
-.pipeline{ display:flex; align-items:center; }
+.pipeline{ display:flex; align-items:center; flex-wrap: wrap; }
 .pipeline-node{
   width:22px; height:22px; border-radius:50%; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
@@ -239,7 +247,7 @@ body.dark .btn-primary{ color:#0f1418; }
 }
 .stage-row{
   display:grid;
-  grid-template-columns: 34px 1.1fr 90px 90px 80px 150px 150px;
+  grid-template-columns: 34px 1.2fr 90px 90px 80px 150px;
   gap:12px;
   align-items:center;
   padding:11px 18px;
@@ -248,7 +256,7 @@ body.dark .btn-primary{ color:#0f1418; }
 .stage-row:last-child{ border-bottom:none; }
 .stage-row-head{
   display:grid;
-  grid-template-columns: 34px 1.1fr 90px 90px 80px 150px 150px;
+  grid-template-columns: 34px 1.2fr 90px 90px 80px 150px;
   gap:12px;
   padding:10px 18px;
   font-family:'Space Grotesk',sans-serif; font-size:10.5px; font-weight:600;
@@ -295,20 +303,39 @@ body.dark .btn-primary{ color:#0f1418; }
 @media (max-width: 900px){
   .stage-row-head{ display:none; }
   .stage-row{ grid-template-columns: 30px 1fr; grid-auto-rows:auto; row-gap:6px; }
-  .stage-progress{ max-width:none; }
 }
-@media (max-width: 760px){
-  .row-head{ display:none; }
-  .order-row{ grid-template-columns: 1fr; gap:8px; }
-  .pipeline{ margin-top:4px; }
-  .timeline-item{ grid-template-columns: 30px 1fr; }
+.sidebar {
+  background: #1e3a8a !important;
+}
+
+.sidebar .nav-menu li a {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+.sidebar .nav-menu li a:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.sidebar .nav-menu li a.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.sidebar .sidebar-header .logo-small span {
+  color: #ffffff !important;
+}
+
+.sidebar .sidebar-header .logo-icon {
+  background: #2563eb !important;
+  color: #ffffff !important;
 }
 </style>
 </head>
 <body>
 <div class="app-container">
 
-  <!-- Бургер‑кнопка и оверлей -->
   <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -316,6 +343,7 @@ body.dark .btn-primary{ color:#0f1418; }
     <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PP</div><span>ProfitPrint</span></div></div>
     <ul class="nav-menu">
       <li><a href="index.html">📊 Главная</a></li>
+      <li><a href="index2.html">📊 Главная</a></li>
       <li><a href="orders.html">📋 Заказы контрагентов</a></li>
       <li><a href="production.html">🏭 Заказы на производство</a></li>
       <li><a href="invoices.html">📦 Накладные</a></li>
@@ -327,14 +355,11 @@ body.dark .btn-primary{ color:#0f1418; }
       <li><a href="texKarta.html">⚙️ Техкарта</a></li>
       <li><a href="statuses.html" class="active">📊 Статусы</a></li>
     </ul>
-    <div class="theme-switch-wrapper">
-      <button id="themeToggle"><span id="themeIcon">🌙</span> <span id="themeLabel">Тёмная тема</span></button>
-    </div>
+    
   </nav>
 
   <main class="main-content">
     <div class="status-wrapper">
-      <!-- Экран 1: список -->
       <div id="listView">
         <div class="page-header">
           <div>
@@ -370,7 +395,6 @@ body.dark .btn-primary{ color:#0f1418; }
         <div class="table-container" id="tableContainer"></div>
       </div>
 
-      <!-- Экран 2: страница техкарты -->
       <div id="cardPage" class="card-page">
         <div class="breadcrumb"><a href="#" onclick="goToList(); return false;">← К списку техкарт</a></div>
         <div class="card-page-header">
@@ -397,27 +421,7 @@ function closeSidebar() {
   document.getElementById('sidebarOverlay').classList.remove('show');
 }
 
-// ---------- Тема ----------
-(function(){
-  const body=document.body;
-  const themeToggle=document.getElementById('themeToggle');
-  const themeIcon=document.getElementById('themeIcon');
-  const themeLabel=document.getElementById('themeLabel');
-  const saved=localStorage.getItem('theme')||'light';
-  body.className = saved==='dark' ? 'dark' : '';
-  updateThemeUI();
-  themeToggle.addEventListener('click',()=>{
-    const next = body.classList.contains('dark') ? 'light' : 'dark';
-    body.className = next==='dark' ? 'dark' : '';
-    localStorage.setItem('theme', next);
-    updateThemeUI();
-  });
-  function updateThemeUI(){
-    const isDark=body.classList.contains('dark');
-    themeIcon.textContent = isDark ? '☀️' : '🌙';
-    themeLabel.textContent = isDark ? 'Светлая тема' : 'Тёмная тема';
-  }
-})();
+
 
 // ---------- Статусы ----------
 const STATUS_META = {
@@ -429,14 +433,34 @@ const STATUS_META = {
 };
 const STATUS_ORDER = ['waiting','progress','done','paused','error'];
 
-const STAGES = [
-  { id:'print',   label:'Печать',      norm:120 },
-  { id:'stp',     label:'СТП',         norm:60 },
-  { id:'gluing',  label:'Склейка',     norm:90 },
-  { id:'cutting', label:'Резка',       norm:45 },
-  { id:'flot',    label:'Флоторезка',  norm:30 },
-  { id:'diecut',  label:'Высечка',     norm:50 }
-];
+// Динамические этапы в зависимости от услуг заказа
+function getStages(order) {
+  const serviceMap = {};
+  if (order.services && Array.isArray(order.services)) {
+    order.services.forEach(s => {
+      if (s.name === 'lamination') serviceMap.lamination = s.type || 'есть';
+      else if (s.name === 'embossing') serviceMap.embossing = s.type || 'есть';
+      else if (s.name === 'kongrev') serviceMap.kongrev = 'есть';
+      else if (s.name === 'die_cut') serviceMap.die_cut = 'есть';
+      else if (s.name === 'gluing') serviceMap.gluing = s.type || 'есть';
+    });
+  }
+
+  const stages = [
+    { id: 'ctp',        label: 'CTP' },
+    { id: 'flotorezka', label: 'Флоторезка' },
+    { id: 'pechat',     label: 'Печать' }
+  ];
+  if (serviceMap.lamination) stages.push({ id: 'lamination', label: 'Ламинация', detail: serviceMap.lamination });
+  if (serviceMap.embossing)  stages.push({ id: 'embossing',  label: 'Тиснение',  detail: serviceMap.embossing });
+  if (serviceMap.kongrev)    stages.push({ id: 'kongrev',    label: 'Конгрев',    detail: serviceMap.kongrev });
+  if (serviceMap.die_cut)    stages.push({ id: 'die_cut',    label: 'Высечка',    detail: serviceMap.die_cut });
+  stages.push({ id: 'archish', label: 'Арчиш' });
+  if (serviceMap.gluing)     stages.push({ id: 'gluing',     label: 'Склейка',    detail: serviceMap.gluing });
+  stages.push({ id: 'sklad',  label: 'Склад' });
+  if (serviceMap.gluing)     stages.push({ id: 'netu',       label: 'Netu' });
+  return stages;
+}
 
 function loadOrders(){
   try{
@@ -447,59 +471,63 @@ function loadOrders(){
 function saveOrders(orders){ localStorage.setItem('pp_orders', JSON.stringify(orders)); }
 
 function initTimeline(order){
-  if(!order.timeline) order.timeline={};
-  STAGES.forEach(s=>{
-    if(!order.timeline[s.id]) order.timeline[s.id]={status:'waiting',start:null,end:null,duration:0};
-    if(!STATUS_ORDER.includes(order.timeline[s.id].status)) order.timeline[s.id].status='waiting';
+  if(!order.timeline) order.timeline = {};
+  const stages = getStages(order);
+  stages.forEach(s => {
+    if(!order.timeline[s.id]) order.timeline[s.id] = {status:'waiting',start:null,end:null,duration:0};
+    if(!STATUS_ORDER.includes(order.timeline[s.id].status)) order.timeline[s.id].status = 'waiting';
   });
 }
 
 function setStageStatus(order, stageId, newStatus){
   initTimeline(order);
-  const data=order.timeline[stageId];
-  const now=Date.now();
-  if(newStatus==='progress' && data.status!=='progress'){
-    if(!data.start) data.start=now;
-    data.end=null;
-  } else if(newStatus==='done'){
-    if(!data.start) data.start=now;
-    data.end=now;
-    data.duration=Math.round((data.end-data.start)/60000);
-  } else if(newStatus==='waiting'){
-    data.start=null; data.end=null; data.duration=0;
-  } else if(newStatus==='paused' || newStatus==='error'){
-    if(data.start && !data.end) data.duration=Math.round((now-data.start)/60000);
+  const data = order.timeline[stageId];
+  const now = Date.now();
+  if(newStatus === 'progress' && data.status !== 'progress'){
+    if(!data.start) data.start = now;
+    data.end = null;
+  } else if(newStatus === 'done'){
+    if(!data.start) data.start = now;
+    data.end = now;
+    data.duration = Math.round((data.end - data.start) / 60000);
+  } else if(newStatus === 'waiting'){
+    data.start = null; data.end = null; data.duration = 0;
+  } else if(newStatus === 'paused' || newStatus === 'error'){
+    if(data.start && !data.end) data.duration = Math.round((now - data.start) / 60000);
   }
-  data.status=newStatus;
+  data.status = newStatus;
 }
 
 function formatDuration(min){
-  if(!min || min<=0) return '—';
-  const h=Math.floor(min/60), m=min%60;
+  if(!min || min <= 0) return '—';
+  const h = Math.floor(min / 60), m = min % 60;
   return h ? `${h}ч ${m}м` : `${m}м`;
 }
 function formatDate(ts){
   if(!ts) return '—';
   return new Date(ts).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
 }
+
 function overallStatus(order){
-  const statuses = STAGES.map(s=>order.timeline[s.id]?.status || 'waiting');
+  const stages = getStages(order);
+  const statuses = stages.map(s => order.timeline[s.id]?.status || 'waiting');
   if(statuses.includes('error')) return 'error';
-  if(statuses.every(s=>s==='done')) return 'done';
+  if(statuses.every(s => s === 'done')) return 'done';
   if(statuses.includes('paused')) return 'paused';
   if(statuses.includes('progress')) return 'progress';
   return 'waiting';
 }
 
 function renderPipeline(order){
+  const stages = getStages(order);
   let html = '<div class="pipeline">';
-  STAGES.forEach((s, i) => {
+  stages.forEach((s, i) => {
     const status = order.timeline[s.id]?.status || 'waiting';
     const meta = STATUS_META[status];
     const glyph = status === 'waiting' ? '' : meta.icon;
     html += `<div class="pipeline-node ${status}" title="${s.label}: ${meta.label}">${glyph}</div>`;
-    if(i < STAGES.length-1){
-      const nextDone = (order.timeline[s.id]?.status === 'done');
+    if(i < stages.length - 1){
+      const nextDone = (status === 'done');
       html += `<div class="pipeline-connector ${nextDone ? 'filled' : ''}"></div>`;
     }
   });
@@ -519,15 +547,15 @@ function renderTable(){
 
   orders.forEach(initTimeline);
 
-  let filtered = orders.filter(o=>{
+  let filtered = orders.filter(o => {
     if(search){
-      const hit = [o.techcard_no, o.customer, o.product_name].some(f=>String(f||'').toLowerCase().includes(search));
+      const hit = [o.techcard_no, o.customer, o.product_name].some(f => String(f || '').toLowerCase().includes(search));
       if(!hit) return false;
     }
     if(statusFilter && overallStatus(o) !== statusFilter) return false;
     return true;
   });
-  filtered.sort((a,b)=>b.id-a.id);
+  filtered.sort((a,b) => b.id - a.id);
 
   if(!filtered.length){
     container.innerHTML = '<div class="empty-state">Ничего не найдено по заданным фильтрам.</div>';
@@ -535,7 +563,7 @@ function renderTable(){
   }
 
   let html = `<div class="row-head"><div>№</div><div>Заказчик</div><div>Продукция</div><div>Прогресс</div></div><div class="row-list">`;
-  filtered.forEach(order=>{
+  filtered.forEach(order => {
     html += `<div class="order-row" onclick="openCard('${order.id}')">
       <div class="order-no mono">№${order.techcard_no || order.id}</div>
       <div class="order-customer">${order.customer || '—'}</div>
@@ -549,45 +577,45 @@ function renderTable(){
 
 function renderCardPage(order){
   initTimeline(order);
+  const stages = getStages(order);
   document.getElementById('cardTitle').textContent = `Техкарта №${order.techcard_no || order.id}`;
   document.getElementById('cardSub').textContent = `${order.customer || 'Без заказчика'} · ${order.product_name || ''}`;
 
   const overall = overallStatus(order);
   const overallEl = document.getElementById('cardOverallStatus');
   overallEl.className = `card-page-status ${overall}`;
-  overallEl.textContent = `${STATUS_META[overall].label}`;
+  overallEl.textContent = STATUS_META[overall].label;
 
   let html = `<div class="stage-row-head"><div></div><div>Этап</div><div>Начало</div><div>Конец</div><div>Затрач.</div><div>Прогресс</div><div>Статус</div></div>`;
-  STAGES.forEach(stage=>{
+  stages.forEach(stage => {
     const data = order.timeline[stage.id];
     const status = data.status || 'waiting';
     const meta = STATUS_META[status];
     const start = data.start, end = data.end;
-    const duration = data.duration || (start && end ? Math.round((end-start)/60000) : 0);
-    const elapsed = status==='progress' && start ? Math.round((Date.now()-start)/60000) : 0;
-    const remaining = status==='progress' ? Math.max(0, stage.norm-elapsed) : null;
-
-    let progressPercent=0;
-    if(status==='done') progressPercent=100;
-    else if(status==='progress' && stage.norm>0) progressPercent=Math.min(100, Math.round((elapsed/stage.norm)*100));
-    else if((status==='paused'||status==='error') && stage.norm>0) progressPercent=Math.min(100, Math.round(((duration||elapsed)/stage.norm)*100));
-
+    const duration = data.duration || (start && end ? Math.round((end - start) / 60000) : 0);
+    const elapsed = status === 'progress' && start ? Math.round((Date.now() - start) / 60000) : 0;
     const started = status !== 'waiting';
+
+    let progressPercent = 0;
+    if (status === 'done') progressPercent = 100;
+    else if (status === 'progress') progressPercent = 50;
+    else if (status === 'paused') progressPercent = 25;
+    else if (status === 'error') progressPercent = 10;
 
     html += `
       <div class="stage-row">
-        <div class="stage-icon ${status}">${status==='waiting' ? '' : meta.icon}</div>
+        <div class="stage-icon ${status}">${status === 'waiting' ? '' : meta.icon}</div>
         <div class="stage-name">
           ${stage.label}
-          <span class="stage-cell-label">Норматив ${formatDuration(stage.norm)}${status==='progress' && remaining!==null ? ` · осталось ${formatDuration(remaining)}` : ''}</span>
+          ${stage.detail ? `<span class="stage-cell-label">${stage.detail}</span>` : ''}
         </div>
         <div class="stage-cell-value">${started ? formatDate(start).split(', ')[1] || formatDate(start) : '—'}</div>
         <div class="stage-cell-value">${end ? formatDate(end).split(', ')[1] || formatDate(end) : '—'}</div>
-        <div class="stage-cell-value">${started ? formatDuration(duration||elapsed) : '—'}</div>
-        <div class="stage-progress"><div class="fill ${(status==='progress' && elapsed>stage.norm)||status==='error' ? 'overdue' : ''}" style="width:${progressPercent}%"></div></div>
+        <div class="stage-cell-value">${started ? formatDuration(duration || elapsed) : '—'}</div>
+        <div class="stage-progress"><div class="fill ${(status === 'progress' && elapsed > 60) || status === 'error' ? 'overdue' : ''}" style="width:${progressPercent}%"></div></div>
         <div class="status-select-wrap">
           <select class="status-select" onchange="changeStatus('${order.id}','${stage.id}', this.value)">
-            ${STATUS_ORDER.map(st=>`<option value="${st}" ${status===st?'selected':''}>${STATUS_META[st].label}</option>`).join('')}
+            ${STATUS_ORDER.map(st => `<option value="${st}" ${status === st ? 'selected' : ''}>${STATUS_META[st].label}</option>`).join('')}
           </select>
         </div>
       </div>`;
@@ -596,15 +624,15 @@ function renderCardPage(order){
 }
 
 function showListScreen(){
-  document.getElementById('listView').style.display='';
+  document.getElementById('listView').style.display = '';
   document.getElementById('cardPage').classList.remove('active');
   renderTable();
 }
 function showCardScreen(orderId){
   const orders = loadOrders();
-  const order = orders.find(o=>String(o.id)===String(orderId));
+  const order = orders.find(o => String(o.id) === String(orderId));
   if(!order){ showListScreen(); return; }
-  document.getElementById('listView').style.display='none';
+  document.getElementById('listView').style.display = 'none';
   document.getElementById('cardPage').classList.add('active');
   renderCardPage(order);
   window.scrollTo(0,0);
@@ -627,7 +655,7 @@ window.addEventListener('popstate', route);
 
 window.changeStatus = function(orderId, stageId, newStatus){
   const orders = loadOrders();
-  const order = orders.find(o=>String(o.id)===String(orderId));
+  const order = orders.find(o => String(o.id) === String(orderId));
   if(!order) return;
   setStageStatus(order, stageId, newStatus);
   saveOrders(orders);
@@ -642,8 +670,8 @@ window.saveAll = function(){
 };
 
 window.resetFilters = function(){
-  document.getElementById('searchInput').value='';
-  document.getElementById('statusFilter').value='';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('statusFilter').value = '';
   renderTable();
 };
 

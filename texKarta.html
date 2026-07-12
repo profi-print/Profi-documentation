@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -221,6 +222,33 @@
       color: var(--primary-blue); padding: 2px 10px; border-radius: 6px;
       margin-left: auto; white-space: nowrap;
     }
+    .sidebar {
+  background: #1e3a8a !important;
+}
+
+.sidebar .nav-menu li a {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+.sidebar .nav-menu li a:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.sidebar .nav-menu li a.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.sidebar .sidebar-header .logo-small span {
+  color: #ffffff !important;
+}
+
+.sidebar .sidebar-header .logo-icon {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
   </style>
 </head>
 <body>
@@ -316,6 +344,16 @@
         const hasRollFormat = order.roll_format && String(order.roll_format).trim() !== '';
 
         const materialType = order.material_type || 'roll';
+        const isDivideByTwo = order.divide_by_two === true;
+
+        // Формируем название раздела в зависимости от типа и режима 1/2
+        let materialLabel = 'Информация о материале';
+        if (materialType === 'roll') {
+          materialLabel = isDivideByTwo ? 'Флоторезка 1/2' : 'Флоторезка';
+        } else {
+          materialLabel = isDivideByTwo ? 'Листовой 1/2' : 'Листовой';
+        }
+
         let sheetWidth, sheetLength;
         if (materialType === 'roll') {
           sheetWidth = order.roll_width || order.size_width || 0;
@@ -328,8 +366,6 @@
         const printWidth = order.size_width || 0;
         const printLength = order.size_length || 0;
         const printSizeFormatted = `${printWidth}×${printLength}`;
-
-        const isDivideByTwo = order.divide_by_two === true;
 
         const serviceMap = {
           lamination: '', vd_lak: '', embossing: '', kongrev: '',
@@ -414,6 +450,7 @@
           `;
         }
 
+        // Убран блок "Флоторезка (½ формата)"
         let html = `
           <div class="tech-card-container">
             <a href="texKarta.html" class="back-link">← Назад к списку</a>
@@ -430,29 +467,9 @@
                   <span class="desc-value value">${order.description || ''}</span>
                 </div>
               </div>
-              ${isDivideByTwo ? `
-                <div class="section-title">Флоторезка (½ формата)</div>
-                <div class="table-responsive">
-                  <table>
-                    <thead><tr>
-                      <th>материал</th>
-                      ${hasRollFormat ? '<th>формат рулона</th>' : ''}
-                      <th>Размер листа</th><th>гр/м2</th><th>тираж листов</th><th>факт листов</th>
-                    </tr></thead>
-                    <tbody><tr>
-                      <td><strong>${order.paper_type || ''}</strong></td>
-                      ${hasRollFormat ? `<td><strong>${(order.roll_format/2 || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}</strong></td>` : ''}
-                      <td><strong>${Math.round(sheetWidth/2)}×${Math.round(sheetLength/2)}</strong></td>
-                      <td><strong>${gsmFormatted}</strong></td>
-                      <td><strong>${Math.floor(displaySheets / 2).toLocaleString('ru-RU')}</strong></td>
-                      <td></td>
-                    </tr></tbody>
-                  </table>
-                </div>
-              ` : ''}
               <div class="section-title info-title">
                 <span>Информация о материале</span>
-                <span class="material-type-badge">${materialType === 'roll' ? 'Рулон' : 'Листовой'}</span>
+                <span class="material-type-badge">${materialLabel}</span>
               </div>
               <div class="table-responsive">
                 <table>
