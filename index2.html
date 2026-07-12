@@ -2,10 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ProfitPrint — Производственный дашборд</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ProfitPrint">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <script>
         (function() {
             const user = sessionStorage.getItem('profitprint_user');
@@ -17,13 +21,9 @@
         })();
     </script>
 
-
     <style>
         /* ============================================
            ПРИНУДИТЕЛЬНАЯ СВЕТЛАЯ ТЕМА
-           (тот же блок, что и в otpCex.html — чтобы
-           переменные темы гарантированно резолвились
-           в те же цвета и страница не «слепла»)
            ============================================ */
         :root {
             --bg-main: #f1f4f9;
@@ -32,8 +32,13 @@
             --text-secondary: #64748b;
             --border-color: #e2e8f0;
             --primary-blue: #2563eb;
+            --primary-blue-light: #3b82f6;
             --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.1);
             --accent-red: #dc2626;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-orange: #f59e0b;
             --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
@@ -49,164 +54,516 @@
             --accent-red: #dc2626 !important;
         }
 
-        .theme-switch-wrapper {
-            display: none !important;
-        }
+        .theme-switch-wrapper { display: none !important; }
 
-        /* ============================================
-           Единые стили, полностью повторяющие otpCex.html
-           ============================================ */
-        body { margin: 0; background: var(--bg-main); font-family: var(--font-main); }
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg-main);
+            font-family: var(--font-main);
+            color: var(--text-primary);
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            -webkit-user-select: none;
+            user-select: none;
+            overscroll-behavior: none;
+        }
 
         .app-container { display: flex; min-height: 100vh; }
 
-        /* Sidebar — идентична otpCex */
-        .sidebar {
-            width: 240px; background: var(--bg-white);
-            border-right: 1px solid var(--border-color);
-            padding: 20px 0; display: flex; flex-direction: column;
-            flex-shrink: 0;
-        }
-        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
-        .logo-small { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text-primary); }
-        .logo-icon {
-            width: 36px; height: 36px; background: var(--primary-blue); color: #fff;
-            border-radius: 8px; display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 18px;
-        }
-        .nav-menu { list-style: none; padding: 0 12px; margin: 0; flex: 1; }
-        .nav-menu li { margin-bottom: 2px; }
-        .nav-menu a {
-            display: flex; align-items: center; gap: 8px; padding: 10px 12px;
-            border-radius: 8px; color: var(--text-primary); text-decoration: none;
-            font-weight: 500; font-size: 14px; transition: background 0.15s;
-        }
-        .nav-menu a:hover, .nav-menu a.active { background: var(--bg-main); color: var(--primary-blue); }
-
-        .logout-btn {
-            margin: 20px; padding: 10px 20px; border: 1.5px solid var(--border-color);
-            border-radius: 8px; background: var(--bg-main); color: var(--text-primary);
-            font-size: 14px; font-weight: 600; cursor: pointer;
-        }
-        .logout-btn:hover { border-color: #dc2626; color: #dc2626; }
-
-        /* Основной контент — такие же отступы, как в otpCex */
-        .main-content {
-            flex: 1;
-            padding: 30px;
-        }
-
-        .top-bar h1 {
-            margin: 0 0 24px 0;
-            font-size: 26px;
-            color: var(--text-primary);
-        }
-
-        /* Центральная карточка — унифицирована с .form-column из otpCex */
-        .dashboard-card {
+        /* ============================================
+           БУРГЕР-МЕНЮ (как в otpCex.html)
+           ============================================ */
+        .burger-btn {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 1100;
             background: var(--bg-white);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 32px 40px;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-            max-width: 640px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .dashboard-card h1 {
-            margin: 0 0 12px 0;
-            font-size: 28px;
+            border-radius: 8px;
+            width: 44px;
+            height: 44px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             color: var(--text-primary);
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1040;
+        }
+        .sidebar-overlay.show { display: block; }
+
+        /* ============================================
+           SIDEBAR
+           ============================================ */
+        .sidebar {
+            width: 260px;
+            background: #1e3a8a;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            min-height: 100vh;
+            padding-top: env(safe-area-inset-top);
+        }
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        .logo-small {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: #2563eb;
+            color: #fff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        .nav-menu {
+            list-style: none;
+            padding: 0 12px;
+            margin: 0;
+            flex: 1;
+        }
+        .nav-menu li { margin-bottom: 4px; }
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: #ffffff !important;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: transparent !important;
+        }
+        .nav-menu a:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            transform: translateX(4px);
+        }
+        .nav-menu a.active {
+            background: #2563eb !important;
+            color: #fff !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
-        .dashboard-card p {
+        .logout-btn {
+            margin: 20px;
+            padding: 12px 20px;
+            border: 1.5px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: transparent;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .logout-btn:hover {
+            background: rgba(220, 38, 38, 0.15);
+            border-color: #dc2626;
+            color: #fff;
+        }
+
+        /* ============================================
+           ОСНОВНОЙ КОНТЕНТ
+           ============================================ */
+        .main-content {
+            flex: 1;
+            padding: 40px 30px;
+            padding-top: calc(40px + env(safe-area-inset-top));
+            padding-bottom: calc(40px + env(safe-area-inset-bottom));
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .top-bar {
+            margin-bottom: 30px;
+        }
+
+        /* ============================================
+           ПРИВЕТСТВЕННАЯ КАРТОЧКА
+           ============================================ */
+        .welcome-card {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            border-radius: 20px;
+            padding: 32px 40px;
+            color: #fff;
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.3);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            animation: slideDown 0.5s ease;
+        }
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .welcome-card::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .welcome-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            border: 3px solid rgba(255,255,255,0.3);
+            flex-shrink: 0;
+        }
+        .welcome-text { flex: 1; min-width: 200px; }
+        .welcome-text h1 {
+            margin: 0 0 6px 0;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+        .welcome-text p {
+            margin: 0;
+            font-size: 15px;
+            opacity: 0.9;
+        }
+        .welcome-date {
+            margin-top: 12px;
+            font-size: 13px;
+            opacity: 0.75;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ============================================
+           СТАТИСТИКА
+           ============================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.06);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease backwards;
+        }
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-blue);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--stat-color, var(--primary-blue));
+        }
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 12px;
+            background: var(--stat-bg, rgba(37,99,235,0.1));
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 4px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        .stat-label {
+            font-size: 13px;
             color: var(--text-secondary);
-            font-size: 16px;
-            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           БЫСТРЫЕ ССЫЛКИ
+           ============================================ */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--primary-blue);
+            border-radius: 2px;
         }
 
         .quick-links {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 16px;
         }
-
         .quick-link {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 18px 20px;
-            border-radius: 10px;
-            background: var(--bg-main);
+            gap: 14px;
+            padding: 20px 22px;
+            border-radius: 14px;
+            background: var(--bg-white);
             border: 1.5px solid var(--border-color);
             color: var(--text-primary);
             font-weight: 600;
-            font-size: 16px;
+            font-size: 15px;
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.06);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease backwards;
         }
-
+        .quick-link:nth-child(1) { animation-delay: 0.15s; }
+        .quick-link:nth-child(2) { animation-delay: 0.25s; }
+        .quick-link:nth-child(3) { animation-delay: 0.35s; }
+        .quick-link:nth-child(4) { animation-delay: 0.45s; }
         .quick-link:hover {
             border-color: var(--primary-blue);
             background: var(--bg-white);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15);
+        }
+        .quick-link:hover .quick-link-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+        .quick-link::after {
+            content: '→';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%) translateX(-10px);
+            opacity: 0;
+            color: var(--primary-blue);
+            font-size: 20px;
+            font-weight: 700;
+            transition: all 0.25s ease;
+        }
+        .quick-link:hover::after {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+        .quick-link-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            transition: transform 0.25s ease;
+        }
+        .quick-link-icon.blue { background: rgba(37,99,235,0.1); }
+        .quick-link-icon.green { background: rgba(16,185,129,0.1); }
+        .quick-link-icon.purple { background: rgba(139,92,246,0.1); }
+        .quick-link-icon.orange { background: rgba(245,158,11,0.1); }
+
+        .quick-link-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .quick-link-text small {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 400;
         }
 
-        /* Убираем стрелки у number-инпутов на всём сайте */
+        /* ============================================
+           АНИМАЦИИ
+           ============================================ */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================
+           МОБИЛЬНАЯ АДАПТАЦИЯ
+           ============================================ */
+        @media screen and (max-width: 768px) {
+            .burger-btn { display: flex; }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -280px;
+                width: 280px;
+                height: 100vh;
+                transition: left 0.3s ease;
+                z-index: 1050;
+                box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+                overflow-y: auto;
+            }
+            .sidebar.open { left: 0; }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 70px 16px 20px;
+                padding-top: calc(70px + env(safe-area-inset-top));
+                width: 100%;
+            }
+            .welcome-card {
+                padding: 24px 20px;
+                border-radius: 16px;
+            }
+            .welcome-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+            .welcome-avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+            }
+            .welcome-text h1 { font-size: 22px; }
+            .welcome-text p { font-size: 14px; }
+            .welcome-date { justify-content: center; }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .stat-card { padding: 16px; }
+            .stat-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+            .stat-value { font-size: 22px; }
+            .stat-label { font-size: 12px; }
+            .quick-links {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .quick-link {
+                padding: 16px 18px;
+                font-size: 14px;
+            }
+            .quick-link-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 22px;
+            }
+            .section-title { font-size: 16px; }
+        }
+
+        @media screen and (max-width: 480px) {
+            .main-content {
+                padding: 65px 12px 16px;
+                padding-top: calc(65px + env(safe-area-inset-top));
+            }
+            .welcome-card { padding: 20px 16px; }
+            .welcome-text h1 { font-size: 20px; }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .stat-card { padding: 14px; }
+            .stat-value { font-size: 20px; }
+            .stat-label { font-size: 11px; }
+            .quick-link {
+                padding: 14px 16px;
+                font-size: 13px;
+            }
+            .quick-link-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+
+        /* Убираем стрелки у number-инпутов */
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-
-        /* Адаптивность, как в otpCex */
-        @media screen and (max-width: 768px) {
-            .sidebar { width: 200px; }
-            .main-content { padding: 20px; }
-            .dashboard-card { padding: 24px; }
-            .quick-links { grid-template-columns: 1fr; }
-        }
-        @media screen and (max-width: 480px) {
-            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); }
-            .app-container { flex-direction: column; }
-        }
-
-        /* Для всего приложения в standalone-режиме */
-body {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  -webkit-user-select: none;  /* отключаем выделение текста как в нативных приложениях */
-  user-select: none;
-  overscroll-behavior: none;  /* убираем эффект резины */
-}
-
-/* Для боковой панели: учитываем статус-бар */
-.sidebar {
-  padding-top: env(safe-area-inset-top);
-}
-
-/* Основной контент */
-.main-content {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* Если в приложении есть нижняя панель навигации – добавляем ей отступ */
-.bottom-nav {
-  padding-bottom: env(safe-area-inset-bottom);
-}
+        input[type="number"] { -moz-appearance: textfield; }
     </style>
 </head>
 <body>
-    <!-- Сбрасываем тёмную тему, как в otpCex.html -->
     <script>
         (function() {
             document.body.classList.remove('dark-theme', 'dark');
@@ -216,9 +573,11 @@ body {
         })();
     </script>
 
+    <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
     <div class="app-container">
-        <!-- Sidebar (полностью как в otpCex) -->
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo-small">
                     <div class="logo-icon">PP</div>
@@ -226,7 +585,7 @@ body {
                 </div>
             </div>
             <ul class="nav-menu">
-                <li><a href="index.html" class="active">📊 Главная</a></li>
+                <li><a href="index2.html" class="active">📊 Главная</a></li>
                 <li><a href="clients.html">👥 Контрагенты</a></li>
                 <li><a href="otpCex.html">⚙️ На производство</a></li>
                 <li><a href="texKarta.html">🛠️ Техкарта</a></li>
@@ -235,21 +594,77 @@ body {
             <button class="logout-btn" id="logoutBtn">🚪 Выйти</button>
         </nav>
 
-        <!-- Основное содержимое -->
         <main class="main-content">
-            <div class="top-bar">
+            <!-- Приветственная карточка -->
+            <div class="welcome-card">
+                <div class="welcome-content">
+                    <div class="welcome-avatar" id="userAvatar">D</div>
+                    <div class="welcome-text">
+                        <h1>Добро пожаловать, <span id="userName">Дизайнер</span>!</h1>
+                        <p>Производственный раздел ProfitPrint</p>
+                        <div class="welcome-date">
+                            <span>📅</span>
+                            <span id="currentDate"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="dashboard-card">
-                <h1>Добро пожаловать, <span id="userName">...</span>!</h1>
-                <p>Производственный раздел ProfitPrint</p>
-                
-                <div class="quick-links">
-                    <a href="clients.html" class="quick-link">👥 Контрагенты</a>
-                    <a href="otpCex.html" class="quick-link">⚙️ Отправка в цех</a>
-                    <a href="texKarta.html" class="quick-link">🛠️ Технологическая карта</a>
-                    <a href="statuses.html" class="quick-link">📊 Статусы</a>
+            <!-- Статистика -->
+            <div class="stats-grid">
+                <div class="stat-card" style="--stat-color: #2563eb; --stat-bg: rgba(37,99,235,0.1);">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-value" id="statOrders">0</div>
+                    <div class="stat-label">Всего заказов</div>
                 </div>
+                <div class="stat-card" style="--stat-color: #10b981; --stat-bg: rgba(16,185,129,0.1);">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="statDone">0</div>
+                    <div class="stat-label">Завершено</div>
+                </div>
+                <div class="stat-card" style="--stat-color: #f59e0b; --stat-bg: rgba(245,158,11,0.1);">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-value" id="statProgress">0</div>
+                    <div class="stat-label">В процессе</div>
+                </div>
+                <div class="stat-card" style="--stat-color: #8b5cf6; --stat-bg: rgba(139,92,246,0.1);">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="statClients">0</div>
+                    <div class="stat-label">Контрагентов</div>
+                </div>
+            </div>
+
+            <!-- Быстрые ссылки -->
+            <h2 class="section-title">Быстрый доступ</h2>
+            <div class="quick-links">
+                <a href="clients.html" class="quick-link">
+                    <div class="quick-link-icon blue">👥</div>
+                    <div class="quick-link-text">
+                        <span>Контрагенты</span>
+                        <small>Управление клиентами</small>
+                    </div>
+                </a>
+                <a href="otpCex.html" class="quick-link">
+                    <div class="quick-link-icon green">⚙️</div>
+                    <div class="quick-link-text">
+                        <span>Отправка в цех</span>
+                        <small>Создать производственный заказ</small>
+                    </div>
+                </a>
+                <a href="texKarta.html" class="quick-link">
+                    <div class="quick-link-icon purple">🛠️</div>
+                    <div class="quick-link-text">
+                        <span>Технологическая карта</span>
+                        <small>Документация производства</small>
+                    </div>
+                </a>
+                <a href="statuses.html" class="quick-link">
+                    <div class="quick-link-icon orange">📊</div>
+                    <div class="quick-link-text">
+                        <span>Статусы</span>
+                        <small>Отслеживание этапов</small>
+                    </div>
+                </a>
             </div>
         </main>
     </div>
@@ -257,76 +672,132 @@ body {
     <script src="js/multi-account-storage.js"></script>
     <script src="js/auth-check-2.js"></script>
     <script>
-        const user = sessionStorage.getItem('profitprint_user');
-        if (user) document.getElementById('userName').textContent = user;
+        // Бургер-меню
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+        }
 
+        // Имя пользователя и аватар
+        const user = sessionStorage.getItem('profitprint_user') || 'Дизайнер';
+        document.getElementById('userName').textContent = user;
+        document.getElementById('userAvatar').textContent = user.charAt(0).toUpperCase();
+
+        // Выход
         document.getElementById('logoutBtn').addEventListener('click', () => {
             sessionStorage.clear();
             window.location.href = 'login.html';
         });
+
+        // Текущая дата
+        const dateEl = document.getElementById('currentDate');
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateEl.textContent = now.toLocaleDateString('ru-RU', options);
+
+        // Статистика
+        function loadStats() {
+            try {
+                const orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
+                const clients = JSON.parse(localStorage.getItem('pp_clients') || '[]');
+
+                document.getElementById('statOrders').textContent = orders.length;
+                document.getElementById('statClients').textContent = clients.length;
+
+                // Считаем завершённые и в процессе по статусам
+                let done = 0, progress = 0;
+                orders.forEach(order => {
+                    if (order.timeline) {
+                        const statuses = Object.values(order.timeline).map(t => t.status);
+                        if (statuses.every(s => s === 'done')) done++;
+                        else if (statuses.some(s => s === 'progress')) progress++;
+                    }
+                });
+                document.getElementById('statDone').textContent = done;
+                document.getElementById('statProgress').textContent = progress;
+            } catch (e) {
+                console.error('Ошибка загрузки статистики:', e);
+            }
+        }
+        loadStats();
+
+        // Анимация счётчиков
+        document.querySelectorAll('.stat-value').forEach(el => {
+            const target = parseInt(el.textContent) || 0;
+            let current = 0;
+            const step = Math.max(1, Math.ceil(target / 20));
+            const interval = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(interval);
+                }
+                el.textContent = current;
+            }, 30);
+        });
     </script>
+
+    <!-- iOS install hint -->
     <style>
-  .ios-install-hint {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-    padding: 16px 20px;
-    z-index: 10000;
-    display: none;
-    width: 90%;
-    max-width: 360px;
-    font-family: 'Inter', sans-serif;
-    animation: slideUp 0.3s ease;
-  }
-  .ios-install-hint .hint-text {
-    font-size: 14px;
-    color: #1e293b;
-    margin-bottom: 12px;
-  }
-  .ios-install-hint .hint-text strong {
-    color: #2563eb;
-  }
-  .ios-install-hint .close-hint {
-    position: absolute;
-    top: 8px;
-    right: 12px;
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    color: #94a3b8;
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
-  }
-</style>
+        .ios-install-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            padding: 16px 20px;
+            z-index: 10000;
+            display: none;
+            width: 90%;
+            max-width: 360px;
+            font-family: 'Inter', sans-serif;
+            animation: slideUp 0.3s ease;
+        }
+        .ios-install-hint .hint-text {
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        .ios-install-hint .hint-text strong { color: #2563eb; }
+        .ios-install-hint .close-hint {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
 
-<div class="ios-install-hint" id="iosHint">
-  <button class="close-hint" onclick="document.getElementById('iosHint').style.display='none'">✕</button>
-  <div class="hint-text">
-    Чтобы установить <strong>ProfitPrint</strong> как приложение,<br>
-    нажмите кнопку <strong>«Поделиться»</strong> (квадрат со стрелкой) → <strong>«На экран „Домой“»</strong>.
-  </div>
-</div>
+    <div class="ios-install-hint" id="iosHint">
+        <button class="close-hint" onclick="document.getElementById('iosHint').style.display='none'">✕</button>
+        <div class="hint-text">
+            Чтобы установить <strong>ProfitPrint</strong> как приложение,<br>
+            нажмите кнопку <strong>«Поделиться»</strong> (квадрат со стрелкой) → <strong>«На экран „Домой"»</strong>.
+        </div>
+    </div>
 
-<script>
-  (function() {
-    // Показываем подсказку только на iOS и если приложение не уже в standalone-режиме
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-    const hint = document.getElementById('iosHint');
-    if (isIOS && !isStandalone) {
-      // Показываем через 1 секунду после загрузки
-      setTimeout(() => {
-        hint.style.display = 'block';
-      }, 1000);
-    }
-  })();
-</script>
+    <script>
+        (function() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+            const hint = document.getElementById('iosHint');
+            if (isIOS && !isStandalone) {
+                setTimeout(() => { hint.style.display = 'block'; }, 1000);
+            }
+        })();
+    </script>
 </body>
 </html>
