@@ -1473,6 +1473,129 @@ img {
     max-width: 100% !important;
   }
 }
+/* ============================================
+   ИСПРАВЛЕНИЕ - ИНПУТЫ В ПАРАМЕТРАХ (data-table)
+   ============================================ */
+@media screen and (max-width: 768px) {
+  /* Убираем лишние отступы у строк data-table */
+  .data-table tr {
+    margin-bottom: 12px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+  }
+
+  /* Ячейки с лейблами */
+  .data-table td {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  /* Лейбл (первая ячейка) */
+  .data-table td:first-child {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 6px !important;
+    margin-top: 14px !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+  }
+
+  /* Инпуты и селекты — идентичны form-group */
+  .data-table select,
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 14px 12px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
+    border: 1.5px solid var(--border-color) !important;
+    background: var(--bg-white) !important;
+    color: var(--text-primary) !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+  }
+
+  /* Фокус — такой же как в form-group */
+  .data-table select:focus,
+  .data-table input:focus {
+    outline: none !important;
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  }
+
+  /* Select — стрелка как в form-group */
+  .data-table select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 14px center !important;
+    padding-right: 40px !important;
+  }
+
+  /* Блок "Тираж листов" — карточка */
+  .print-sheets-container {
+    background: var(--bg-white) !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    padding: 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .print-sheets-info {
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .print-sheets-info > span {
+    width: 100% !important;
+    justify-content: space-between !important;
+    padding: 10px 12px !important;
+    background: var(--bg-main) !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--border-color) !important;
+    font-size: 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .print-sheets-info strong {
+    padding: 6px 14px !important;
+    font-size: 14px !important;
+    min-width: 70px !important;
+    text-align: center !important;
+    max-width: none !important;
+  }
+
+  /* Первая строка data-table без верхнего отступа у лейбла */
+  .data-table tr:first-child td:first-child {
+    margin-top: 0 !important;
+  }
+}
+
+/* Очень маленькие экраны */
+@media screen and (max-width: 480px) {
+  .data-table td:first-child {
+    font-size: 12px !important;
+  }
+
+  .data-table select,
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    padding: 12px 10px !important;
+    font-size: 15px !important;
+  }
+
+  .print-sheets-container {
+    padding: 12px !important;
+  }
+}
   </style>
 </head>
 <body>
