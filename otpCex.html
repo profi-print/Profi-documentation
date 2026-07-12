@@ -536,6 +536,390 @@
   text-overflow: ellipsis;
   flex-shrink: 1;
 }
+
+/* Мобильная адаптация */
+@media screen and (max-width: 768px) {
+  /* Основные контейнеры */
+  .main-content {
+    padding: 60px 8px 20px !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .content-section {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Список заказов - карточный вид */
+  .orders-list {
+    padding: 12px;
+    margin: 0;
+    border-radius: 8px;
+  }
+
+  .orders-list .header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .orders-list .header-row h2 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .orders-list .controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .orders-list .controls input {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .orders-list .controls .btn {
+    width: 100%;
+  }
+
+  /* Таблица заказов - скрыть на мобильных, использовать карточки */
+  .table-responsive {
+    display: none;
+  }
+
+  /* Карточки заказов для мобильных */
+  .orders-list::after {
+    content: '';
+    display: block;
+  }
+
+  #ordersBody tr {
+    display: block;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  #ordersBody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+  }
+
+  #ordersBody td:last-child {
+    border-bottom: none;
+  }
+
+  #ordersBody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  #ordersBody td:nth-child(1)::before { content: '№ техкарты:'; }
+  #ordersBody td:nth-child(2)::before { content: 'Заказчик:'; }
+  #ordersBody td:nth-child(3)::before { content: 'Продукция:'; }
+  #ordersBody td:nth-child(4)::before { content: 'Менеджер:'; }
+  #ordersBody td:nth-child(5)::before { content: 'Кол-во:'; }
+  #ordersBody td:nth-child(6)::before { content: 'Тираж:'; }
+
+  #ordersBody td {
+    text-align: right;
+  }
+
+  #ordersBody td:first-child {
+    text-align: left;
+  }
+
+  /* Форма */
+  .form-columns {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .form-column {
+    padding: 14px !important;
+  }
+
+  .form-column-title {
+    font-size: 16px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Choice cards */
+  .choice-cards {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .choice-card {
+    padding: 14px 10px !important;
+  }
+
+  /* Service grid */
+  .service-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .service-item {
+    padding: 14px !important;
+  }
+
+  .service-item label {
+    font-size: 15px !important;
+  }
+
+  /* Material fields */
+  .material-fields-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .material-fields-row .field-group {
+    width: 100% !important;
+    min-width: auto !important;
+  }
+
+  .material-fields-row .btn-material {
+    width: 100% !important;
+    height: 48px !important;
+  }
+
+  /* Data table */
+  .data-table {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .data-table tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+  }
+
+  .data-table td {
+    display: block;
+    padding: 8px 0 !important;
+    border: none !important;
+  }
+
+  .data-table td:first-child {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .data-table select,
+  .data-table input {
+    width: 100% !important;
+    font-size: 15px !important;
+    padding: 12px !important;
+  }
+
+  /* Print sheets info */
+  .print-sheets-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .print-sheets-info {
+    flex-direction: column;
+    gap: 10px !important;
+    width: 100%;
+  }
+
+  .print-sheets-info > span {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .print-sheets-info strong {
+    max-width: none !important;
+    font-size: 15px !important;
+    padding: 8px 14px !important;
+  }
+
+  /* Form row */
+  .form-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .form-group {
+    width: 100% !important;
+  }
+
+  .form-group label {
+    font-size: 14px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100% !important;
+    font-size: 15px !important;
+    padding: 12px !important;
+  }
+
+  /* PDF block */
+  .pdf-block {
+    margin-top: 20px !important;
+  }
+
+  .pdf-block > div {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .pdf-block .btn {
+    width: 100% !important;
+  }
+
+  .pdf-filename-input {
+    width: 100% !important;
+  }
+
+  .pdf-filename-input input {
+    width: 100% !important;
+  }
+
+  /* Screenshot block */
+  .screenshot-block {
+    margin-top: 20px !important;
+  }
+
+  .screenshot-drop-area {
+    min-height: 150px !important;
+    max-height: 250px !important;
+  }
+
+  /* Form actions */
+  .form-actions {
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 16px 0 !important;
+  }
+
+  .form-actions .btn {
+    width: 100% !important;
+    padding: 16px !important;
+    font-size: 16px !important;
+    min-height: 52px !important;
+  }
+
+  /* Pagination */
+  .pagination {
+    gap: 4px !important;
+    flex-wrap: wrap;
+  }
+
+  .pagination button {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    min-width: 40px;
+  }
+
+  /* Cutting fields */
+  .service-options .cutting-fields {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .service-options .cutting-fields input {
+    width: 100% !important;
+  }
+
+  .cutting-row-inline {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100%;
+  }
+
+  .cutting-row-inline label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+  }
+
+  .cutting-row-inline input {
+    width: 100% !important;
+  }
+
+  /* Sidebar overlay */
+  .sidebar-overlay {
+    z-index: 1040 !important;
+  }
+
+  /* Burger button */
+  .burger-btn {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 26px !important;
+  }
+
+  /* Top bar */
+  .top-bar h1 {
+    font-size: 20px !important;
+    padding-left: 50px !important;
+  }
+}
+
+/* Очень маленькие экраны */
+@media screen and (max-width: 480px) {
+  .main-content {
+    padding: 56px 6px 16px !important;
+  }
+
+  .orders-list {
+    padding: 10px !important;
+  }
+
+  .form-column {
+    padding: 12px !important;
+  }
+
+  .choice-card {
+    padding: 12px 8px !important;
+  }
+
+  .service-item {
+    padding: 12px !important;
+  }
+
+  .pagination button {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    min-width: 36px;
+  }
+}
+
+/* Предотвращение горизонтальной прокрутки */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
   </style>
 </head>
 <body>
@@ -642,7 +1026,7 @@
                   <tr><td>Печатный формат (Длина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeLength" required></td></tr>
                   <tr><td>Приладка</td><td><input type="text" inputmode="numeric" class="masked-number" id="makeReady" required></td></tr>
                   <tr><td>Доля</td><td><input type="text" inputmode="numeric" class="masked-number" id="stripes" required></td></tr>
-                  <tr><td>Цвет</td><td><input type="text" name="color" id="color" required></td></tr>
+                  <tr><td>Красочность</td><td><input type="text" name="color" id="color" required></td></tr>
                   <tr>
                     <td>Тираж листов</td>
                     <td>
