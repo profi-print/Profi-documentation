@@ -801,331 +801,338 @@
             }
 
             function renderTechCard(order) {
-                const rawNo = order.techcard_no || order.id;
-                const techcardNoFormatted = String(rawNo).padStart(3, '0');
+    const rawNo = order.techcard_no || order.id;
+    const techcardNoFormatted = String(rawNo).padStart(3, '0');
 
-                const materialType = order.material_type || 'roll';
-                const isDivideByTwo = order.divide_by_two === true;
+    const materialType = order.material_type || 'roll';
+    const isDivideByTwo = order.divide_by_two === true;
 
-                // 1. Формируем правильный заголовок материала
-                let materialLabel = '';
-                if (materialType === 'roll') {
-                    materialLabel = isDivideByTwo ? 'Флоторезка 1/2' : 'Флоторезка';
-                } else {
-                    materialLabel = isDivideByTwo ? 'Листовой 1/2' : 'Листовой';
-                }
+    // 1. Формируем правильный заголовок материала
+    let materialLabel = '';
+    if (materialType === 'roll') {
+        materialLabel = isDivideByTwo ? 'Флоторезка 1/2' : 'Флоторезка';
+    } else {
+        materialLabel = isDivideByTwo ? 'Листовой 1/2' : 'Листовой';
+    }
 
-                // 2. ОРИГИНАЛЬНЫЙ тираж (для таблиц Печать и Пост печать)
-                const originalDisplaySheets = Math.ceil(order.print_sheets || 0);
-                const originalDisplaySheetsFormatted = originalDisplaySheets.toLocaleString('ru-RU');
+    // 2. ОРИГИНАЛЬНЫЙ тираж
+    const originalDisplaySheets = Math.ceil(order.print_sheets || 0);
+    const originalDisplaySheetsFormatted = originalDisplaySheets.toLocaleString('ru-RU');
 
-                // 3. РАЗДЕЛЁННЫЙ тираж (только для таблицы материалов)
-                let materialDisplaySheets = originalDisplaySheets;
-                if (isDivideByTwo) {
-                    materialDisplaySheets = Math.ceil(materialDisplaySheets / 2);
-                }
-                const materialDisplaySheetsFormatted = materialDisplaySheets.toLocaleString('ru-RU');
+    // 3. РАЗДЕЛЁННЫЙ тираж (только для таблицы материалов)
+    let materialDisplaySheets = originalDisplaySheets;
+    if (isDivideByTwo) {
+        materialDisplaySheets = Math.ceil(materialDisplaySheets / 2);
+    }
+    const materialDisplaySheetsFormatted = materialDisplaySheets.toLocaleString('ru-RU');
 
-                const orderQty = order.order_qty || 0;
-                const orderQtyFormatted = orderQty.toLocaleString('ru-RU');
-                const makeReadyFormatted = (order.make_ready || 0).toLocaleString('ru-RU');
-                const gsmFormatted = (order.gsm || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-                const rollFormatFormatted = (order.roll_format || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-                const hasRollFormat = order.roll_format && String(order.roll_format).trim() !== '';
+    // 4. Тираж БЕЗ приладки (для таблиц Печать и Пост печать)
+    const postPrintSheets = Math.max(0, originalDisplaySheets - (order.make_ready || 0));
+    const postPrintSheetsFormatted = postPrintSheets.toLocaleString('ru-RU');
 
-                // 4. Формируем таблицу материалов (ИСПОЛЬЗУЕМ РАЗДЕЛЁННЫЙ тираж)
-                let tableHeaders = '';
-                let tableRow = '';
+    const orderQty = order.order_qty || 0;
+    const orderQtyFormatted = orderQty.toLocaleString('ru-RU');
+    const makeReadyFormatted = (order.make_ready || 0).toLocaleString('ru-RU');
+    const gsmFormatted = (order.gsm || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const rollFormatFormatted = (order.roll_format || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const hasRollFormat = order.roll_format && String(order.roll_format).trim() !== '';
 
-                if (materialType === 'roll') {
-                    tableHeaders = `
-                        <th>материал</th>
-                        <th>гр/м2</th>
-                        <th>Формат рулона</th>
-                        <th>Формат флоторезки</th>
-                        <th>тираж листов</th>
-                        <th>факт листов</th>
-                    `;
-                    tableRow = `
-                        <td data-label="материал"><strong>${order.paper_type || ''}</strong></td>
-                        <td data-label="гр/м2"><strong>${gsmFormatted}</strong></td>
-                        <td data-label="Формат рулона"><strong>${order.flot_length || ''}</strong></td>
-                        <td data-label="Формат флоторезки"><strong>${order.roll_width || ''}</strong></td>
-                        <td data-label="тираж листов"><strong>${materialDisplaySheetsFormatted}</strong></td>
-                        <td data-label="факт листов"></td>
-                    `;
-                } else {
-                    tableHeaders = `
-                        <th>материал</th>
-                        <th>гр/м2</th>
-                        <th>Размер листа</th>
-                        <th>тираж листов</th>
-                        <th>факт листов</th>
-                    `;
-                    tableRow = `
-                        <td data-label="материал"><strong>${order.paper_type || ''}</strong></td>
-                        <td data-label="гр/м2"><strong>${gsmFormatted}</strong></td>
-                        <td data-label="Размер листа"><strong>${(order.sheet_width || '')}×${(order.sheet_length || '')}</strong></td>
-                        <td data-label="тираж листов"><strong>${materialDisplaySheetsFormatted}</strong></td>
-                        <td data-label="факт листов"></td>
-                    `;
-                }
+    // 5. Формируем таблицу материалов
+    let tableHeaders = '';
+    let tableRow = '';
 
-                const printWidth = order.size_width || 0;
-                const printLength = order.size_length || 0;
-                const printSizeFormatted = `${printWidth}×${printLength}`;
+    if (materialType === 'roll') {
+        tableHeaders = `
+            <th>Материал</th>
+            <th>Гр/м2</th>
+            <th>Формат рулона</th>
+            <th>Формат флоторезки</th>
+            <th>Тираж листов</th>
+            <th>Факт листов</th>
+        `;
+        tableRow = `
+            <td data-label="Материал"><strong>${order.paper_type || ''}</strong></td>
+            <td data-label="Гр/м2"><strong>${gsmFormatted}</strong></td>
+            <td data-label="Формат рулона"><strong>${order.flot_length || ''}</strong></td>
+            <td data-label="Формат флоторезки"><strong>${order.roll_width || ''}</strong></td>
+            <td data-label="Тираж листов"><strong>${materialDisplaySheetsFormatted}</strong></td>
+            <td data-label="Факт листов"></td>
+        `;
+    } else {
+        tableHeaders = `
+            <th>Материал</th>
+            <th>Гр/м2</th>
+            <th>Размер листа</th>
+            <th>Тираж листов</th>
+            <th>Факт листов</th>
+        `;
+        tableRow = `
+            <td data-label="Материал"><strong>${order.paper_type || ''}</strong></td>
+            <td data-label="Гр/м2"><strong>${gsmFormatted}</strong></td>
+            <td data-label="Размер листа"><strong>${(order.sheet_width || '')}×${(order.sheet_length || '')}</strong></td>
+            <td data-label="Тираж листов"><strong>${materialDisplaySheetsFormatted}</strong></td>
+            <td data-label="Факт листов"></td>
+        `;
+    }
 
-                const serviceMap = {
-                    lamination: '', vd_lak: '', embossing: '', kongrev: '',
-                    die_cut: '', gluing: '', uv_lak: '', cutting_pre: '', cutting_post: ''
-                };
+    const printWidth = order.size_width || 0;
+    const printLength = order.size_length || 0;
+    const printSizeFormatted = `${printWidth}×${printLength}`;
 
-                if (order.services && Array.isArray(order.services)) {
-                    order.services.forEach(s => {
-                        if (s.name === 'lamination') serviceMap.lamination = s.type || 'есть';
-                        else if (s.name === 'vd_lak') serviceMap.vd_lak = s.type || 'есть';
-                        else if (s.name === 'embossing') serviceMap.embossing = s.type || 'есть';
-                        else if (s.name === 'kongrev') serviceMap.kongrev = 'есть';
-                        else if (s.name === 'die_cut') serviceMap.die_cut = 'есть';
-                        else if (s.name === 'gluing') serviceMap.gluing = s.type || 'есть';
-                        else if (s.name === 'uv_lak') serviceMap.uv_lak = s.type || 'есть';
-                        else if (s.name === 'cutting') {
-                            if (s.type === 'pre' || s.type === 'до печать') {
-                                serviceMap.cutting_pre = (s.width && s.length) ? `${s.width}×${s.length}` : 'есть';
-                            } else if (s.type === 'post' || s.type === 'пост печать') {
-                                serviceMap.cutting_post = (s.width && s.length) ? `${s.width}×${s.length}` : 'есть';
-                            } else if (s.type === 'both' || s.type === 'оба') {
-                                if (s.details) {
-                                    const pre = s.details.find(d => d.type === 'до печать');
-                                    const post = s.details.find(d => d.type === 'пост печать');
-                                    if (pre && pre.width && pre.length) serviceMap.cutting_pre = `${pre.width}×${pre.length}`;
-                                    if (post && post.width && post.length) serviceMap.cutting_post = `${post.width}×${post.length}`;
-                                }
-                            }
-                        }
-                    });
-                }
+    const serviceMap = {
+        lamination: '', vd_lak: '', embossing: '', kongrev: '',
+        die_cut: '', gluing: '', uv_lak: '', cutting_pre: '', cutting_post: ''
+    };
 
-                const printType = order.print_type || 'A1';
-                const printLabel = `Печать ${printType}`;
-
-                const serviceList = [
-                    { key: 'lamination', label: 'ламинация' },
-                    { key: 'vd_lak', label: 'ВД Лак' },
-                    { key: 'embossing', label: 'тиснения' },
-                    { key: 'kongrev', label: 'конгрев' },
-                    { key: 'die_cut', label: 'высечка' },
-                    { key: 'gluing', label: 'склейка' },
-                    { key: 'cutting_pre', label: 'Резка до печати' },
-                    { key: 'cutting_post', label: 'Резка пост печати' }
-                ];
-                const activeServices = serviceList.filter(item => serviceMap[item.key] !== '');
-
-                let techOpHTML = '';
-                if (activeServices.length > 0) {
-                    const techOpRow = activeServices.map(item => `<td>${item.label}</td>`).join('');
-                    const paramsRow = activeServices.map(item => {
-                        let val = serviceMap[item.key];
-                        if (item.key === 'die_cut' || item.key === 'gluing') val = 'есть';
-                        return `<td><strong>${val}</strong></td>`;
-                    }).join('');
-                    const planRow = activeServices.map(item => {
-                        let val = '';
-                        if (item.key === 'gluing') val = orderQtyFormatted;
-                        else val = originalDisplaySheetsFormatted;
-                        return `<td><strong>${val}</strong></td>`;
-                    }).join('');
-                    const faktRow = activeServices.map(() => `<td></td>`).join('');
-                    const brakRow = activeServices.map(() => `<td></td>`).join('');
-
-                    techOpHTML = `
-                        <div class="section-title">Пост печать</div>
-                        <div class="table-responsive tech-op-desktop">
-                          <table class="tech-op-table">
-                            <tbody>
-                              <tr><td class="row-label tech-op-header">Пост печать</td>${techOpRow}</tr>
-                              <tr><td class="row-label">Параметры</td>${paramsRow}</tr>
-                              <tr><td class="row-label">План</td>${planRow}</tr>
-                              <tr><td class="row-label">Факт</td>${faktRow}</tr>
-                              <tr><td class="row-label">Брак</td>${brakRow}</tr>
-                            </tbody>
-                          </table>
-                        </div>
-                        <div class="tech-op-mobile">
-                          ${activeServices.map(item => {
-                              let paramVal = serviceMap[item.key];
-                              if (item.key === 'die_cut' || item.key === 'gluing') paramVal = 'есть';
-                              const planVal = item.key === 'gluing' ? orderQtyFormatted : originalDisplaySheetsFormatted;
-                              return `
-                                <div class="service-card">
-                                    <div class="service-name">${item.label}</div>
-                                    <div class="service-row"><span class="service-label">Параметры</span><span class="service-value">${paramVal}</span></div>
-                                    <div class="service-row"><span class="service-label">План</span><span class="service-value">${planVal}</span></div>
-                                    <div class="service-row"><span class="service-label">Факт</span><span class="service-value"></span></div>
-                                    <div class="service-row"><span class="service-label">Брак</span><span class="service-value"></span></div>
-                                </div>
-                              `;
-                          }).join('')}
-                        </div>
-                    `;
-                } else {
-                    techOpHTML = `
-                        <div class="section-title">Пост печать</div>
-                        <p style="color: var(--text-secondary); font-style: italic; margin: 10px 0;">Нет дополнительных услуг</p>
-                    `;
-                }
-
-                // Блок файлов
-                let filesHTML = '';
-                if (order.pdf_filename || order.screenshot_base64) {
-                    filesHTML = `<div class="section-title files-title">Файлы</div>`;
-
-                    if (order.pdf_filename) {
-                        filesHTML += `
-                            <div class="file-row pdf-file-row">
-                                <span class="label">Имя PDF:</span> 
-                                <span class="pdf-name">${order.pdf_filename}</span>
-                            </div>
-                        `;
-                    }
-
-                    if (order.screenshot_base64) {
-                        filesHTML += `
-                            <div class="screenshot-with-lines" id="screenshotLinesBlock">
-                                <div class="screenshot-side">
-                                    <div class="screenshot-container">
-                                        <img id="techScreenshotImg" src="${order.screenshot_base64}" alt="" class="screenshot-img" onclick="event.stopPropagation(); document.getElementById('screenshotModal').classList.add('visible'); document.getElementById('modalImage').src='${order.screenshot_base64}';">
-                                    </div>
-                                </div>
-                                <div class="lines-side" id="linesSide">
-                                    <div class="comment-line"></div>
-                                    <div class="comment-line"></div>
-                                    <div class="comment-line"></div>
-                                    <div class="comment-line"></div>
-                                    <div class="comment-line"></div>
-                                    <div class="comment-line"></div>
-                                </div>
-                            </div>
-                        `;
+    if (order.services && Array.isArray(order.services)) {
+        order.services.forEach(s => {
+            if (s.name === 'lamination') serviceMap.lamination = s.type || 'есть';
+            else if (s.name === 'vd_lak') serviceMap.vd_lak = s.type || 'есть';
+            else if (s.name === 'embossing') serviceMap.embossing = s.type || 'есть';
+            else if (s.name === 'kongrev') serviceMap.kongrev = 'есть';
+            else if (s.name === 'die_cut') serviceMap.die_cut = 'есть';
+            else if (s.name === 'gluing') serviceMap.gluing = s.type || 'есть';
+            else if (s.name === 'uv_lak') serviceMap.uv_lak = s.type || 'есть';
+            else if (s.name === 'cutting') {
+                if (s.type === 'pre' || s.type === 'до печать') {
+                    serviceMap.cutting_pre = (s.width && s.length) ? `${s.width}×${s.length}` : 'есть';
+                } else if (s.type === 'post' || s.type === 'пост печать') {
+                    serviceMap.cutting_post = (s.width && s.length) ? `${s.width}×${s.length}` : 'есть';
+                } else if (s.type === 'both' || s.type === 'оба') {
+                    if (s.details) {
+                        const pre = s.details.find(d => d.type === 'до печать');
+                        const post = s.details.find(d => d.type === 'пост печать');
+                        if (pre && pre.width && pre.length) serviceMap.cutting_pre = `${pre.width}×${pre.length}`;
+                        if (post && post.width && post.length) serviceMap.cutting_post = `${post.width}×${post.length}`;
                     }
                 }
+            }
+        });
+    }
 
-                let html = `
-                    <div class="tech-card-container">
-                        <a href="texKarta.html" class="back-link">← Назад к списку</a>
-                        <div class="tech-card" id="techCardContent">
-                            <div class="tech-card-header-row">
-                                <h2>Технологическая карта</h2>
-                                <div class="tech-card-number">№ ${techcardNoFormatted}</div>
-                            </div>
-                            <div class="order-meta">
-                                <div class="meta-row">
-                                    <p><span class="label">Заказчик</span> <span class="value">${order.customer || ''}</span></p>
-                                    <p><span class="label">Название продукции</span> <span class="value">${order.product_name || ''}</span></p>
-                                    <p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>
-                                </div>
-                                <div class="desc-row">
-                                    <span class="desc-label label">Примечание</span>
-                                    <span class="desc-value value">${order.description || ''}</span>
-                                </div>
-                            </div>
-                            <div class="section-title" style="margin: 24px 0 10px 0;">
-                                ${materialLabel}
-                            </div>
-                            <div class="table-responsive">
-                                <table>
-                                    <thead><tr>
-                                        ${tableHeaders}
-                                    </tr></thead>
-                                    <tbody><tr>
-                                        ${tableRow}
-                                    </tr></tbody>
-                                </table>
-                            </div>
-                            <div class="section-title">${printLabel}</div>
-                            <div class="table-responsive">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Печатный формат</th><th>Красочность</th><th>тираж</th><th>приладка</th><th>ВД лак</th><th>Кол-во брака</th><th>Кол-во факта печати</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td data-label="Печатный формат"><strong>${printSizeFormatted}</strong></td>
-                                            <td data-label="Красочность"><strong>${order.color || ''}</strong></td>
-                                            <td data-label="тираж"><strong>${originalDisplaySheetsFormatted}</strong></td>
-                                            <td data-label="приладка"><strong>${makeReadyFormatted}</strong></td>
-                                            <td data-label="ВД лак"><strong>${serviceMap.vd_lak || ''}</strong></td>
-                                            <td data-label="Кол-во брака"></td>
-                                            <td data-label="Кол-во факта печати"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            ${techOpHTML}
-                            ${filesHTML}
+    const printType = order.print_type || 'A1';
+    const printLabel = `Печать ${printType}`;
+
+    const serviceList = [
+        { key: 'lamination', label: 'Ламинация' },
+        { key: 'vd_lak', label: 'ВД Лак' },
+        { key: 'embossing', label: 'Тиснения' },
+        { key: 'kongrev', label: 'Конгрев' },
+        { key: 'die_cut', label: 'Высечка' },
+        { key: 'gluing', label: 'Склейка' },
+        { key: 'cutting_pre', label: 'Резка до печати' },
+        { key: 'cutting_post', label: 'Резка пост печати' }
+    ];
+    const activeServices = serviceList.filter(item => serviceMap[item.key] !== '');
+
+    // 6. Формируем блок Пост печать
+    let techOpHTML = '';
+    if (activeServices.length > 0) {
+        const techOpRow = activeServices.map(item => `<td>${item.label}</td>`).join('');
+        const paramsRow = activeServices.map(item => {
+            let val = serviceMap[item.key];
+            if (item.key === 'die_cut' || item.key === 'gluing') val = 'есть';
+            return `<td><strong>${val}</strong></td>`;
+        }).join('');
+        
+        const planRow = activeServices.map(item => {
+            let val = '';
+            if (item.key === 'gluing') val = orderQtyFormatted;
+            else val = postPrintSheetsFormatted;  // Используем тираж БЕЗ приладки
+            return `<td><strong>${val}</strong></td>`;
+        }).join('');
+        const faktRow = activeServices.map(() => `<td></td>`).join('');
+        const brakRow = activeServices.map(() => `<td></td>`).join('');
+
+        techOpHTML = `
+            <div class="section-title">Пост печать</div>
+            <div class="table-responsive tech-op-desktop">
+              <table class="tech-op-table">
+                <tbody>
+                  <tr><td class="row-label tech-op-header">Пост печать</td>${techOpRow}</tr>
+                  <tr><td class="row-label">Параметры</td>${paramsRow}</tr>
+                  <tr><td class="row-label">План</td>${planRow}</tr>
+                  <tr><td class="row-label">Факт</td>${faktRow}</tr>
+                  <tr><td class="row-label">Брак</td>${brakRow}</tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="tech-op-mobile">
+              ${activeServices.map(item => {
+                  let paramVal = serviceMap[item.key];
+                  if (item.key === 'die_cut' || item.key === 'gluing') paramVal = 'есть';
+                  const planVal = item.key === 'gluing' ? orderQtyFormatted : postPrintSheetsFormatted;
+                  return `
+                    <div class="service-card">
+                        <div class="service-name">${item.label}</div>
+                        <div class="service-row"><span class="service-label">Параметры</span><span class="service-value">${paramVal}</span></div>
+                        <div class="service-row"><span class="service-label">План</span><span class="service-value">${planVal}</span></div>
+                        <div class="service-row"><span class="service-label">Факт</span><span class="service-value"></span></div>
+                        <div class="service-row"><span class="service-label">Брак</span><span class="service-value"></span></div>
+                    </div>
+                  `;
+              }).join('')}
+            </div>
+        `;
+    } else {
+        techOpHTML = `
+            <div class="section-title">Пост печать</div>
+            <p style="color: var(--text-secondary); font-style: italic; margin: 10px 0;">Нет дополнительных услуг</p>
+        `;
+    }
+
+    // 7. Блок файлов
+    let filesHTML = '';
+    if (order.pdf_filename || order.screenshot_base64) {
+        filesHTML = `<div class="section-title files-title">Файлы</div>`;
+
+        if (order.pdf_filename) {
+            filesHTML += `
+                <div class="file-row pdf-file-row">
+                    <span class="label">Имя PDF:</span> 
+                    <span class="pdf-name">${order.pdf_filename}</span>
+                </div>
+            `;
+        }
+
+        if (order.screenshot_base64) {
+            filesHTML += `
+                <div class="screenshot-with-lines" id="screenshotLinesBlock">
+                    <div class="screenshot-side">
+                        <div class="screenshot-container">
+                            <img id="techScreenshotImg" src="${order.screenshot_base64}" alt="" class="screenshot-img" onclick="event.stopPropagation(); document.getElementById('screenshotModal').classList.add('visible'); document.getElementById('modalImage').src='${order.screenshot_base64}';">
                         </div>
                     </div>
-                `;
+                    <div class="lines-side" id="linesSide">
+                        <div class="comment-line"></div>
+                        <div class="comment-line"></div>
+                        <div class="comment-line"></div>
+                        <div class="comment-line"></div>
+                        <div class="comment-line"></div>
+                        <div class="comment-line"></div>
+                    </div>
+                </div>
+            `;
+        }
+    }
 
-                content.innerHTML = html;
-                actionBar.style.display = 'flex';
+    // 8. Собираем итоговый HTML
+    let html = `
+        <div class="tech-card-container">
+            <a href="texKarta.html" class="back-link">← Назад к списку</a>
+            <div class="tech-card" id="techCardContent">
+                <div class="tech-card-header-row">
+                    <h2>Технологическая карта</h2>
+                    <div class="tech-card-number">№ ${techcardNoFormatted}</div>
+                </div>
+                <div class="order-meta">
+                    <div class="meta-row">
+                        <p><span class="label">Заказчик</span> <span class="value">${order.customer || ''}</span></p>
+                        <p><span class="label">Название продукции</span> <span class="value">${order.product_name || ''}</span></p>
+                        <p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>
+                    </div>
+                    <div class="desc-row">
+                        <span class="desc-label label">Примечание</span>
+                        <span class="desc-value value">${order.description || ''}</span>
+                    </div>
+                </div>
+                <div class="section-title" style="margin: 24px 0 10px 0;">
+                    ${materialLabel}
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr>
+                            ${tableHeaders}
+                        </tr></thead>
+                        <tbody><tr>
+                            ${tableRow}
+                        </tr></tbody>
+                    </table>
+                </div>
+                <div class="section-title">${printLabel}</div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Печатный формат</th><th>Красочность</th><th>тираж</th><th>приладка</th><th>ВД лак</th><th>Кол-во брака</th><th>Кол-во факта печати</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Печатный формат"><strong>${printSizeFormatted}</strong></td>
+                                <td data-label="Красочность"><strong>${order.color || ''}</strong></td>
+                                <td data-label="тираж"><strong>${postPrintSheetsFormatted}</strong></td>
+                                <td data-label="приладка"><strong>${makeReadyFormatted}</strong></td>
+                                <td data-label="ВД лак"><strong>${serviceMap.vd_lak || ''}</strong></td>
+                                <td data-label="Кол-во брака"></td>
+                                <td data-label="Кол-во факта печати"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                ${techOpHTML}
+                ${filesHTML}
+            </div>
+        </div>
+    `;
 
-                printBtn.onclick = function() { window.print(); };
+    content.innerHTML = html;
+    actionBar.style.display = 'flex';
 
-                setTimeout(() => {
-                    const img = document.getElementById('techScreenshotImg');
-                    const linesSide = document.getElementById('linesSide');
-                    if (img && linesSide) {
-                        const syncHeight = () => {
-                            const imgHeight = img.offsetHeight;
-                            if (imgHeight > 0) {
-                                linesSide.style.height = imgHeight + 'px';
-                                linesSide.style.minHeight = imgHeight + 'px';
-                            }
-                        };
-                        
-                        if (img.complete) {
-                            syncHeight();
-                        } else {
-                            img.onload = syncHeight;
-                        }
-                        
-                        window.addEventListener('resize', syncHeight);
-                    }
-                }, 100);
+    printBtn.onclick = function() { window.print(); };
 
-                downloadPdfBtn.onclick = function() {
-                    const element = document.getElementById('techCardContent');
-                    if (!element) return;
-                    html2canvas(element, { scale: 2, backgroundColor: '#ffffff', allowTaint: true, useCORS: true })
-                        .then(canvas => {
-                            const imgData = canvas.toDataURL('image/png');
-                            const { jsPDF } = window.jspdf;
-                            const pdf = new jsPDF('p', 'mm', 'a4');
-                            const pdfWidth = pdf.internal.pageSize.getWidth();
-                            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                            let heightLeft = pdfHeight;
-                            let position = 0;
-                            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                            heightLeft -= pdf.internal.pageSize.getHeight();
-                            while (heightLeft > 0) {
-                                position = heightLeft - pdfHeight;
-                                pdf.addPage();
-                                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                                heightLeft -= pdf.internal.pageSize.getHeight();
-                            }
-                            pdf.save(`Техкарта_${techcardNoFormatted}.pdf`);
-                        })
-                        .catch(err => { alert('Ошибка при создании PDF: ' + err.message); });
-                };
-
-                const modal = document.getElementById('screenshotModal');
-                modal.onclick = function(e) {
-                    if (e.target === this) this.classList.remove('visible');
-                };
+    setTimeout(() => {
+        const img = document.getElementById('techScreenshotImg');
+        const linesSide = document.getElementById('linesSide');
+        if (img && linesSide) {
+            const syncHeight = () => {
+                const imgHeight = img.offsetHeight;
+                if (imgHeight > 0) {
+                    linesSide.style.height = imgHeight + 'px';
+                    linesSide.style.minHeight = imgHeight + 'px';
+                }
+            };
+            
+            if (img.complete) {
+                syncHeight();
+            } else {
+                img.onload = syncHeight;
             }
+            
+            window.addEventListener('resize', syncHeight);
+        }
+    }, 100);
+
+    downloadPdfBtn.onclick = function() {
+        const element = document.getElementById('techCardContent');
+        if (!element) return;
+        html2canvas(element, { scale: 2, backgroundColor: '#ffffff', allowTaint: true, useCORS: true })
+            .then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                let heightLeft = pdfHeight;
+                let position = 0;
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                heightLeft -= pdf.internal.pageSize.getHeight();
+                while (heightLeft > 0) {
+                    position = heightLeft - pdfHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                    heightLeft -= pdf.internal.pageSize.getHeight();
+                }
+                pdf.save(`Техкарта_${techcardNoFormatted}.pdf`);
+            })
+            .catch(err => { alert('Ошибка при создании PDF: ' + err.message); });
+    };
+
+    const modal = document.getElementById('screenshotModal');
+    modal.onclick = function(e) {
+        if (e.target === this) this.classList.remove('visible');
+    };
+}
 
             if (orderId) {
                 const orders = loadOrders();

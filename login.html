@@ -32,17 +32,16 @@
             transition: background 0.3s;
         }
         .login-logo {
-            width: 64px;
-            height: 64px;
-            background: var(--primary-blue, #2563eb);
-            color: #fff;
-            border-radius: 18px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 28px;
-            margin-bottom: 16px;
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            margin: 0 auto 24px auto;
+            display: block;
+        }
+        .login-logo img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
         .login-card h1 {
             margin: 0 0 4px;
@@ -107,9 +106,7 @@
                 border-radius: 20px;
             }
             .login-logo {
-                width: 56px;
-                height: 56px;
-                font-size: 24px;
+                max-width: 240px;
             }
             .login-card input {
                 padding: 14px;
@@ -124,9 +121,9 @@
 </head>
 <body>
 <div class="login-card">
-    <div class="login-logo">PP</div>
-    <h1>PrintMax</h1>
-    <p>Войдите в свою учётную запись</p>
+    <div class="login-logo">
+        <img src="printmax.jpg" alt="PrintMax">
+    </div>
     <input type="text" id="loginInput" placeholder="Логин" autocomplete="username" inputmode="text">
     <input type="password" id="passwordInput" placeholder="Пароль" autocomplete="current-password">
     <div class="login-error" id="loginError"></div>
