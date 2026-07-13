@@ -695,37 +695,6 @@
     height: 48px !important;
   }
 
-  /* Data table */
-  .data-table {
-    width: 100%;
-    font-size: 14px;
-  }
-
-  .data-table tr {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 12px;
-  }
-
-  .data-table td {
-    display: block;
-    padding: 8px 0 !important;
-    border: none !important;
-  }
-
-  .data-table td:first-child {
-    font-weight: 600;
-    color: var(--text-secondary);
-    font-size: 13px;
-    margin-bottom: 4px;
-  }
-
-  .data-table select,
-  .data-table input {
-    width: 100% !important;
-    font-size: 15px !important;
-    padding: 12px !important;
-  }
 
   /* Print sheets info */
   .print-sheets-container {
@@ -1114,46 +1083,6 @@ img {
     font-size: 15px !important;
     padding: 0 16px !important;
     border-radius: 10px !important;
-  }
-
-  /* Data table (Параметры) */
-  .data-table {
-    width: 100% !important;
-    margin-top: 16px !important;
-  }
-
-  .data-table tr {
-    display: flex !important;
-    flex-direction: column !important;
-    margin-bottom: 14px !important;
-    padding: 12px !important;
-    background: var(--bg-main) !important;
-    border-radius: 10px !important;
-  }
-
-  .data-table td {
-    display: block !important;
-    width: 100% !important;
-    padding: 6px 0 !important;
-    border: none !important;
-  }
-
-  .data-table td:first-child {
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    color: var(--text-secondary) !important;
-    margin-bottom: 8px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-  }
-
-  .data-table select,
-  .data-table input[type="text"],
-  .data-table input[type="number"] {
-    width: 100% !important;
-    padding: 14px 12px !important;
-    font-size: 16px !important;
-    border-radius: 8px !important;
   }
 
   /* Print sheets info */
@@ -1864,6 +1793,116 @@ img {
   .data-table input[type="number"] {
     padding: 8px !important;
     font-size: 13px !important;
+  }
+}
+
+/* ============================================
+   ЕДИНЫЙ БЛОК: МОБИЛЬНЫЕ ПАРАМЕТРЫ (data-table)
+   ============================================ */
+@media screen and (max-width: 768px) {
+  .data-table {
+    width: 100% !important;
+    min-width: 0 !important;  /* СБРАСЫВАЕМ min-width с десктопа */
+    border-collapse: separate !important;
+    border-spacing: 0 8px !important;
+    margin-top: 12px !important;
+    display: block !important;
+  }
+
+  .data-table tbody {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .data-table tr {
+    display: block !important;
+    background: var(--bg-white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    margin-bottom: 8px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .data-table td {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .data-table td:first-child {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 6px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+  }
+
+  .data-table select,
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    border: 1.5px solid var(--border-color) !important;
+    background: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .data-table select:focus,
+  .data-table input:focus {
+    outline: none !important;
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  }
+
+  .data-table select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    padding-right: 36px !important;
+  }
+
+  .print-sheets-container {
+    width: 100% !important;
+    margin-top: 6px !important;
+  }
+  
+  .print-sheets-info {
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .print-sheets-info > span {
+    width: 100% !important;
+    padding: 8px 10px !important;
+    background: var(--bg-main) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+
+  .print-sheets-info strong {
+    padding: 2px 8px !important;
+    font-size: 13px !important;
+    min-width: auto !important;
   }
 }
   </style>
