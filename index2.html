@@ -784,6 +784,7 @@
                 <li><a href="otpCex.html">⚙️ На производство</a></li>
                 <li><a href="texKarta.html">🛠️ Техкарта</a></li>
                 <li><a href="statuses.html">📊 Статусы</a></li>
+                <li><a href="settings.html">⚙️ Настройки</a></li>
             </ul>
             <button class="logout-btn" id="logoutBtn">🚪 Выйти</button>
         </nav>
@@ -836,6 +837,13 @@
                             <small>Отслеживание</small>
                         </div>
                     </a>
+                    <a href="settings.html" class="quick-link-compact">
+                        <div class="quick-link-icon-compact orange">⚙️</div>
+                        <div class="quick-link-text-compact">
+                            <span>Настройки</span>
+                            <small>Конфигурация</small>
+                        </div>
+                    </a>
                 </div>
             </div>
 <!-- Статистика -->
@@ -859,6 +867,11 @@
         <div class="stat-icon">📊</div>
         <div class="stat-value" id="statProgress">0</div>
         <div class="stat-label">Статус</div>
+    </div>
+    <div class="stat-card stat-clickable" onclick="window.location.href='otpCex.html'" style="--stat-color: #012142; --stat-bg: rgba(16,185,129,0.1);">
+        <div class="stat-icon">⚙️</div>
+        <div class="stat-value" id="statDone">0</div>
+        <div class="stat-label">Настройки</div>
     </div>
 </div>
         </main>

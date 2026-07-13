@@ -1672,6 +1672,98 @@ img {
         align-items: stretch;
     }
 }
+
+/* ============================================
+   ИСПРАВЛЕНИЕ: Компактные инпуты в "Параметры" для мобильных
+   ============================================ */
+@media screen and (max-width: 768px) {
+  .data-table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 10px !important; /* Расстояние между строками-карточками */
+  }
+
+  .data-table tr {
+    display: flex !important;
+    flex-direction: column !important;
+    background: var(--bg-white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+  }
+
+  .data-table td {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important; /* Ключевое: padding не увеличивает ширину */
+  }
+
+  .data-table td:first-child {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 6px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  /* ЖЁСТКОЕ ограничение ширины инпутов и селектов */
+  .data-table select,
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 12px !important;
+    font-size: 15px !important;
+    border-radius: 8px !important;
+    border: 1.5px solid var(--border-color) !important;
+    background: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .data-table select:focus,
+  .data-table input:focus {
+    outline: none !important;
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  }
+
+  /* Блок "Тираж листов" тоже делаем компактным */
+  .print-sheets-container {
+    width: 100% !important;
+    margin-top: 8px !important;
+  }
+  
+  .print-sheets-info {
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .print-sheets-info > span {
+    width: 100% !important;
+    justify-content: space-between !important;
+    padding: 10px !important;
+    background: var(--bg-white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .print-sheets-info strong {
+    padding: 6px 12px !important;
+    font-size: 14px !important;
+    min-width: 60px !important;
+    text-align: center !important;
+  }
+}
   </style>
 </head>
 <body>
