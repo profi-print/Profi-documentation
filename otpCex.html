@@ -2005,27 +2005,27 @@ img {
 
                 <div class="calc-mode-switch"><label><input type="radio" name="calc_mode" value="warehouse" checked> Параметры</label></div>
                 <table class="data-table">
-                  <tr><td>Тип бумаги</td><td><select name="paper_type" id="paperType" required><option value="картон">картон</option><option value="Меловка">Меловка</option><option value="Офсет">Офсет</option></select></td></tr>
-                  <tr><td>гр/м²</td><td><input type="text" inputmode="numeric" class="masked-number" id="gsm" required></td></tr>
-                  <tr><td>Кол-во продукции</td><td><input type="text" inputmode="numeric" class="masked-number" id="orderQty" required></td></tr>
-                  <tr><td>Печатный формат (Ширина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeWidth" required></td></tr>
-                  <tr><td>Печатный формат (Длина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeLength" required></td></tr>
-                  <tr><td>Приладка</td><td><input type="text" inputmode="numeric" class="masked-number" id="makeReady" required></td></tr>
-                  <tr><td>Доля</td><td><input type="text" inputmode="numeric" class="masked-number" id="stripes" required></td></tr>
-                  <tr><td>Красочность</td><td><input type="text" name="color" id="color" required></td></tr>
-                  <tr>
-                    <td>Тираж листов</td>
-                    <td>
-                      <div class="print-sheets-container">
-                        <div class="print-sheets-info">
-                          <span>Тираж листов: <strong id="printSheetsAuto"></strong></span>
-                          <span>Вес заказа: <strong id="weightResult">— кг</strong></span>
-                        </div>
-                      </div>
-                      <input type="hidden" name="print_sheets" id="printSheetsHidden" value="0">
-                    </td>
-                  </tr>
-                </table>
+  <tr><td>Тип материала</td><td><select name="paper_type" id="paperType" required><option value="картон">картон</option><option value="Меловка">Меловка</option><option value="Офсет">Офсет</option></select></td></tr>
+  <tr><td>гр/м²</td><td><input type="text" inputmode="numeric" class="masked-number" id="gsm" required></td></tr>
+  <tr><td>Печатный формат (Ширина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeWidth" required></td></tr>
+  <tr><td>Печатный формат (Длина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeLength" required></td></tr>
+  <tr><td>Кол-во продукции</td><td><input type="text" inputmode="numeric" class="masked-number" id="orderQty" required></td></tr>
+  <tr><td>Доля на печатном листе</td><td><input type="text" inputmode="numeric" class="masked-number" id="stripes" required></td></tr>
+  <tr><td>Приладка</td><td><input type="text" inputmode="numeric" class="masked-number" id="makeReady" required></td></tr>
+  <tr><td>Красочность</td><td><input type="text" name="color" id="color" required></td></tr>
+  <tr>
+    <td>Тираж листов</td>
+    <td>
+      <div class="print-sheets-container">
+        <div class="print-sheets-info">
+          <span>Тираж листов: <strong id="printSheetsAuto"></strong></span>
+          <span>Вес заказа: <strong id="weightResult">— кг</strong></span>
+        </div>
+      </div>
+      <input type="hidden" name="print_sheets" id="printSheetsHidden" value="0">
+    </td>
+  </tr>
+</table>
                 <!-- Кнопок здесь нет -->
               </div>
 
@@ -2244,8 +2244,8 @@ function transferFormat() {
   const sizeLength = document.getElementById('sizeLength');
   let w = 0, l = 0;
   if (matRoll.checked) {
-    w = getCleanNumber('rollWidth');
-    l = getCleanNumber('flotLength');
+    w = getCleanNumber('flotLength');
+    l = getCleanNumber('rollWidth');
   } else {
     w = getCleanNumber('sheetWidth');
     l = getCleanNumber('sheetLength');
