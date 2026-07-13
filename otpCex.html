@@ -2243,18 +2243,21 @@ function transferFormat() {
   const sizeWidth = document.getElementById('sizeWidth');
   const sizeLength = document.getElementById('sizeLength');
   let w = 0, l = 0;
+  
   if (matRoll.checked) {
+    // Формат рулона (flotLength) -> в Ширину печатного формата
     w = getCleanNumber('flotLength');
+    // Формат флоторезки (rollWidth) -> в Длину печатного формата
     l = getCleanNumber('rollWidth');
   } else {
     w = getCleanNumber('sheetWidth');
     l = getCleanNumber('sheetLength');
   }
+  
   sizeWidth.value = formatWithSpaces(Math.round(w).toString());
   sizeLength.value = formatWithSpaces(Math.round(l).toString());
   recalc();
 }
-
 transferBtn.addEventListener('click', function(e) {
   activateTransfer(); // Активируем режим передачи
   transferFormat(); // Выполняем передачу формата
