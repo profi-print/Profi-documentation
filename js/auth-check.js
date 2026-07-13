@@ -5,7 +5,7 @@
   const currentPage = window.location.pathname.split('/').pop().toLowerCase();
   const ACCESS = {
     manager: { forbidden: ['otpcex.html', 'texkarta.html', 'statuses.html'] },
-    designer: { allowed: ['index2.html', 'clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html'] }
+    designer: { allowed: ['index2.html', 'clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html', 'settings.html'] }
   };
   const rules = ACCESS[role];
   if (!rules) { sessionStorage.clear(); window.location.href = 'login.html'; return; }
