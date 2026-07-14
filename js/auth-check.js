@@ -11,7 +11,7 @@
         defaultRedirect: 'index.html'
     },
     designer: {
-        allowed: ['index2.html', 'clients.html', 'otpCex.html', 'texKarta.html', 'statuses.html', 'settings.html'],
+        allowed: ['index2.html', 'clients.html', 'otpCex.html', 'texKarta.html', 'statuses.html', 'settings.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'],
         defaultRedirect: 'index2.html'
     },
     warehouse: {

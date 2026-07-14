@@ -49,7 +49,6 @@
         }
         .mono { font-family: 'IBM Plex Mono', monospace; }
 
-        /* ---------- Бургер-меню ---------- */
         .burger-btn {
             display: none;
             position: fixed;
@@ -108,7 +107,6 @@
             }
         }
 
-        /* ---------- Контент ---------- */
         .clients-wrapper {
             max-width: 1320px;
             margin: 0 auto;
@@ -217,7 +215,6 @@
         .empty-state a { color: var(--brand); font-weight: 700; text-decoration: none; }
         .empty-state a:hover { text-decoration: underline; }
 
-        /* ---------- Модальные окна ---------- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -268,7 +265,6 @@
             gap: 10px;
         }
 
-        /* Детализация внутри карточки */
         .detail-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -369,6 +365,12 @@
   background: #2563eb !important;
   color: #ffffff !important;
 }
+.sidebar .nav-menu li.nav-group > .nav-group-toggle { display: flex; justify-content: space-between; align-items: center; }
+.sidebar .nav-menu li.nav-group .nav-caret { font-size: 11px; transition: transform 0.2s ease; }
+.sidebar .nav-menu li.nav-group.open .nav-caret { transform: rotate(180deg); }
+.sidebar .nav-menu .nav-submenu { list-style: none; margin: 0; padding: 0; max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+.sidebar .nav-menu li.nav-group.open .nav-submenu { max-height: 300px; }
+.sidebar .nav-menu .nav-submenu li a { padding-left: 34px; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -396,6 +398,18 @@
                 <li><a href="otpCex.html">⚙️ На производство</a></li>
                 <li><a href="texKarta.html">⚙️ Техкарта</a></li>
                 <li><a href="statuses.html">📊 Статусы</a></li>
+                <li class="nav-group" id="skladNavGroup">
+                    <a href="#" class="nav-group-toggle" onclick="event.preventDefault(); this.closest('li').classList.toggle('open');">
+                        <span>🏬 Склад</span><span class="nav-caret">▾</span>
+                    </a>
+                    <ul class="nav-submenu">
+                        <li><a href="sklad.html">📋 Склад заказов</a></li>
+                        <li><a href="rashodniki.html">🧪 Расходники</a></li>
+                        <li><a href="bumaga.html">📄 Бумага</a></li>
+                        <li><a href="instrumenty.html">🛠️ Инструменты</a></li>
+                        <li><a href="palety.html">🪵 Палеты</a></li>
+                    </ul>
+                </li>
                 <li><a href="settings.html">⚙️ Настройки</a></li>
             </ul>
             <div class="theme-switch-wrapper" style="display:none;">
@@ -538,7 +552,6 @@
     <script src="js/storage.js"></script>
     <script src="js/multi-account-storage.js"></script>
     <script>
-        // ---------- Бургер-меню ----------
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('sidebarOverlay').classList.toggle('show');
@@ -548,7 +561,6 @@
             document.getElementById('sidebarOverlay').classList.remove('show');
         }
 
-        // ---------- Рендер списка контрагентов ----------
         function renderClients() {
             const clients = Storage.getClients();
             const search = (document.getElementById('client-search')?.value || '').toLowerCase();
@@ -578,7 +590,6 @@
             container.innerHTML = html;
         }
 
-        // ---------- Модальное окно создания/редактирования ----------
         function showClientForm() {
             document.getElementById('client-modal-title').textContent = 'Новый контрагент';
             document.getElementById('client-form').reset();
@@ -652,7 +663,6 @@
             document.getElementById('client-modal').classList.remove('show');
         }
 
-        // ---------- Детали контрагента ----------
         function showClientDetail(clientId) {
             const client = Storage.getClient(clientId);
             if (!client) return;
@@ -744,12 +754,9 @@
             if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('show');
         });
 
-        // Инициализация
         Storage.init().then(() => renderClients());
     </script>
     <script src="js/auth-check.js"></script>
     <script src="js/nav-filter.js"></script>
 </body>
 </html>
-
-<!-- CTP -> Flotorezka -> Pechat -> Laminatsiya -> Tisnenite -> Kongrev -> Visechka -> Archish -> Skleyka ->> Sklad If skleyka auto archish, then add new status Netu -->

@@ -7,12 +7,15 @@
     // Все списки приводим к нижнему регистру заранее, чтобы сравнение не зависело
     // от того, с какими буквами (otpCex.html / otpcex.html) написан href в разметке.
     const forbiddenForManager = ['otpcex.html', 'texkarta.html', 'index2.html', 'statuses.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'];
-    const allowedForDesigner = ['clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html', 'index2.html', 'settings.html'];
+    const allowedForDesigner = ['clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html', 'index2.html', 'settings.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'];
     const allowedForWarehouse = ['sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html', 'settings.html'];
 
     menuItems.forEach(link => {
         const href = link.getAttribute('href');
         if (!href) return;
+        // Стрелочка-переключатель подменю "Склад" (href="#") видимостью управляется
+        // отдельно ниже (по группе), а не как обычная ссылка на страницу.
+        if (href === '#') return;
         const page = href.split('?')[0].split('/').pop().toLowerCase();
 
         if (role === 'manager') {
@@ -32,4 +35,12 @@
             }
         }
     });
+
+    // Группа "Склад" (аккордеон) в общем синем сайдбаре — видна только Диёру (designer).
+    // Менеджеру скрываем целиком (все страницы склада ему и так запрещены индивидуально,
+    // но без этой строчки родительский пункт "Склад" остался бы висеть пустым).
+    const skladGroup = document.getElementById('skladNavGroup');
+    if (skladGroup && role !== 'designer') {
+        skladGroup.style.setProperty('display', 'none', 'important');
+    }
 })();

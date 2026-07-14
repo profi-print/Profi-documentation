@@ -589,6 +589,33 @@
             background: #2563eb !important;
             color: #ffffff !important;
         }
+        .sidebar .nav-menu li.nav-group > .nav-group-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sidebar .nav-menu li.nav-group .nav-caret {
+            font-size: 11px;
+            transition: transform 0.2s ease;
+        }
+        .sidebar .nav-menu li.nav-group.open .nav-caret {
+            transform: rotate(180deg);
+        }
+        .sidebar .nav-menu .nav-submenu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease;
+        }
+        .sidebar .nav-menu li.nav-group.open .nav-submenu {
+            max-height: 300px;
+        }
+        .sidebar .nav-menu .nav-submenu li a {
+            padding-left: 34px;
+            font-size: 13px;
+        }
         .sidebar .sidebar-header .logo-small span {
             color: #ffffff !important;
         }
@@ -839,7 +866,18 @@
                 <li><a href="otpCex.html">⚙️ На производство</a></li>
                 <li><a href="texKarta.html" class="active">⚙️ Техкарта</a></li>
                 <li><a href="statuses.html">📊 Статусы</a></li>
-                <li><a href="sklad.html">🏬 Склад</a></li>
+                <li class="nav-group" id="skladNavGroup">
+                    <a href="#" class="nav-group-toggle" onclick="event.preventDefault(); this.closest('li').classList.toggle('open');">
+                        <span>🏬 Склад</span><span class="nav-caret">▾</span>
+                    </a>
+                    <ul class="nav-submenu">
+                        <li><a href="sklad.html">📋 Склад заказов</a></li>
+                        <li><a href="rashodniki.html">🧪 Расходники</a></li>
+                        <li><a href="bumaga.html">📄 Бумага</a></li>
+                        <li><a href="instrumenty.html">🛠️ Инструменты</a></li>
+                        <li><a href="palety.html">🪵 Палеты</a></li>
+                    </ul>
+                </li>
                 <li><a href="settings.html">⚙️ Настройки</a></li>
             </ul>
             <div class="theme-switch-wrapper">

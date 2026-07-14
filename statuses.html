@@ -331,6 +331,13 @@ body.dark .btn-primary{ color:#0f1418; }
   background: #2563eb !important;
   color: #ffffff !important;
 }
+
+.sidebar .nav-menu li.nav-group > .nav-group-toggle { display: flex; justify-content: space-between; align-items: center; }
+.sidebar .nav-menu li.nav-group .nav-caret { font-size: 11px; transition: transform 0.2s ease; }
+.sidebar .nav-menu li.nav-group.open .nav-caret { transform: rotate(180deg); }
+.sidebar .nav-menu .nav-submenu { list-style: none; margin: 0; padding: 0; max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+.sidebar .nav-menu li.nav-group.open .nav-submenu { max-height: 300px; }
+.sidebar .nav-menu .nav-submenu li a { padding-left: 34px; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -342,20 +349,25 @@ body.dark .btn-primary{ color:#0f1418; }
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PM</div><span>PrintMax</span></div></div>
     <ul class="nav-menu">
-      <li><a href="index.html">📊 Главная</a></li>
-      <li><a href="index2.html">📊 Главная</a></li>
-      <li><a href="orders.html">📋 Заказы контрагентов</a></li>
-      <li><a href="production.html">🏭 Заказы на производство</a></li>
-      <li><a href="invoices.html">📦 Накладные</a></li>
-      <li><a href="clients.html">👥 Контрагенты</a></li>
-      <li><a href="products.html">📁 Продукты</a></li>
-      <li><a href="reconciliations.html">📑 Акты сверки</a></li>
-      <li><a href="backups.html">🗑️ Резервные копии</a></li>
-      <li><a href="otpCex.html">⚙️ На производство</a></li>
-      <li><a href="texKarta.html">⚙️ Техкарта</a></li>
-      <li><a href="statuses.html" class="active">📊 Статусы</a></li>
-      <li><a href="settings.html">⚙️ Настройки</a></li>
-    </ul>
+                <li><a href="index2.html" class="active">📊 Главная</a></li>
+                <li><a href="clients.html">👥 Контрагенты</a></li>
+                <li><a href="otpCex.html">⚙️ На производство</a></li>
+                <li><a href="texKarta.html">🛠️ Техкарта</a></li>
+                <li><a href="statuses.html">📊 Статусы</a></li>
+                <li class="nav-group" id="skladNavGroup">
+                    <a href="#" class="nav-group-toggle" onclick="event.preventDefault(); this.closest('li').classList.toggle('open');">
+                        <span>🏬 Склад</span><span class="nav-caret">▾</span>
+                    </a>
+                    <ul class="nav-submenu">
+                        <li><a href="sklad.html">📋 Склад заказов</a></li>
+                        <li><a href="rashodniki.html">🧪 Расходники</a></li>
+                        <li><a href="bumaga.html">📄 Бумага</a></li>
+                        <li><a href="instrumenty.html">🛠️ Инструменты</a></li>
+                        <li><a href="palety.html">🪵 Палеты</a></li>
+                    </ul>
+                </li>
+                <li><a href="settings.html">⚙️ Настройки</a></li>
+            </ul>
     
   </nav>
 

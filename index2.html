@@ -22,9 +22,6 @@
     </script>
 
     <style>
-        /* ============================================
-           ПРИНУДИТЕЛЬНАЯ СВЕТЛАЯ ТЕМА
-           ============================================ */
         :root {
             --bg-main: #f1f4f9;
             --bg-white: #ffffff;
@@ -74,9 +71,6 @@
 
         .app-container { display: flex; min-height: 100vh; }
 
-        /* ============================================
-           БУРГЕР-МЕНЮ (как в otpCex.html)
-           ============================================ */
         .burger-btn {
             display: none;
             position: fixed;
@@ -104,9 +98,6 @@
         }
         .sidebar-overlay.show { display: block; }
 
-        /* ============================================
-           SIDEBAR
-           ============================================ */
         .sidebar {
             width: 260px;
             background: #1e3a8a;
@@ -190,9 +181,6 @@
             color: #fff;
         }
 
-        /* ============================================
-           ОСНОВНОЙ КОНТЕНТ
-           ============================================ */
         .main-content {
             flex: 1;
             padding: 40px 30px;
@@ -206,9 +194,6 @@
             margin-bottom: 30px;
         }
 
-        /* ============================================
-           ПРИВЕТСТВЕННАЯ КАРТОЧКА
-           ============================================ */
         .welcome-card {
             background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
             border-radius: 20px;
@@ -286,9 +271,6 @@
             gap: 6px;
         }
 
-        /* ============================================
-           БЫСТРЫЕ ССЫЛКИ (ВЕРХНЯЯ ЧАСТЬ)
-           ============================================ */
         .quick-access-section {
             margin-bottom: 30px;
             animation: fadeInUp 0.5s ease backwards;
@@ -359,9 +341,6 @@
             font-weight: 400;
         }
 
-        /* ============================================
-           СТАТИСТИКА
-           ============================================ */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -422,9 +401,6 @@
             font-weight: 500;
         }
 
-        /* ============================================
-           ДЕТАЛЬНЫЕ ССЫЛКИ (НИЖНЯЯ ЧАСТЬ)
-           ============================================ */
         .section-title {
             font-size: 18px;
             font-weight: 700;
@@ -521,9 +497,6 @@
             font-weight: 400;
         }
 
-        /* ============================================
-           АНИМАЦИИ
-           ============================================ */
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -533,9 +506,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ============================================
-           МОБИЛЬНАЯ АДАПТАЦИЯ
-           ============================================ */
         @media screen and (max-width: 768px) {
             .burger-btn { display: flex; }
             .sidebar {
@@ -573,8 +543,7 @@
             .welcome-text h1 { font-size: 22px; }
             .welcome-text p { font-size: 14px; }
             .welcome-date { justify-content: center; }
-            
-            /* Быстрый доступ - мобильная версия */
+
             .quick-links-compact {
                 grid-template-columns: 1fr;
                 gap: 10px;
@@ -588,7 +557,7 @@
                 height: 36px;
                 font-size: 18px;
             }
-            
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 12px;
@@ -652,7 +621,6 @@
             }
         }
 
-        /* Убираем стрелки у number-инпутов */
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -660,7 +628,6 @@
         }
         input[type="number"] { -moz-appearance: textfield; }
 
-        /* Бургер-меню - FIXED, не двигается */
         .burger-btn {
             display: none;
             position: fixed;
@@ -686,7 +653,6 @@
             background: var(--bg-main);
         }
 
-        /* Overlay для закрытия */
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -696,8 +662,8 @@
             opacity: 0;
             transition: opacity 0.3s;
         }
-        .sidebar-overlay.show { 
-            display: block; 
+        .sidebar-overlay.show {
+            display: block;
             opacity: 1;
         }
 
@@ -722,39 +688,45 @@
                 width: 100%;
             }
         }
-        /* Кликабельные карточки статистики */
-.stat-clickable {
-    cursor: pointer;
-    transition: all 0.25s ease;
-    position: relative;
-}
+        .stat-clickable {
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
 
-.stat-clickable:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15);
-}
+        .stat-clickable:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15);
+        }
 
-.stat-clickable:active {
-    transform: translateY(-2px) scale(0.98);
-}
+        .stat-clickable:active {
+            transform: translateY(-2px) scale(0.98);
+        }
 
-.stat-clickable::after {
-    content: '→';
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%) translateX(-8px);
-    opacity: 0;
-    color: var(--primary-blue);
-    font-size: 20px;
-    font-weight: 700;
-    transition: all 0.25s ease;
-}
+        .stat-clickable::after {
+            content: '→';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%) translateX(-8px);
+            opacity: 0;
+            color: var(--primary-blue);
+            font-size: 20px;
+            font-weight: 700;
+            transition: all 0.25s ease;
+        }
 
-.stat-clickable:hover::after {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0);
-}
+        .stat-clickable:hover::after {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        .sidebar .nav-menu li.nav-group > .nav-group-toggle { display: flex; justify-content: space-between; align-items: center; }
+        .sidebar .nav-menu li.nav-group .nav-caret { font-size: 11px; transition: transform 0.2s ease; }
+        .sidebar .nav-menu li.nav-group.open .nav-caret { transform: rotate(180deg); }
+        .sidebar .nav-menu .nav-submenu { list-style: none; margin: 0; padding: 0; max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+        .sidebar .nav-menu li.nav-group.open .nav-submenu { max-height: 300px; }
+        .sidebar .nav-menu .nav-submenu li a { padding-left: 34px; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -784,13 +756,24 @@
                 <li><a href="otpCex.html">⚙️ На производство</a></li>
                 <li><a href="texKarta.html">🛠️ Техкарта</a></li>
                 <li><a href="statuses.html">📊 Статусы</a></li>
+                <li class="nav-group" id="skladNavGroup">
+                    <a href="#" class="nav-group-toggle" onclick="event.preventDefault(); this.closest('li').classList.toggle('open');">
+                        <span>🏬 Склад</span><span class="nav-caret">▾</span>
+                    </a>
+                    <ul class="nav-submenu">
+                        <li><a href="sklad.html">📋 Склад заказов</a></li>
+                        <li><a href="rashodniki.html">🧪 Расходники</a></li>
+                        <li><a href="bumaga.html">📄 Бумага</a></li>
+                        <li><a href="instrumenty.html">🛠️ Инструменты</a></li>
+                        <li><a href="palety.html">🪵 Палеты</a></li>
+                    </ul>
+                </li>
                 <li><a href="settings.html">⚙️ Настройки</a></li>
             </ul>
             <button class="logout-btn" id="logoutBtn">🚪 Выйти</button>
         </nav>
 
         <main class="main-content">
-            <!-- Приветственная карточка -->
             <div class="welcome-card">
                 <div class="welcome-content">
                     <div class="welcome-avatar" id="userAvatar">D</div>
@@ -805,7 +788,6 @@
                 </div>
             </div>
 
-            <!-- БЫСТРЫЙ ДОСТУП (ПЕРЕМЕЩЕН ВВЕРХ) -->
             <div class="quick-access-section">
                 <h2 class="section-title">Быстрый доступ</h2>
                 <div class="quick-links-compact">
@@ -846,34 +828,49 @@
                     </a>
                 </div>
             </div>
-<!-- Статистика -->
-<div class="stats-grid">
-    <div class="stat-card stat-clickable" onclick="window.location.href='clients.html'" style="--stat-color: #8b5cf6; --stat-bg: rgba(139,92,246,0.1);">
-        <div class="stat-icon">👥</div>
-        <div class="stat-value" id="statClients">0</div>
-        <div class="stat-label">Контрагенты</div>
-    </div>
-    <div class="stat-card stat-clickable" onclick="window.location.href='otpCex.html'" style="--stat-color: #10b981; --stat-bg: rgba(16,185,129,0.1);">
-        <div class="stat-icon">⚙️</div>
-        <div class="stat-value" id="statDone">0</div>
-        <div class="stat-label">Производство</div>
-    </div>
-    <div class="stat-card stat-clickable" onclick="window.location.href='texKarta.html'" style="--stat-color: #2563eb; --stat-bg: rgba(37,99,235,0.1);">
-        <div class="stat-icon">🛠️</div>
-        <div class="stat-value" id="statOrders">0</div>
-        <div class="stat-label">Тех карты</div>
-    </div>
-    <div class="stat-card stat-clickable" onclick="window.location.href='statuses.html'" style="--stat-color: #f59e0b; --stat-bg: rgba(245,158,11,0.1);">
-        <div class="stat-icon">📊</div>
-        <div class="stat-value" id="statProgress">0</div>
-        <div class="stat-label">Статус</div>
-    </div>
-    <div class="stat-card stat-clickable" onclick="window.location.href='otpCex.html'" style="--stat-color: #012142; --stat-bg: rgba(16,185,129,0.1);">
-        <div class="stat-icon">⚙️</div>
-        <div class="stat-value" id="statDone">0</div>
-        <div class="stat-label">Настройки</div>
-    </div>
-</div>
+            <h2 class="section-title">Производство</h2>
+            <div class="stats-grid">
+                <div class="stat-card stat-clickable" onclick="window.location.href='clients.html'" style="--stat-color: #8b5cf6; --stat-bg: rgba(139,92,246,0.1);">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="statClients">0</div>
+                    <div class="stat-label">Контрагенты</div>
+                </div>
+                <div class="stat-card stat-clickable" onclick="window.location.href='otpCex.html'" style="--stat-color: #10b981; --stat-bg: rgba(16,185,129,0.1);">
+                    <div class="stat-icon">⚙️</div>
+                    <div class="stat-value" id="statProduction">0</div>
+                    <div class="stat-label">Производство</div>
+                </div>
+                <div class="stat-card stat-clickable" onclick="window.location.href='texKarta.html'" style="--stat-color: #2563eb; --stat-bg: rgba(37,99,235,0.1);">
+                    <div class="stat-icon">🛠️</div>
+                    <div class="stat-value" id="statOrders">0</div>
+                    <div class="stat-label">Тех карты</div>
+                </div>
+                <div class="stat-card stat-clickable" onclick="window.location.href='statuses.html'" style="--stat-color: #f59e0b; --stat-bg: rgba(245,158,11,0.1);">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value" id="statProgress">0</div>
+                    <div class="stat-label">Статус</div>
+                </div>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 24px;">Склад</h2>
+            <div class="stats-grid">
+                <div class="stat-card stat-clickable" onclick="window.location.href='sklad.html'" style="--stat-color: #d97706; --stat-bg: rgba(217,119,6,0.1);">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-value" id="statWhOrders">0</div>
+                    <div class="stat-label">Заказов на складе</div>
+                </div>
+                <div class="stat-card stat-clickable" onclick="window.location.href='palety.html'" style="--stat-color: #b45309; --stat-bg: rgba(180,83,9,0.1);">
+                    <div class="stat-icon">🪵</div>
+                    <div class="stat-value" id="statWhContractors">0</div>
+                    <div class="stat-label">Контрагентов с палетами</div>
+                </div>
+                <div class="stat-card stat-clickable" onclick="window.location.href='rashodniki.html'" style="--stat-color: #78716c; --stat-bg: rgba(120,113,108,0.1);">
+                    <div class="stat-icon">🧾</div>
+                    <div class="stat-value" id="statWhPositions">0</div>
+                    <div class="stat-label">Позиций в Расходниках/Бумаге/Инструментах</div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -885,7 +882,7 @@
         const overlay = document.getElementById('sidebarOverlay');
         sidebar.classList.toggle('open');
         overlay.classList.toggle('show');
-        
+
         if (sidebar.classList.contains('open')) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -930,22 +927,15 @@
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     dateEl.textContent = now.toLocaleDateString('ru-RU', options);
 
-    // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ СТАТИСТИКИ =====
     function loadStats() {
         try {
             const orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
             const clients = JSON.parse(localStorage.getItem('pp_clients') || '[]');
 
-            // Тех карты = все заказы
             const techCardsCount = orders.length;
-            
-            // Производство = заказы, которые отправлены в цех (есть в pp_orders)
             const productionCount = orders.length;
-            
-            // Контрагенты
             const clientsCount = clients.length;
-            
-            // Статусы = заказы с timeline или просто все заказы
+
             let statusesCount = 0;
             orders.forEach(order => {
                 if (order.timeline && Object.keys(order.timeline).length > 0) {
@@ -954,39 +944,74 @@
                     if (hasAnyStatus) statusesCount++;
                 }
             });
-            
-            // Если нет timeline, считаем все заказы как имеющие статус
+
             if (statusesCount === 0 && orders.length > 0) {
                 statusesCount = orders.length;
             }
 
-            // Устанавливаем значения
             document.getElementById('statOrders').textContent = techCardsCount;
             document.getElementById('statClients').textContent = clientsCount;
-            document.getElementById('statDone').textContent = productionCount;
+            document.getElementById('statProduction').textContent = productionCount;
             document.getElementById('statProgress').textContent = statusesCount;
-            
+
+            // ===== Показатели по складу =====
+            // Заказов на складе: полностью принятые (pp_warehouse_orders) + ещё частично принимаемые (pp_orders с received_qty > 0)
+            let whOrdersCount = 0;
+            try {
+                const warehouseOrders = JSON.parse(localStorage.getItem('pp_warehouse_orders') || '[]');
+                const partialOrders = orders.filter(o => (o.received_qty || 0) > 0);
+                whOrdersCount = warehouseOrders.length + partialOrders.length;
+            } catch (e) { console.error('Ошибка подсчёта заказов на складе:', e); }
+            document.getElementById('statWhOrders').textContent = whOrdersCount;
+
+            // Контрагентов с палетами на складе (остаток > 0)
+            let whContractorsCount = 0;
+            try {
+                const paletyData = JSON.parse(localStorage.getItem('pp_inventory_palety') || '{}');
+                whContractorsCount = Object.keys(paletyData).filter(name => {
+                    const hist = (paletyData[name] && paletyData[name].history) || [];
+                    let stock = 0;
+                    hist.forEach(h => { stock += (h.type === 'prihod' ? h.qty : -h.qty); });
+                    return stock > 0;
+                }).length;
+            } catch (e) { console.error('Ошибка подсчёта контрагентов с палетами:', e); }
+            document.getElementById('statWhContractors').textContent = whContractorsCount;
+
+            // Позиций в Расходниках/Бумаге/Инструментах (у которых есть хоть одна запись прихода/расхода)
+            let whPositionsCount = 0;
+            try {
+                ['pp_inventory_rashodniki', 'pp_inventory_bumaga', 'pp_inventory_instrumenty'].forEach(key => {
+                    const data = JSON.parse(localStorage.getItem(key) || '{}');
+                    Object.keys(data).forEach(itemId => {
+                        const hist = (data[itemId] && data[itemId].history) || [];
+                        if (hist.length > 0) whPositionsCount++;
+                    });
+                });
+            } catch (e) { console.error('Ошибка подсчёта позиций склада:', e); }
+            document.getElementById('statWhPositions').textContent = whPositionsCount;
+
             console.log('Статистика загружена:', {
                 techCards: techCardsCount,
                 production: productionCount,
                 clients: clientsCount,
-                statuses: statusesCount
+                statuses: statusesCount,
+                whOrders: whOrdersCount,
+                whContractors: whContractorsCount,
+                whPositions: whPositionsCount
             });
-            
-            // Запускаем анимацию ПОСЛЕ загрузки данных
+
             animateCounters();
-            
+
         } catch (e) {
             console.error('Ошибка загрузки статистики:', e);
         }
     }
 
-    // Анимация счётчиков - отдельная функция
     function animateCounters() {
         document.querySelectorAll('.stat-value').forEach(el => {
             const target = parseInt(el.textContent) || 0;
-            if (target === 0) return; // Пропускаем нули
-            
+            if (target === 0) return;
+
             let current = 0;
             const step = Math.max(1, Math.ceil(target / 20));
             const interval = setInterval(() => {
@@ -1001,9 +1026,8 @@
     }
 
     loadStats();
-</script>
+    </script>
 
-    <!-- iOS install hint -->
     <style>
         .ios-install-hint {
             position: fixed;
