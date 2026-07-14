@@ -2,17 +2,35 @@
   const user = sessionStorage.getItem('profitprint_user');
   const role = sessionStorage.getItem('profitprint_role');
   if (!user || !role) { window.location.href = 'login.html'; return; }
+
   const currentPage = window.location.pathname.split('/').pop().toLowerCase();
+
   const ACCESS = {
-    manager: { forbidden: ['otpcex.html', 'texkarta.html', 'statuses.html'] },
-    designer: { allowed: ['index2.html', 'clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html', 'settings.html'] }
+    manager: {
+        forbidden: ['otpcex.html', 'texkarta.html', 'statuses.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'],
+        defaultRedirect: 'index.html'
+    },
+    designer: {
+        allowed: ['index2.html', 'clients.html', 'otpCex.html', 'texKarta.html', 'statuses.html', 'settings.html'],
+        defaultRedirect: 'index2.html'
+    },
+    warehouse: {
+        allowed: ['sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html', 'settings.html'],
+        defaultRedirect: 'sklad.html'
+    }
   };
+
   const rules = ACCESS[role];
   if (!rules) { sessionStorage.clear(); window.location.href = 'login.html'; return; }
-  if (rules.forbidden && rules.forbidden.includes(currentPage)) {
-    window.location.href = 'dashboard.html?error=access'; return;
+
+  // Сравниваем без учёта регистра, чтобы 'otpCex.html' в правилах совпадал с 'otpcex.html' из URL
+  const forbidden = (rules.forbidden || []).map(p => p.toLowerCase());
+  const allowed = rules.allowed ? rules.allowed.map(p => p.toLowerCase()) : null;
+
+  if (forbidden.includes(currentPage)) {
+    window.location.href = rules.defaultRedirect + '?error=access'; return;
   }
-  if (rules.allowed && !rules.allowed.includes(currentPage)) {
-    window.location.href = 'dashboard.html?error=access'; return;
+  if (allowed && !allowed.includes(currentPage)) {
+    window.location.href = rules.defaultRedirect + '?error=access'; return;
   }
 })();

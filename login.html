@@ -99,7 +99,6 @@
             background: #1d4ed8;
         }
 
-        /* Адаптация для очень маленьких экранов */
         @media (max-width: 400px) {
             .login-card {
                 padding: 28px 20px;
@@ -142,15 +141,28 @@
     })();
 
     // ========== АККАУНТЫ ==========
+    // Сюда позже добавятся: печатник, флоторезка, склейка и т.д.
     const ACCOUNTS = [
-        { login: 'Bekzod', password: '0505', role: 'manager' },
-        { login: 'Diyor',  password: 'diyorbek', role: 'designer' }
+        { login: 'Bekzod', password: '0505',     role: 'manager'   },
+        { login: 'Diyor',  password: 'diyorbek', role: 'designer'  },
+        { login: 'Sklad',  password: '123',      role: 'warehouse' }
     ];
+
+    // Единая карта "роль -> куда вести после логина"
+    const ROLE_REDIRECT = {
+        manager:   'index.html',
+        designer:  'index2.html',
+        warehouse: 'sklad.html'
+    };
 
     const loginInput = document.getElementById('loginInput');
     const passwordInput = document.getElementById('passwordInput');
     const loginError = document.getElementById('loginError');
     const btnLogin = document.getElementById('btnLogin');
+
+    function redirectForRole(role) {
+        return ROLE_REDIRECT[role] || 'index.html';
+    }
 
     function doLogin() {
         const l = loginInput.value.trim();
@@ -163,14 +175,7 @@
         if (acc) {
             sessionStorage.setItem('profitprint_user', acc.login);
             sessionStorage.setItem('profitprint_role', acc.role);
-            // Редирект в зависимости от роли
-            if (acc.role === 'manager') {
-                window.location.href = 'index.html';    // Bekzod – полный доступ
-            } else if (acc.role === 'designer') {
-                window.location.href = 'index2.html';   // Diyor – производственный раздел
-            } else {
-                window.location.href = 'index.html';    // на случай неизвестной роли
-            }
+            window.location.href = redirectForRole(acc.role);
         } else {
             loginError.textContent = 'Неверный логин или пароль';
         }
@@ -180,10 +185,10 @@
     passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
     loginInput.addEventListener('keydown', e => { if (e.key === 'Enter') passwordInput.focus(); });
 
-    // Если уже вошли — сразу на дашборд
+    // Если уже вошли — сразу на нужный дашборд по роли
     if (sessionStorage.getItem('profitprint_user')) {
         const role = sessionStorage.getItem('profitprint_role');
-        window.location.href = role === 'designer' ? 'index2.html' : 'index.html';
+        window.location.href = redirectForRole(role);
     }
 </script>
 </body>

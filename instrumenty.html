@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Инструменты — PrintMax</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#d97706">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <style>
+        :root {
+            --bg-main: #fdf6ec;
+            --bg-white: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #78716c;
+            --border-color: #f0e0c8;
+            --primary-amber: #d97706;
+            --primary-amber-dark: #b45309;
+            --accent-green: #10b981;
+            --accent-red: #dc2626;
+            --shadow-md: 0 4px 16px rgba(217, 119, 6, 0.08);
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+        body.dark-theme, body[data-theme="dark"] {
+            --bg-main: #241a10 !important;
+            --bg-white: #1c140c !important;
+            --text-primary: #f3e9da !important;
+            --text-secondary: #b8a488 !important;
+            --border-color: #4a3a24 !important;
+            --primary-amber: #f59e0b !important;
+        }
+        .theme-switch-wrapper { display: none !important; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0; background: var(--bg-main); font-family: var(--font-main); color: var(--text-primary);
+            padding-top: var(--safe-top); padding-bottom: var(--safe-bottom);
+            -webkit-user-select: none; user-select: none; overscroll-behavior: none; touch-action: manipulation;
+        }
+        .app-container { display: flex; min-height: 100vh; }
+        .burger-btn {
+            display: none; position: fixed; top: calc(12px + var(--safe-top)); left: calc(12px + env(safe-area-inset-left));
+            z-index: 1100; background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 10px;
+            width: 48px; height: 48px; font-size: 24px; cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            color: var(--text-primary); align-items: center; justify-content: center; -webkit-appearance: none; appearance: none;
+        }
+        .burger-btn:active { transform: scale(0.95); background: var(--bg-main); }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1040; opacity: 0; transition: opacity 0.3s; }
+        .sidebar-overlay.show { display: block; opacity: 1; }
+        .sidebar { width: 260px; background: #7c3d10; flex-shrink: 0; min-height: 100vh; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .logo-small { display: flex; align-items: center; gap: 10px; }
+        .logo-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--primary-amber); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 14px; }
+        .logo-small span { color: #fff; font-weight: 700; font-size: 16px; }
+        .nav-menu { list-style: none; margin: 0; padding: 12px; }
+        .nav-menu li { margin-bottom: 4px; }
+        .nav-menu li a { display: block; padding: 12px 14px; border-radius: 8px; color: #fff !important; text-decoration: none; font-weight: 500; font-size: 14px; transition: background 0.15s; }
+        .nav-menu li a:hover { background: rgba(255,255,255,0.1) !important; }
+        .nav-menu li a.active { background: var(--primary-amber) !important; color: #fff !important; font-weight: 700; }
+        @media screen and (max-width: 768px) {
+            .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100vh; transition: left 0.3s ease; z-index: 1050; box-shadow: 2px 0 12px rgba(0,0,0,0.1); overflow-y: auto; -webkit-overflow-scrolling: touch; padding-top: var(--safe-top); }
+            .sidebar.open { left: 0; }
+            .burger-btn { display: flex; }
+            .main-content { margin-left: 0 !important; padding: 70px 12px 20px; padding-top: calc(70px + var(--safe-top)); width: 100%; overflow-x: hidden; }
+        }
+        .main-content { flex: 1; padding: 24px; }
+        .top-bar h1 { margin: 0 0 20px 0; font-size: 26px; color: var(--text-primary); }
+        .top-bar h1::before { content: "🛠️ "; }
+
+        .inv-list { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-md); max-width: 1100px; margin: 0 auto; }
+        .inv-list h2 { margin: 0 0 16px 0; color: var(--text-primary); font-size: 20px; border-bottom: 2px solid var(--primary-amber); padding-bottom: 8px; }
+
+        .inv-item { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; }
+        .inv-item-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+        .inv-item-name { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+        .inv-item-stock { font-size: 20px; font-weight: 700; color: var(--primary-amber-dark); }
+        .inv-item-stock small { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-left: 4px; }
+        .inv-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .inv-actions button, .inv-actions a {
+            padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 6px; min-height: 38px;
+        }
+        .btn-prihod { background: var(--accent-green); color: #fff; }
+        .btn-prihod:hover { opacity: 0.9; }
+        .btn-rashod { background: var(--primary-amber); color: #fff; }
+        .btn-rashod:hover { background: var(--primary-amber-dark); }
+        .btn-hist { background: var(--bg-main); color: var(--text-primary); border: 1px solid var(--border-color) !important; }
+
+        .inv-history { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border-color); }
+        .inv-history.show { display: block; }
+        .inv-history-item { display: flex; gap: 10px; align-items: flex-start; padding: 7px 10px; border-radius: 8px; background: var(--bg-main); margin-bottom: 6px; font-size: 13px; }
+        .inv-history-icon { font-size: 15px; flex-shrink: 0; }
+        .inv-history-body { flex: 1; }
+        .inv-history-qty { font-weight: 700; }
+        .inv-history-date { color: var(--text-secondary); font-size: 12px; margin-left: 8px; }
+        .inv-history-meta { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
+        .inv-history-meta .tk-link { color: var(--primary-amber-dark); font-weight: 600; text-decoration: none; }
+        .inv-history-comment { color: var(--text-secondary); font-size: 12px; margin-top: 2px; font-style: italic; }
+        .inv-history-empty { color: var(--text-secondary); font-style: italic; font-size: 13px; }
+
+        /* ===== Модалка приход/расход ===== */
+        .inv-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1200; justify-content: center; align-items: center; backdrop-filter: blur(4px); padding: 16px; }
+        .inv-modal.show { display: flex; }
+        .inv-modal-content { background: var(--bg-white); border-radius: 16px; padding: 28px; max-width: 400px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .inv-modal-content h3 { margin: 0 0 6px 0; font-size: 19px; color: var(--text-primary); }
+        .inv-modal-content .im-sub { margin: 0 0 20px 0; color: var(--text-secondary); font-size: 13px; }
+        .inv-modal-content label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+        .inv-modal-content input, .inv-modal-content select, .inv-modal-content textarea {
+            width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 15px;
+            margin-bottom: 16px; color: var(--text-primary); background: var(--bg-main); font-family: inherit; -webkit-appearance: none; appearance: none;
+        }
+        .inv-modal-content input:focus, .inv-modal-content select:focus, .inv-modal-content textarea:focus {
+            outline: none; border-color: var(--primary-amber); box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.12);
+        }
+        .inv-modal-content textarea { resize: vertical; min-height: 60px; }
+        .inv-qty-row { display: flex; gap: 10px; }
+        .inv-qty-row input { flex: 2; }
+        .inv-qty-row select { flex: 1; }
+        .inv-modal-error { color: var(--accent-red); font-size: 13px; margin-bottom: 12px; display: none; font-weight: 500; }
+        .inv-modal-error.show { display: block; }
+        .inv-modal-buttons { display: flex; gap: 12px; }
+        .inv-modal-buttons button { flex: 1; padding: 12px 20px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .inv-modal-buttons .btn-cancel { background: var(--bg-main); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .inv-modal-buttons .btn-confirm-prihod { background: var(--accent-green); color: #fff; }
+        .inv-modal-buttons .btn-confirm-rashod { background: var(--primary-amber); color: #fff; }
+    </style>
+</head>
+<body>
+    <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">СК</div><span>PrintMax Склад</span></div></div>
+            <ul class="nav-menu">
+                <li><a href="sklad.html">🏬 Склад заказов</a></li>
+                <li><a href="rashodniki.html">🧪 Расходники</a></li>
+                <li><a href="bumaga.html">📄 Бумага</a></li>
+                <li><a href="instrumenty.html" class="active">🛠️ Инструменты</a></li>
+                <li><a href="palety.html">🪵 Палеты</a></li>
+                <li><a href="settings.html">⚙️ Настройки</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar"><h1>Инструменты</h1></div>
+            <div id="content">Загрузка...</div>
+        </main>
+    </div>
+
+    <!-- Модалка Приход -->
+    <div class="inv-modal" id="prihodModal">
+        <div class="inv-modal-content">
+            <h3>📥 Приход</h3>
+            <p class="im-sub" id="prihodItemName">Пополнение остатка на складе</p>
+            <label>Количество</label>
+            <div class="inv-qty-row">
+                <input type="number" id="prihodQtyInput" min="1" placeholder="Например, 50">
+                <select id="prihodUnitSelect">
+                    <option value="unit">шт/кг</option>
+                    <option value="pachka">Пачка</option>
+                    <option value="korobka">Коробка</option>
+                    <option value="palet">Палет</option>
+                </select>
+            </div>
+            <label for="prihodDateInput">Дата</label>
+            <input type="date" id="prihodDateInput">
+            <label for="prihodCommentInput">Комментарий</label>
+            <textarea id="prihodCommentInput" placeholder="Например: закупили у поставщика"></textarea>
+            <div id="prihodNozhFields" style="display:none;">
+                <label for="prihodPurposeInput">Назначение (для чего этот нож)</label>
+                <input type="text" id="prihodPurposeInput" placeholder="Например: высечка коробки">
+                <label for="prihodBoxInput">Для какой коробки</label>
+                <input type="text" id="prihodBoxInput" placeholder="Например: коробка 150×100×50">
+            </div>
+            <div class="inv-modal-error" id="prihodModalError">Введите корректное количество</div>
+            <div class="inv-modal-buttons">
+                <button class="btn-cancel" onclick="closePrihodModal()">Отмена</button>
+                <button class="btn-confirm-prihod" onclick="confirmPrihod()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка Расход -->
+    <div class="inv-modal" id="rashodModal">
+        <div class="inv-modal-content">
+            <h3>📤 Расход</h3>
+            <p class="im-sub" id="rashodItemName">Списание со склада</p>
+            <label>Количество</label>
+            <div class="inv-qty-row">
+                <input type="number" id="rashodQtyInput" min="1" placeholder="Например, 10">
+                <select id="rashodUnitSelect">
+                    <option value="unit">шт/кг</option>
+                    <option value="pachka">Пачка</option>
+                    <option value="korobka">Коробка</option>
+                    <option value="palet">Палет</option>
+                </select>
+            </div>
+            <div class="inv-modal-remaining" style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">
+                Доступно на складе: <strong id="rashodAvailableText">0</strong>
+            </div>
+            <label for="rashodTechcardInput">№ техкарты (если списание под конкретный заказ)</label>
+            <input type="text" id="rashodTechcardInput" list="techcardOptionsList" placeholder="Поиск по номеру, заказчику, продукции...">
+            <datalist id="techcardOptionsList"></datalist>
+            <label for="rashodDateInput">Дата</label>
+            <input type="date" id="rashodDateInput">
+            <label for="rashodCommentInput">Комментарий</label>
+            <textarea id="rashodCommentInput" placeholder="Например: ушло на заказ Nanopharmaceuticals"></textarea>
+            <div id="rashodNozhFields" style="display:none;">
+                <label for="rashodPurposeInput">Назначение (для чего этот нож)</label>
+                <input type="text" id="rashodPurposeInput" placeholder="Например: высечка коробки">
+                <label for="rashodBoxInput">Для какой коробки</label>
+                <input type="text" id="rashodBoxInput" placeholder="Например: коробка 150×100×50">
+            </div>
+            <div class="inv-modal-error" id="rashodModalError">Введите корректное количество</div>
+            <div class="inv-modal-buttons">
+                <button class="btn-cancel" onclick="closeRashodModal()">Отмена</button>
+                <button class="btn-confirm-rashod" onclick="confirmRashod()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show'); }
+        document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+        (function() { document.body.classList.remove('dark-theme', 'dark'); document.body.removeAttribute('data-theme'); })();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const content = document.getElementById('content');
+            const STORAGE_KEY = 'pp_inventory_instrumenty';
+
+            // Список позиций этой страницы: id, название, единица измерения
+            const ITEMS = [
+                { id: 'nozh', name: 'Нож', unit: 'шт' },
+                { id: 'lak_forma', name: 'Лак-форма', unit: 'шт' },
+                { id: 'kleshe', name: 'Клеще', unit: 'шт' }
+            ];
+
+            function loadData() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    return raw ? JSON.parse(raw) : {};
+                } catch (e) { console.error('Ошибка загрузки расходников:', e); return {}; }
+            }
+            function saveData(data) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            }
+
+            function getItemHistory(data, itemId) {
+                return (data[itemId] && Array.isArray(data[itemId].history)) ? data[itemId].history : [];
+            }
+            function getItemStock(data, itemId) {
+                const hist = getItemHistory(data, itemId);
+                let stock = 0;
+                hist.forEach(h => { stock += (h.type === 'prihod' ? h.qty : -h.qty); });
+                return stock;
+            }
+
+            const unitLabels = { unit: '', pachka: 'пачка', korobka: 'коробка', palet: 'палет' };
+
+            function buildHistoryHTML(hist) {
+                if (hist.length === 0) return '<div class="inv-history-empty">История пуста</div>';
+                const sorted = hist.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                return sorted.map(h => {
+                    const icon = h.type === 'prihod' ? '📥' : '📤';
+                    const label = h.type === 'prihod' ? 'Приход' : 'Расход';
+                    const unitTag = h.unitLabel ? ` (${h.unitLabel})` : '';
+                    return `
+                        <div class="inv-history-item">
+                            <div class="inv-history-icon">${icon}</div>
+                            <div class="inv-history-body">
+                                <span class="inv-history-qty">${label}: ${h.qty.toLocaleString('ru-RU')}${unitTag}</span>
+                                <span class="inv-history-date">${h.date || ''}</span>
+                                ${h.techcardNo ? (h.techcardId
+                                    ? `<div class="inv-history-meta">Заказ: <a class="tk-link" href="texKarta.html?id=${h.techcardId}">№ ${h.techcardNo}</a></div>`
+                                    : `<div class="inv-history-meta">Заказ: № ${h.techcardNo}</div>`) : ''}
+                                ${h.purpose ? `<div class="inv-history-meta">Назначение: ${h.purpose}</div>` : ''}
+                                ${h.boxName ? `<div class="inv-history-meta">Коробка: ${h.boxName}</div>` : ''}
+                                ${h.comment ? `<div class="inv-history-comment">${h.comment}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function loadAllTechcards() {
+                let all = [];
+                try { all = all.concat(JSON.parse(localStorage.getItem('pp_orders') || '[]')); } catch (e) {}
+                try { all = all.concat(JSON.parse(localStorage.getItem('pp_warehouse_orders') || '[]')); } catch (e) {}
+                return all;
+            }
+
+            function techcardDisplayString(o) {
+                const no = String(o.techcard_no || o.id).padStart(3, '0');
+                return `№${no} — ${o.customer || ''} — ${o.product_name || ''}`;
+            }
+
+            function populateTechcardDatalist() {
+                const datalist = document.getElementById('techcardOptionsList');
+                if (!datalist) return;
+                const orders = loadAllTechcards();
+                datalist.innerHTML = orders.map(o => `<option value="${techcardDisplayString(o)}"></option>`).join('');
+            }
+
+            // Находим реальный заказ по строке из поля ввода (после выбора из datalist),
+            // чтобы ссылка в истории вела на настоящую техкарту, а не просто хранила текст.
+            function resolveTechcardFromInput(value) {
+                const trimmed = (value || '').trim();
+                if (!trimmed) return null;
+                const orders = loadAllTechcards();
+                const exact = orders.find(o => techcardDisplayString(o) === trimmed);
+                if (exact) {
+                    return { id: exact.id, no: String(exact.techcard_no || exact.id).padStart(3, '0') };
+                }
+                // Пользователь напечатал что-то своё, не выбрав из списка — сохраняем как есть, без ссылки
+                const match = trimmed.match(/^№?\s*([^\s—]+)/);
+                return { id: null, no: match ? match[1] : trimmed };
+            }
+
+            function render() {
+                const data = loadData();
+                const itemsHTML = ITEMS.map(item => {
+                    const hist = getItemHistory(data, item.id);
+                    const stock = getItemStock(data, item.id);
+                    return `
+                        <div class="inv-item" data-item-id="${item.id}">
+                            <div class="inv-item-top">
+                                <div class="inv-item-name">${item.name}</div>
+                                <div class="inv-item-stock">${stock.toLocaleString('ru-RU')} <small>${item.unit}</small></div>
+                            </div>
+                            <div class="inv-actions">
+                                <button class="btn-prihod" onclick="window.openPrihodModal('${item.id}')">📥 Приход</button>
+                                <button class="btn-rashod" onclick="window.openRashodModal('${item.id}')">📤 Расход</button>
+                                <button class="btn-hist" onclick="window.toggleInvHistory('${item.id}')">🕘 История</button>
+                            </div>
+                            <div class="inv-history" id="hist-${item.id}">
+                                ${buildHistoryHTML(hist)}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                content.innerHTML = `
+                    <div class="inv-list">
+                        <h2>🛠️ Инструменты</h2>
+                        ${itemsHTML}
+                    </div>
+                `;
+            }
+
+            window.toggleInvHistory = function(itemId) {
+                const el = document.getElementById('hist-' + itemId);
+                if (el) el.classList.toggle('show');
+            };
+
+            // ===== Приход =====
+            let prihodTargetId = null;
+            const prihodModal = document.getElementById('prihodModal');
+            const prihodItemName = document.getElementById('prihodItemName');
+            const prihodQtyInput = document.getElementById('prihodQtyInput');
+            const prihodUnitSelect = document.getElementById('prihodUnitSelect');
+            const prihodDateInput = document.getElementById('prihodDateInput');
+            const prihodCommentInput = document.getElementById('prihodCommentInput');
+            const prihodModalError = document.getElementById('prihodModalError');
+
+            window.openPrihodModal = function(itemId) {
+                const item = ITEMS.find(i => i.id === itemId);
+                if (!item) return;
+                prihodTargetId = itemId;
+                prihodItemName.textContent = `Пополнение остатка: ${item.name} (${item.unit})`;
+                prihodQtyInput.value = '';
+                prihodUnitSelect.value = 'unit';
+                prihodDateInput.value = new Date().toISOString().slice(0, 10);
+                prihodCommentInput.value = '';
+                prihodModalError.classList.remove('show');
+                const nozhFields = document.getElementById('prihodNozhFields');
+                if (itemId === 'nozh') {
+                    nozhFields.style.display = 'block';
+                    document.getElementById('prihodPurposeInput').value = '';
+                    document.getElementById('prihodBoxInput').value = '';
+                } else {
+                    nozhFields.style.display = 'none';
+                }
+                prihodModal.classList.add('show');
+                setTimeout(() => prihodQtyInput.focus(), 100);
+            };
+            window.closePrihodModal = function() { prihodModal.classList.remove('show'); prihodTargetId = null; };
+            window.confirmPrihod = function() {
+                if (!prihodTargetId) return;
+                const qty = parseInt(prihodQtyInput.value, 10);
+                if (!qty || qty <= 0) {
+                    prihodModalError.textContent = 'Введите количество больше нуля';
+                    prihodModalError.classList.add('show');
+                    return;
+                }
+                const data = loadData();
+                if (!data[prihodTargetId]) data[prihodTargetId] = { history: [] };
+                const entry = {
+                    type: 'prihod',
+                    qty: qty,
+                    unitLabel: unitLabels[prihodUnitSelect.value] || '',
+                    date: prihodDateInput.value || new Date().toISOString().slice(0, 10),
+                    comment: prihodCommentInput.value.trim(),
+                    timestamp: Date.now()
+                };
+                if (prihodTargetId === 'nozh') {
+                    entry.purpose = document.getElementById('prihodPurposeInput').value.trim() || null;
+                    entry.boxName = document.getElementById('prihodBoxInput').value.trim() || null;
+                }
+                data[prihodTargetId].history.push(entry);
+                saveData(data);
+                closePrihodModal();
+                render();
+            };
+            prihodModal.addEventListener('click', function(e) { if (e.target === prihodModal) closePrihodModal(); });
+
+            // ===== Расход =====
+            let rashodTargetId = null;
+            const rashodModal = document.getElementById('rashodModal');
+            const rashodItemName = document.getElementById('rashodItemName');
+            const rashodQtyInput = document.getElementById('rashodQtyInput');
+            const rashodUnitSelect = document.getElementById('rashodUnitSelect');
+            const rashodAvailableText = document.getElementById('rashodAvailableText');
+            const rashodTechcardInput = document.getElementById('rashodTechcardInput');
+            const rashodDateInput = document.getElementById('rashodDateInput');
+            const rashodCommentInput = document.getElementById('rashodCommentInput');
+            const rashodModalError = document.getElementById('rashodModalError');
+
+            window.openRashodModal = function(itemId) {
+                const item = ITEMS.find(i => i.id === itemId);
+                if (!item) return;
+                const data = loadData();
+                rashodTargetId = itemId;
+                rashodItemName.textContent = `Списание: ${item.name} (${item.unit})`;
+                rashodAvailableText.textContent = getItemStock(data, itemId).toLocaleString('ru-RU') + ' ' + item.unit;
+                rashodQtyInput.value = '';
+                rashodUnitSelect.value = 'unit';
+                rashodTechcardInput.value = '';
+                rashodDateInput.value = new Date().toISOString().slice(0, 10);
+                rashodCommentInput.value = '';
+                rashodModalError.classList.remove('show');
+                populateTechcardDatalist();
+                const nozhFields = document.getElementById('rashodNozhFields');
+                if (itemId === 'nozh') {
+                    nozhFields.style.display = 'block';
+                    document.getElementById('rashodPurposeInput').value = '';
+                    document.getElementById('rashodBoxInput').value = '';
+                } else {
+                    nozhFields.style.display = 'none';
+                }
+                rashodModal.classList.add('show');
+                setTimeout(() => rashodQtyInput.focus(), 100);
+            };
+            window.closeRashodModal = function() { rashodModal.classList.remove('show'); rashodTargetId = null; };
+            window.confirmRashod = function() {
+                if (!rashodTargetId) return;
+                const data = loadData();
+                const available = getItemStock(data, rashodTargetId);
+                const qty = parseInt(rashodQtyInput.value, 10);
+                if (!qty || qty <= 0 || qty > available) {
+                    rashodModalError.textContent = `Введите количество от 1 до ${available}`;
+                    rashodModalError.classList.add('show');
+                    return;
+                }
+                if (!data[rashodTargetId]) data[rashodTargetId] = { history: [] };
+                const techcard = resolveTechcardFromInput(rashodTechcardInput.value);
+                const entry = {
+                    type: 'rashod',
+                    qty: qty,
+                    unitLabel: unitLabels[rashodUnitSelect.value] || '',
+                    techcardNo: techcard ? techcard.no : null,
+                    techcardId: techcard ? techcard.id : null,
+                    date: rashodDateInput.value || new Date().toISOString().slice(0, 10),
+                    comment: rashodCommentInput.value.trim(),
+                    timestamp: Date.now()
+                };
+                if (rashodTargetId === 'nozh') {
+                    entry.purpose = document.getElementById('rashodPurposeInput').value.trim() || null;
+                    entry.boxName = document.getElementById('rashodBoxInput').value.trim() || null;
+                }
+                data[rashodTargetId].history.push(entry);
+                saveData(data);
+                closeRashodModal();
+                render();
+            };
+            rashodModal.addEventListener('click', function(e) { if (e.target === rashodModal) closeRashodModal(); });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') { closePrihodModal(); closeRashodModal(); }
+            });
+
+            render();
+        });
+    </script>
+    <script src="js/screenshot-store.js"></script>
+    <script src="js/auth-check.js"></script>
+    <script src="js/nav-filter.js"></script>
+</body>
+</html>

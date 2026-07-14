@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Настройки — ProfitPrint</title>
+    <title>Настройки — PrintMax</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#2563eb">
     <style>
         :root {
             --bg-main: #f1f4f9;
@@ -16,8 +14,8 @@
             --text-secondary: #64748b;
             --border-color: #e2e8f0;
             --primary-blue: #2563eb;
-            --accent-red: #dc2626;
             --accent-green: #10b981;
+            --accent-red: #dc2626;
             --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
@@ -29,6 +27,7 @@
             font-family: var(--font-main);
             color: var(--text-primary);
             padding: 20px;
+            min-height: 100vh;
         }
 
         .settings-container {
@@ -44,6 +43,9 @@
         }
 
         .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             padding: 10px 16px;
             border-radius: 8px;
             background: var(--bg-white);
@@ -78,36 +80,62 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 0;
+            padding: 20px 0;
             border-bottom: 1px solid var(--border-color);
         }
 
         .setting-item:last-child {
             border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .setting-item:first-child {
+            padding-top: 0;
         }
 
         .setting-info {
             flex: 1;
+            padding-right: 16px;
         }
 
         .setting-title {
             font-size: 16px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            color: var(--text-primary);
         }
 
         .setting-description {
             font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .status-badge.enabled {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+        }
+
+        .status-badge.disabled {
+            background: rgba(100, 116, 139, 0.1);
             color: var(--text-secondary);
         }
 
         /* Toggle Switch */
         .toggle-switch {
             position: relative;
-            width: 56px;
-            height: 30px;
+            width: 52px;
+            height: 28px;
             flex-shrink: 0;
-            margin-left: 16px;
         }
 
         .toggle-switch input {
@@ -125,14 +153,14 @@
             bottom: 0;
             background-color: #cbd5e1;
             transition: 0.3s;
-            border-radius: 30px;
+            border-radius: 28px;
         }
 
         .toggle-slider:before {
             position: absolute;
             content: "";
-            height: 24px;
-            width: 24px;
+            height: 22px;
+            width: 22px;
             left: 3px;
             bottom: 3px;
             background-color: white;
@@ -146,7 +174,7 @@
         }
 
         .toggle-switch input:checked + .toggle-slider:before {
-            transform: translateX(26px);
+            transform: translateX(24px);
         }
 
         /* Password Modal */
@@ -161,6 +189,7 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(4px);
         }
 
         .password-modal.show {
@@ -169,46 +198,52 @@
 
         .password-modal-content {
             background: var(--bg-white);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 32px;
-            max-width: 400px;
+            max-width: 380px;
             width: 90%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
         }
 
         .password-modal-content h3 {
-            margin: 0 0 16px 0;
+            margin: 0 0 8px 0;
             font-size: 20px;
+            color: var(--text-primary);
         }
 
         .password-modal-content p {
-            margin: 0 0 20px 0;
+            margin: 0 0 24px 0;
             color: var(--text-secondary);
             font-size: 14px;
         }
 
         .password-input {
             width: 100%;
-            padding: 12px 14px;
+            padding: 14px;
             border: 1.5px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 18px;
             margin-bottom: 16px;
             text-align: center;
-            letter-spacing: 4px;
+            letter-spacing: 6px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--bg-main);
         }
 
         .password-input:focus {
             outline: none;
             border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
 
         .password-error {
             color: var(--accent-red);
             font-size: 13px;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             display: none;
+            font-weight: 500;
         }
 
         .password-error.show {
@@ -223,8 +258,8 @@
         .modal-buttons button {
             flex: 1;
             padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 14px;
+            border-radius: 10px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             border: none;
@@ -247,68 +282,51 @@
         }
 
         .btn-confirm:hover {
-            opacity: 0.9;
+            background: #1d4ed8;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-
-        .status-badge.enabled {
-            background: rgba(16,185,129,0.1);
-            color: var(--accent-green);
-        }
-
-        .status-badge.disabled {
-            background: rgba(100,116,139,0.1);
-            color: var(--text-secondary);
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 12px;
-            }
-
-            .settings-card {
-                padding: 16px;
-            }
-
-            .setting-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-
-            .toggle-switch {
-                margin-left: 0;
-                align-self: flex-end;
-            }
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .settings-card { padding: 16px; }
+            .setting-item { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .toggle-switch { align-self: flex-end; margin-top: -40px; }
         }
     </style>
 </head>
 <body>
     <div class="settings-container">
         <div class="settings-header">
-            <a href="otpCex.html" class="back-btn">← Назад</a>
+            <a href="index.html" class="back-btn">← Назад</a>
             <h1>Настройки</h1>
         </div>
 
         <div class="settings-card">
+            <!-- Настройка 1: Режим редактирования -->
             <div class="setting-item">
                 <div class="setting-info">
                     <div class="setting-title">Режим редактирования</div>
                     <div class="setting-description">
-                        Включите для отображения кнопок "Изменить" и "Удалить" на странице "На производство"
+                        Показывает кнопки "Изменить" и "Удалить" на странице "На производство"
                     </div>
-                    <span class="status-badge disabled" id="statusBadge">Выключено</span>
+                    <span class="status-badge disabled" id="editStatusBadge">Выключено</span>
                 </div>
                 <label class="toggle-switch">
                     <input type="checkbox" id="editModeToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <!-- Настройка 2: Отправка на склад -->
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-title">Отправка на склад в техкарте</div>
+                    <div class="setting-description">
+                        Показывает кнопки «Отправить полностью» / «Отправить частично» в техкарте — заказ переносится на страницу «Склад» после полного поступления
+                    </div>
+                    <span class="status-badge disabled" id="warehouseStatusBadge">Выключено</span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="warehouseModeToggle">
                     <span class="toggle-slider"></span>
                 </label>
             </div>
@@ -318,9 +336,9 @@
     <!-- Модальное окно для пароля -->
     <div class="password-modal" id="passwordModal">
         <div class="password-modal-content">
-            <h3>Введите пароль</h3>
-            <p>Для включения режима редактирования введите пароль администратора</p>
-            <input type="password" class="password-input" id="passwordInput" placeholder="••••" maxlength="10">
+            <h3>🔒 Введите пароль</h3>
+            <p>Для изменения этой настройки требуется пароль администратора</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="••••" maxlength="10" inputmode="numeric">
             <div class="password-error" id="passwordError">Неверный пароль</div>
             <div class="modal-buttons">
                 <button class="btn-cancel" onclick="closePasswordModal()">Отмена</button>
@@ -331,63 +349,108 @@
 
     <script>
         const ADMIN_PASSWORD = '1001';
-        const STORAGE_KEY = 'pp_edit_mode_enabled';
 
-        const toggle = document.getElementById('editModeToggle');
-        const statusBadge = document.getElementById('statusBadge');
+        const editToggle = document.getElementById('editModeToggle');
+        const editStatusBadge = document.getElementById('editStatusBadge');
+
+        const warehouseToggle = document.getElementById('warehouseModeToggle');
+        const warehouseStatusBadge = document.getElementById('warehouseStatusBadge');
+
         const passwordModal = document.getElementById('passwordModal');
         const passwordInput = document.getElementById('passwordInput');
         const passwordError = document.getElementById('passwordError');
 
-        // Загрузка состояния
+        let currentToggle = null; // Запоминаем, какой тумблер пытались включить
+
+        // Загрузка состояния при старте
         function loadState() {
-            const isEnabled = localStorage.getItem(STORAGE_KEY) === 'true';
-            toggle.checked = isEnabled;
-            updateStatusBadge(isEnabled);
+            const isEditEnabled = localStorage.getItem('pp_edit_mode_enabled') === 'true';
+            const isWarehouseEnabled = localStorage.getItem('pp_warehouse_mode_enabled') === 'true';
+
+            editToggle.checked = isEditEnabled;
+            updateEditBadge(isEditEnabled);
+
+            warehouseToggle.checked = isWarehouseEnabled;
+            updateWarehouseBadge(isWarehouseEnabled);
         }
 
-        function updateStatusBadge(isEnabled) {
+        function updateEditBadge(isEnabled) {
             if (isEnabled) {
-                statusBadge.textContent = 'Включено';
-                statusBadge.className = 'status-badge enabled';
+                editStatusBadge.textContent = 'Включено';
+                editStatusBadge.className = 'status-badge enabled';
             } else {
-                statusBadge.textContent = 'Выключено';
-                statusBadge.className = 'status-badge disabled';
+                editStatusBadge.textContent = 'Выключено';
+                editStatusBadge.className = 'status-badge disabled';
             }
         }
 
-        // Обработчик переключателя
-        toggle.addEventListener('change', function() {
-            if (this.checked) {
-                // Пытаемся включить - запрашиваем пароль
-                passwordInput.value = '';
-                passwordError.classList.remove('show');
-                passwordModal.classList.add('show');
-                setTimeout(() => passwordInput.focus(), 100);
+        function updateWarehouseBadge(isEnabled) {
+            if (isEnabled) {
+                warehouseStatusBadge.textContent = 'Включено';
+                warehouseStatusBadge.className = 'status-badge enabled';
             } else {
-                // Выключаем без пароля
-                localStorage.setItem(STORAGE_KEY, 'false');
-                updateStatusBadge(false);
+                warehouseStatusBadge.textContent = 'Выключено';
+                warehouseStatusBadge.className = 'status-badge disabled';
+            }
+        }
+
+        // Обработчик для режима редактирования
+        editToggle.addEventListener('change', function() {
+            if (this.checked) {
+                currentToggle = 'edit';
+                openPasswordModal();
+            } else {
+                localStorage.setItem('pp_edit_mode_enabled', 'false');
+                updateEditBadge(false);
             }
         });
 
+        // Обработчик для отправки на склад
+        warehouseToggle.addEventListener('change', function() {
+            if (this.checked) {
+                currentToggle = 'warehouse';
+                openPasswordModal();
+            } else {
+                localStorage.setItem('pp_warehouse_mode_enabled', 'false');
+                updateWarehouseBadge(false);
+            }
+        });
+
+        function openPasswordModal() {
+            passwordInput.value = '';
+            passwordError.classList.remove('show');
+            passwordModal.classList.add('show');
+            setTimeout(() => passwordInput.focus(), 100);
+        }
+
+        function closePasswordModal() {
+            passwordModal.classList.remove('show');
+            // Возвращаем тумблер в исходное состояние, если пароль не был введён верно
+            if (currentToggle === 'edit') {
+                editToggle.checked = localStorage.getItem('pp_edit_mode_enabled') === 'true';
+            } else if (currentToggle === 'warehouse') {
+                warehouseToggle.checked = localStorage.getItem('pp_warehouse_mode_enabled') === 'true';
+            }
+            currentToggle = null;
+        }
+
         function confirmPassword() {
             const enteredPassword = passwordInput.value.trim();
-            
+
             if (enteredPassword === ADMIN_PASSWORD) {
-                localStorage.setItem(STORAGE_KEY, 'true');
-                updateStatusBadge(true);
+                if (currentToggle === 'edit') {
+                    localStorage.setItem('pp_edit_mode_enabled', 'true');
+                    updateEditBadge(true);
+                } else if (currentToggle === 'warehouse') {
+                    localStorage.setItem('pp_warehouse_mode_enabled', 'true');
+                    updateWarehouseBadge(true);
+                }
                 closePasswordModal();
             } else {
                 passwordError.classList.add('show');
                 passwordInput.value = '';
                 passwordInput.focus();
             }
-        }
-
-        function closePasswordModal() {
-            passwordModal.classList.remove('show');
-            toggle.checked = localStorage.getItem(STORAGE_KEY) === 'true';
         }
 
         // Закрытие по клику вне модального окна

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Склад — PrintMax</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#d97706">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="PrintMax Склад">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <style>
+        :root {
+            --bg-main: #fdf6ec;
+            --bg-white: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #78716c;
+            --border-color: #f0e0c8;
+            --primary-amber: #d97706;
+            --primary-amber-dark: #b45309;
+            --accent-green: #10b981;
+            --accent-red: #dc2626;
+            --shadow-md: 0 4px 16px rgba(217, 119, 6, 0.08);
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        body.dark-theme, body[data-theme="dark"] {
+            --bg-main: #241a10 !important;
+            --bg-white: #1c140c !important;
+            --text-primary: #f3e9da !important;
+            --text-secondary: #b8a488 !important;
+            --border-color: #4a3a24 !important;
+            --primary-amber: #f59e0b !important;
+        }
+        .theme-switch-wrapper { display: none !important; }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            background: var(--bg-main);
+            font-family: var(--font-main);
+            color: var(--text-primary);
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
+            -webkit-user-select: none;
+            user-select: none;
+            overscroll-behavior: none;
+            touch-action: manipulation;
+        }
+
+        .app-container { display: flex; min-height: 100vh; }
+
+        .burger-btn {
+            display: none;
+            position: fixed;
+            top: calc(12px + var(--safe-top));
+            left: calc(12px + env(safe-area-inset-left));
+            z-index: 1100;
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            width: 48px;
+            height: 48px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            color: var(--text-primary);
+            align-items: center;
+            justify-content: center;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .burger-btn:active { transform: scale(0.95); background: var(--bg-main); }
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 1040; opacity: 0; transition: opacity 0.3s;
+        }
+        .sidebar-overlay.show { display: block; opacity: 1; }
+
+        .sidebar { width: 260px; background: #7c3d10; flex-shrink: 0; min-height: 100vh; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .logo-small { display: flex; align-items: center; gap: 10px; }
+        .logo-icon {
+            width: 36px; height: 36px; border-radius: 8px; background: var(--primary-amber);
+            display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 14px;
+        }
+        .logo-small span { color: #fff; font-weight: 700; font-size: 16px; }
+        .nav-menu { list-style: none; margin: 0; padding: 12px; }
+        .nav-menu li { margin-bottom: 4px; }
+        .nav-menu li a {
+            display: block; padding: 12px 14px; border-radius: 8px; color: #fff !important;
+            text-decoration: none; font-weight: 500; font-size: 14px; transition: background 0.15s;
+        }
+        .nav-menu li a:hover { background: rgba(255,255,255,0.1) !important; }
+        .nav-menu li a.active { background: var(--primary-amber) !important; color: #fff !important; font-weight: 700; }
+
+        @media screen and (max-width: 768px) {
+            .sidebar {
+                position: fixed; top: 0; left: -280px; width: 280px; height: 100vh;
+                transition: left 0.3s ease; z-index: 1050; box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+                overflow-y: auto; -webkit-overflow-scrolling: touch; padding-top: var(--safe-top);
+            }
+            .sidebar.open { left: 0; }
+            .burger-btn { display: flex; }
+            .main-content {
+                margin-left: 0 !important; padding: 70px 12px 20px;
+                padding-top: calc(70px + var(--safe-top)); width: 100%; overflow-x: hidden;
+            }
+        }
+
+        .main-content { flex: 1; padding: 24px; }
+        .top-bar h1 { margin: 0 0 20px 0; font-size: 26px; color: var(--text-primary); }
+        .top-bar h1::before { content: "🏬 "; }
+
+        .warehouse-list {
+            background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 20px; box-shadow: var(--shadow-md); max-width: 1300px; margin: 0 auto;
+        }
+        .warehouse-list h2 {
+            margin: 0 0 16px 0; color: var(--text-primary); font-size: 20px;
+            border-bottom: 2px solid var(--primary-amber); padding-bottom: 8px;
+        }
+        .filter-bar {
+            display: flex; flex-wrap: wrap; gap: 12px 20px; margin-bottom: 20px; padding: 12px 16px;
+            background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border-color); align-items: center;
+        }
+        .filter-bar .search-wrap { flex: 1 1 200px; min-width: 140px; }
+        .filter-bar .search-wrap input {
+            width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 8px;
+            font-size: 14px; background: var(--bg-white); color: var(--text-primary); transition: border-color 0.2s;
+            -webkit-appearance: none; appearance: none;
+        }
+        .filter-bar .search-wrap input:focus {
+            outline: none; border-color: var(--primary-amber); box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12);
+        }
+
+        .empty-msg { padding: 30px; text-align: center; color: var(--text-secondary); font-style: italic; }
+
+        /* ===== Таблица (десктоп) ===== */
+        .table-responsive { overflow-x: auto; }
+        .wh-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 900px; }
+        .wh-table th {
+            text-align: left; padding: 10px 12px; background: var(--bg-main); border-bottom: 2px solid var(--border-color);
+            font-weight: 600; color: var(--text-secondary); white-space: nowrap;
+        }
+        .wh-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); color: var(--text-primary); vertical-align: middle; }
+        .wh-table tr.wh-row:hover { background: var(--bg-main); }
+        .wh-table td strong { font-weight: 700; }
+
+        .wh-qty-cell .wh-mini-progress {
+            width: 90px; height: 5px; background: var(--border-color); border-radius: 4px; overflow: hidden; margin-top: 4px;
+        }
+        .wh-qty-cell .wh-mini-progress-fill { height: 100%; background: var(--primary-amber); border-radius: 4px; }
+        .wh-qty-cell small { color: var(--text-secondary); font-size: 11px; }
+
+        .wh-badge {
+            display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap;
+        }
+        .wh-badge.instant { background: rgba(16,185,129,0.12); color: var(--accent-green); }
+        .wh-badge.partial-badge { background: rgba(217,119,6,0.14); color: var(--primary-amber-dark); }
+        .wh-badge.closed { background: rgba(100,116,139,0.12); color: var(--text-secondary); }
+        .wh-badge.pending { background: rgba(217,119,6,0.10); color: var(--primary-amber-dark); }
+
+        .wh-actions-cell { display: flex; flex-wrap: wrap; gap: 6px; }
+        .wh-actions-cell button, .wh-actions-cell a {
+            padding: 7px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; border: none;
+            cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+        }
+        .btn-ship { background: var(--primary-amber); color: #fff; }
+        .btn-ship:hover { background: var(--primary-amber-dark); }
+        .btn-ship:disabled { background: var(--border-color); color: var(--text-secondary); cursor: not-allowed; }
+        .btn-history { background: var(--bg-main); color: var(--text-primary); border: 1px solid var(--border-color) !important; }
+        .btn-open-card { background: var(--bg-main); color: var(--text-primary); border: 1px solid var(--border-color) !important; }
+
+        .wh-history-row td { background: var(--bg-main); padding: 14px 20px; }
+        .wh-history-title { font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .wh-history-item {
+            display: flex; gap: 10px; align-items: flex-start; padding: 7px 10px; border-radius: 8px;
+            background: var(--bg-white); margin-bottom: 6px; font-size: 13px;
+        }
+        .wh-history-icon { font-size: 15px; flex-shrink: 0; }
+        .wh-history-body { flex: 1; }
+        .wh-history-qty { font-weight: 700; color: var(--text-primary); }
+        .wh-history-date { color: var(--text-secondary); font-size: 12px; margin-left: 8px; }
+        .wh-history-comment { color: var(--text-secondary); font-size: 12px; margin-top: 2px; font-style: italic; }
+        .wh-history-empty { color: var(--text-secondary); font-style: italic; font-size: 13px; }
+
+        /* ===== Мобильные карточки (fallback таблицы) ===== */
+        .wh-cards { display: none; }
+        .wh-card-item {
+            background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(120,90,40,0.06);
+        }
+        .wh-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+        .wh-card-no { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 15px; color: var(--primary-amber-dark); }
+        .wh-card-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; border-bottom: 1px dashed var(--border-color); }
+        .wh-card-row:last-of-type { border-bottom: none; }
+        .wh-card-label { color: var(--text-secondary); font-weight: 500; }
+        .wh-card-value { font-weight: 600; text-align: right; }
+        .wh-card-actions { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 8px; }
+        .wh-card-actions button, .wh-card-actions a {
+            flex: 1 1 auto; text-align: center; justify-content: center; padding: 10px 12px; border-radius: 8px;
+            font-size: 13px; font-weight: 600; border: none; cursor: pointer; text-decoration: none; min-height: 40px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        /* ===== Модалка отгрузки ===== */
+        .ship-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1200; justify-content: center; align-items: center;
+            backdrop-filter: blur(4px); padding: 16px;
+        }
+        .ship-modal.show { display: flex; }
+        .ship-modal-content {
+            background: var(--bg-white); border-radius: 16px; padding: 28px; max-width: 400px; width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .ship-modal-content h3 { margin: 0 0 6px 0; font-size: 19px; color: var(--text-primary); }
+        .ship-modal-content .sm-sub { margin: 0 0 20px 0; color: var(--text-secondary); font-size: 13px; }
+        .ship-modal-content label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+        .ship-modal-content input, .ship-modal-content textarea {
+            width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 10px;
+            font-size: 15px; margin-bottom: 16px; color: var(--text-primary); background: var(--bg-main); font-family: inherit;
+        }
+        .ship-modal-content input:focus, .ship-modal-content textarea:focus {
+            outline: none; border-color: var(--primary-amber); box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.12);
+        }
+        .ship-modal-content textarea { resize: vertical; min-height: 70px; }
+        .ship-modal-remaining { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+        .ship-modal-remaining strong { color: var(--primary-amber-dark); }
+        .ship-modal-error { color: var(--accent-red); font-size: 13px; margin-bottom: 12px; display: none; font-weight: 500; }
+        .ship-modal-error.show { display: block; }
+        .ship-modal-buttons { display: flex; gap: 12px; }
+        .ship-modal-buttons button {
+            flex: 1; padding: 12px 20px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s;
+        }
+        .ship-modal-buttons .btn-cancel { background: var(--bg-main); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .ship-modal-buttons .btn-confirm { background: var(--primary-amber); color: #fff; }
+
+        @media screen and (max-width: 900px) {
+            .warehouse-list { padding: 14px; }
+            .table-responsive { display: none; }
+            .wh-cards { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small"><div class="logo-icon">СК</div><span>PrintMax Склад</span></div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="sklad.html" class="active">🏬 Склад заказов</a></li>
+                <li><a href="rashodniki.html">🧪 Расходники</a></li>
+                <li><a href="bumaga.html">📄 Бумага</a></li>
+                <li><a href="instrumenty.html">🛠️ Инструменты</a></li>
+                <li><a href="palety.html">🪵 Палеты</a></li>
+                <li><a href="settings.html">⚙️ Настройки</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="top-bar"><h1>Склад</h1></div>
+            <div id="content">Загрузка...</div>
+        </main>
+    </div>
+
+    <!-- Модалка отгрузки -->
+    <div class="ship-modal" id="shipModal">
+        <div class="ship-modal-content">
+            <h3>🚚 Отгрузить со склада</h3>
+            <p class="sm-sub">Укажите, сколько отгружается клиенту</p>
+            <div class="ship-modal-remaining">Остаток на складе: <strong id="shipRemainingText">0</strong></div>
+            <label for="shipQtyInput">Количество</label>
+            <input type="number" id="shipQtyInput" min="1" placeholder="Например, 300">
+            <label for="shipDateInput">Дата</label>
+            <input type="date" id="shipDateInput">
+            <label for="shipCommentInput">Комментарий</label>
+            <textarea id="shipCommentInput" placeholder="Например: забрал курьер клиента"></textarea>
+            <label for="shipPaletInput">Палет (шт, необязательно)</label>
+            <input type="number" id="shipPaletInput" min="0" placeholder="Сколько палет ушло с этой отгрузкой">
+            <div class="ship-modal-remaining" id="shipPaletAvailableNote" style="display:none;">Доступно палет у контрагента: <strong id="shipPaletAvailableText">0</strong></div>
+            <div class="ship-modal-error" id="shipModalError">Проверьте введённое количество</div>
+            <div class="ship-modal-buttons">
+                <button class="btn-cancel" onclick="closeShipModal()">Отмена</button>
+                <button class="btn-confirm" onclick="confirmShip()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+        }
+        document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+
+        (function() {
+            document.body.classList.remove('dark-theme', 'dark');
+            document.body.removeAttribute('data-theme');
+        })();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const content = document.getElementById('content');
+
+            // ===== Хранилище =====
+            function loadProductionOrders() {
+                let orders = [];
+                try {
+                    const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
+                    if (raw) orders = JSON.parse(raw);
+                } catch (e) { console.error('Ошибка загрузки заказов производства:', e); }
+                return orders;
+            }
+            function loadWarehouseOrders() {
+                let orders = [];
+                try {
+                    const raw = localStorage.getItem('pp_warehouse_orders');
+                    if (raw) orders = JSON.parse(raw);
+                } catch (e) { console.error('Ошибка загрузки склада:', e); }
+                return orders;
+            }
+            function saveWarehouseOrders(orders) {
+                localStorage.setItem('pp_warehouse_orders', JSON.stringify(orders));
+            }
+            function saveProductionOrders(orders) {
+                localStorage.setItem('pp_orders', JSON.stringify(orders));
+            }
+
+            // ===== Палеты (общий склад с palety.html, ключ pp_inventory_palety) =====
+            const PALETY_KEY = 'pp_inventory_palety';
+            function loadPaletyData() {
+                try {
+                    const raw = localStorage.getItem(PALETY_KEY);
+                    return raw ? JSON.parse(raw) : {};
+                } catch (e) { return {}; }
+            }
+            function savePaletyData(data) {
+                localStorage.setItem(PALETY_KEY, JSON.stringify(data));
+            }
+            function getPaletyStock(customerName) {
+                if (!customerName) return 0;
+                const data = loadPaletyData();
+                const hist = (data[customerName] && Array.isArray(data[customerName].history)) ? data[customerName].history : [];
+                let stock = 0;
+                hist.forEach(h => { stock += (h.type === 'prihod' ? h.qty : -h.qty); });
+                return stock;
+            }
+            // Списывает палеты контрагента при отгрузке заказа; qty уже проверено вызывающим кодом
+            function deductPaletyForShipment(customerName, qty, dateStr, note) {
+                if (!customerName || !qty) return;
+                const data = loadPaletyData();
+                if (!data[customerName]) data[customerName] = { history: [] };
+                data[customerName].history.push({
+                    type: 'rashod',
+                    qty: qty,
+                    date: dateStr || new Date().toISOString().slice(0, 10),
+                    comment: note || '',
+                    timestamp: Date.now()
+                });
+                savePaletyData(data);
+            }
+
+            // Собираем единый список строк: полностью принятые (со склада) + частично принятые (ещё в производстве)
+            function buildUnifiedRows() {
+                const rows = [];
+
+                loadWarehouseOrders().forEach(o => {
+                    rows.push({
+                        source: 'warehouse',
+                        id: o.id,
+                        techcard_no: o.techcard_no,
+                        customer: o.customer,
+                        product_name: o.product_name,
+                        manager: o.manager,
+                        total: o.order_qty || 0,
+                        received: o.order_qty || 0, // на складе всегда принято 100%
+                        shipped: o.shipped_qty || 0,
+                        receive_history: o.receive_history || [],
+                        shipment_history: o.shipment_history || [],
+                        sortKey: o.moved_to_warehouse_at || o.id,
+                        isComplete: true
+                    });
+                });
+
+                loadProductionOrders().forEach(o => {
+                    const received = o.received_qty || 0;
+                    if (received > 0) {
+                        rows.push({
+                            source: 'production',
+                            id: o.id,
+                            techcard_no: o.techcard_no,
+                            customer: o.customer,
+                            product_name: o.product_name,
+                            manager: o.manager,
+                            total: o.order_qty || 0,
+                            received: received,
+                            shipped: o.shipped_qty || 0,
+                            receive_history: o.receive_history || [],
+                            shipment_history: o.shipment_history || [],
+                            sortKey: o.id,
+                            isComplete: false
+                        });
+                    }
+                });
+
+                rows.sort((a, b) => b.sortKey - a.sortKey);
+                return rows;
+            }
+
+            // Остаток на складе всегда = сколько реально пришло минус сколько реально отгружено.
+            // Не зависит от того, пришёл ли заказ уже на 100% или ещё частично поступает.
+            function getRowRemaining(row) {
+                return Math.max(0, (row.received || 0) - (row.shipped || 0));
+            }
+
+            function receiveBadgeHTML(row) {
+                const remaining = getRowRemaining(row);
+                if (remaining <= 0 && row.received > 0) {
+                    return '<span class="wh-badge closed">✔️ Всё отгружено</span>';
+                }
+                if (!row.isComplete) {
+                    return '<span class="wh-badge pending">🕓 Ещё принимается</span>';
+                }
+                const hist = row.receive_history || [];
+                const isInstant = hist.length <= 1 && (hist.length === 0 || hist[0].type === 'full');
+                return isInstant
+                    ? '<span class="wh-badge instant">📥 Пришло сразу</span>'
+                    : '<span class="wh-badge partial-badge">📥 Пришло по частям</span>';
+            }
+
+            function buildHistoryTimeline(row) {
+                const receiveEvents = (row.receive_history || []).map(h => ({
+                    kind: 'receive', qty: h.qty, date: h.date, comment: h.comment, timestamp: h.timestamp || 0
+                }));
+                const shipEvents = (row.shipment_history || []).map(h => ({
+                    kind: 'ship', qty: h.qty, date: h.date, comment: h.comment, timestamp: h.timestamp || 0
+                }));
+                const all = receiveEvents.concat(shipEvents).sort((a, b) => a.timestamp - b.timestamp);
+                if (all.length === 0) return '<div class="wh-history-empty">История пуста</div>';
+                return all.map(ev => {
+                    const icon = ev.kind === 'receive' ? '📥' : '📤';
+                    const label = ev.kind === 'receive' ? 'Приход' : 'Отгрузка';
+                    return `
+                        <div class="wh-history-item">
+                            <div class="wh-history-icon">${icon}</div>
+                            <div class="wh-history-body">
+                                <span class="wh-history-qty">${label}: ${ev.qty.toLocaleString('ru-RU')}</span>
+                                <span class="wh-history-date">${ev.date || ''}</span>
+                                ${ev.comment ? `<div class="wh-history-comment">${ev.comment}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            window._allRows = buildUnifiedRows();
+
+            function renderRows(rows) {
+                if (rows.length === 0) {
+                    content.innerHTML = `
+                        <div class="warehouse-list">
+                            <h2>📦 Заказы на складе (0)</h2>
+                            <div class="empty-msg">Пока нет ни одного заказа с приходом на склад.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const tableRows = rows.map(row => {
+                    const rawNo = row.techcard_no || row.id;
+                    const formattedNo = String(rawNo).padStart(3, '0');
+                    const remaining = getRowRemaining(row);
+                    const pct = row.total > 0 ? Math.min(100, Math.round((row.received / row.total) * 100)) : 0;
+
+                    const receivedCellHTML = `
+                        ${row.received.toLocaleString('ru-RU')}
+                        ${!row.isComplete ? `<div class="wh-mini-progress"><div class="wh-mini-progress-fill" style="width:${pct}%;"></div></div><small>${pct}%</small>` : ''}
+                    `;
+
+                    const shippedCell = row.shipped.toLocaleString('ru-RU');
+                    const remainingCell = remaining.toLocaleString('ru-RU');
+
+                    const actionsHTML = `
+                        <button class="btn-ship" ${remaining <= 0 ? 'disabled' : ''} onclick="window.openShipModal(${row.id}, '${row.source}')">🚚 Отгрузить</button>
+                        <button class="btn-history" onclick="window.toggleHistory('row-${row.id}')">🕘 История</button>
+                        <a href="texKarta.html?id=${row.id}" class="btn-open-card">📄 Техкарта</a>
+                    `;
+
+                    return `
+                        <tr class="wh-row">
+                            <td><strong>№${formattedNo}</strong></td>
+                            <td>${row.customer || ''}</td>
+                            <td>${row.product_name || ''}</td>
+                            <td><strong>${row.total.toLocaleString('ru-RU')}</strong></td>
+                            <td class="wh-qty-cell">${receivedCellHTML}</td>
+                            <td>${shippedCell}</td>
+                            <td><strong>${remainingCell}</strong></td>
+                            <td>${receiveBadgeHTML(row)}</td>
+                            <td><div class="wh-actions-cell">${actionsHTML}</div></td>
+                        </tr>
+                        <tr class="wh-history-row" id="history-row-${row.id}" style="display:none;">
+                            <td colspan="9">
+                                <div class="wh-history-title">Приход и отгрузки — № ${formattedNo}</div>
+                                ${buildHistoryTimeline(row)}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                const cardsHTML = rows.map(row => {
+                    const rawNo = row.techcard_no || row.id;
+                    const formattedNo = String(rawNo).padStart(3, '0');
+                    const remaining = getRowRemaining(row);
+                    const pct = row.total > 0 ? Math.min(100, Math.round((row.received / row.total) * 100)) : 0;
+
+                    return `
+                        <div class="wh-card-item">
+                            <div class="wh-card-top">
+                                <div class="wh-card-no">№${formattedNo}</div>
+                                ${receiveBadgeHTML(row)}
+                            </div>
+                            <div class="wh-card-row"><span class="wh-card-label">Заказчик</span><span class="wh-card-value">${row.customer || '—'}</span></div>
+                            <div class="wh-card-row"><span class="wh-card-label">Продукция</span><span class="wh-card-value">${row.product_name || '—'}</span></div>
+                            <div class="wh-card-row"><span class="wh-card-label">Общее кол-во</span><span class="wh-card-value">${row.total.toLocaleString('ru-RU')}</span></div>
+                            <div class="wh-card-row"><span class="wh-card-label">Пришло</span><span class="wh-card-value">${row.received.toLocaleString('ru-RU')}${!row.isComplete ? ` (${pct}%)` : ''}</span></div>
+                            <div class="wh-card-row"><span class="wh-card-label">Отгружено</span><span class="wh-card-value">${row.shipped.toLocaleString('ru-RU')}</span></div>
+                            <div class="wh-card-row"><span class="wh-card-label">Остаток</span><span class="wh-card-value">${remaining.toLocaleString('ru-RU')}</span></div>
+                            <div class="wh-card-actions">
+                                <button class="btn-ship" ${remaining <= 0 ? 'disabled' : ''} onclick="window.openShipModal(${row.id}, '${row.source}')">🚚 Отгрузить</button>
+                                <button class="btn-history" onclick="window.toggleHistory('row-${row.id}')">🕘 История</button>
+                                <a href="texKarta.html?id=${row.id}" class="btn-open-card">📄 Техкарта</a>
+                            </div>
+                            <div class="wh-history-row" id="history-row-${row.id}-mobile" style="display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border-color);">
+                                <div class="wh-history-title">Приход и отгрузки</div>
+                                ${buildHistoryTimeline(row)}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                content.innerHTML = `
+                    <div class="warehouse-list">
+                        <h2>📦 Заказы на складе (${rows.length})</h2>
+                        <div class="filter-bar">
+                            <div class="search-wrap">
+                                <input type="text" id="whSearchInput" placeholder="🔍 Поиск по номеру, заказчику, продукции..." oninput="applyWhFilter()">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="wh-table">
+                                <thead>
+                                    <tr>
+                                        <th>№ техкарты</th>
+                                        <th>Заказчик</th>
+                                        <th>Продукция</th>
+                                        <th>Общее кол-во</th>
+                                        <th>Пришло</th>
+                                        <th>Отгружено</th>
+                                        <th>Остаток</th>
+                                        <th>Статус</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${tableRows}</tbody>
+                            </table>
+                        </div>
+                        <div class="wh-cards">${cardsHTML}</div>
+                    </div>
+                `;
+            }
+
+            window.applyWhFilter = function() {
+                const searchVal = document.getElementById('whSearchInput')?.value.toLowerCase().trim() || '';
+                let filtered = window._allRows || [];
+                if (searchVal) {
+                    filtered = filtered.filter(o => {
+                        const fields = [o.techcard_no, o.customer, o.product_name, o.manager].map(f => String(f || '').toLowerCase());
+                        return fields.some(f => f.includes(searchVal));
+                    });
+                }
+                const activeSearch = searchVal;
+                renderRows(filtered);
+                // Восстанавливаем фокус и введённый текст (innerHTML пересоздаёт инпут)
+                const input = document.getElementById('whSearchInput');
+                if (input) {
+                    input.value = activeSearch;
+                    input.focus();
+                    input.setSelectionRange(activeSearch.length, activeSearch.length);
+                }
+            };
+
+            window.toggleHistory = function(rowKey) {
+                const desktopRow = document.getElementById('history-' + rowKey);
+                const mobileRow = document.getElementById('history-' + rowKey + '-mobile');
+                if (desktopRow) desktopRow.style.display = (desktopRow.style.display === 'none') ? '' : 'none';
+                if (mobileRow) mobileRow.style.display = (mobileRow.style.display === 'none') ? 'block' : 'none';
+            };
+
+            // ===== Модалка отгрузки =====
+            // Работает с заказом независимо от того, лежит ли он ещё в производстве (pp_orders,
+            // приход неполный) или уже переехал на склад (pp_warehouse_orders, приход 100%).
+            let shipTargetOrderId = null;
+            let shipTargetSource = null;
+            let shipTargetCustomer = null;
+            const shipModal = document.getElementById('shipModal');
+            const shipQtyInput = document.getElementById('shipQtyInput');
+            const shipDateInput = document.getElementById('shipDateInput');
+            const shipCommentInput = document.getElementById('shipCommentInput');
+            const shipModalError = document.getElementById('shipModalError');
+            const shipRemainingText = document.getElementById('shipRemainingText');
+            const shipPaletInput = document.getElementById('shipPaletInput');
+            const shipPaletAvailableNote = document.getElementById('shipPaletAvailableNote');
+            const shipPaletAvailableText = document.getElementById('shipPaletAvailableText');
+
+            function getOrderRemaining(order) {
+                const received = order.received_qty || 0;
+                const shipped = order.shipped_qty || 0;
+                return Math.max(0, received - shipped);
+            }
+
+            window.openShipModal = function(orderId, source) {
+                const orders = source === 'warehouse' ? loadWarehouseOrders() : loadProductionOrders();
+                const order = orders.find(o => String(o.id) === String(orderId));
+                if (!order) return;
+                shipTargetOrderId = orderId;
+                shipTargetSource = source;
+                shipTargetCustomer = order.customer || null;
+                shipQtyInput.value = '';
+                shipCommentInput.value = '';
+                shipDateInput.value = new Date().toISOString().slice(0, 10);
+                shipPaletInput.value = '';
+                shipModalError.classList.remove('show');
+                shipRemainingText.textContent = getOrderRemaining(order).toLocaleString('ru-RU');
+                if (shipTargetCustomer) {
+                    shipPaletAvailableNote.style.display = 'block';
+                    shipPaletAvailableText.textContent = getPaletyStock(shipTargetCustomer).toLocaleString('ru-RU');
+                } else {
+                    shipPaletAvailableNote.style.display = 'none';
+                }
+                shipModal.classList.add('show');
+                setTimeout(() => shipQtyInput.focus(), 100);
+            };
+
+            window.closeShipModal = function() {
+                shipModal.classList.remove('show');
+                shipTargetOrderId = null;
+                shipTargetSource = null;
+                shipTargetCustomer = null;
+            };
+
+            window.confirmShip = function() {
+                if (shipTargetOrderId === null) return;
+                const isWarehouse = shipTargetSource === 'warehouse';
+                let orders = isWarehouse ? loadWarehouseOrders() : loadProductionOrders();
+                const idx = orders.findIndex(o => String(o.id) === String(shipTargetOrderId));
+                if (idx === -1) return;
+                const order = orders[idx];
+
+                const qty = parseInt(shipQtyInput.value, 10);
+                const remaining = getOrderRemaining(order);
+                if (!qty || qty <= 0 || qty > remaining) {
+                    shipModalError.textContent = `Введите количество от 1 до ${remaining}`;
+                    shipModalError.classList.add('show');
+                    return;
+                }
+
+                // Палеты — необязательное поле; если указано, проверяем, что хватает на складе у контрагента
+                const paletQtyRaw = shipPaletInput.value.trim();
+                const paletQty = paletQtyRaw ? parseInt(paletQtyRaw, 10) : 0;
+                if (paletQtyRaw && (!paletQty || paletQty < 0)) {
+                    shipModalError.textContent = 'Некорректное количество палет';
+                    shipModalError.classList.add('show');
+                    return;
+                }
+                if (paletQty > 0) {
+                    const availablePalety = getPaletyStock(shipTargetCustomer);
+                    if (!shipTargetCustomer) {
+                        shipModalError.textContent = 'У заказа не указан контрагент — не могу списать палеты';
+                        shipModalError.classList.add('show');
+                        return;
+                    }
+                    if (paletQty > availablePalety) {
+                        shipModalError.textContent = `У контрагента доступно только ${availablePalety} палет`;
+                        shipModalError.classList.add('show');
+                        return;
+                    }
+                }
+
+                order.shipped_qty = (order.shipped_qty || 0) + qty;
+                if (!Array.isArray(order.shipment_history)) order.shipment_history = [];
+                order.shipment_history.push({
+                    qty: qty,
+                    date: shipDateInput.value || new Date().toISOString().slice(0, 10),
+                    comment: shipCommentInput.value.trim(),
+                    timestamp: Date.now()
+                });
+                orders[idx] = order;
+
+                if (isWarehouse) saveWarehouseOrders(orders);
+                else saveProductionOrders(orders);
+
+                if (paletQty > 0) {
+                    const rawNo = order.techcard_no || order.id;
+                    const formattedNo = String(rawNo).padStart(3, '0');
+                    deductPaletyForShipment(
+                        shipTargetCustomer,
+                        paletQty,
+                        shipDateInput.value,
+                        `Отгрузка по техкарте № ${formattedNo}`
+                    );
+                }
+
+                closeShipModal();
+                window._allRows = buildUnifiedRows();
+                window.applyWhFilter();
+            };
+
+            shipModal.addEventListener('click', function(e) {
+                if (e.target === shipModal) closeShipModal();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && shipModal.classList.contains('show')) closeShipModal();
+            });
+
+            renderRows(window._allRows);
+        });
+    </script>
+    <script src="js/screenshot-store.js"></script>
+    <script src="js/auth-check.js"></script>
+    <script src="js/nav-filter.js"></script>
+</body>
+</html>

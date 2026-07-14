@@ -26,6 +26,8 @@
             --primary-blue: #2563eb;
             --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
             --accent-red: #dc2626;
+            --accent-green: #10b981;
+            --accent-amber: #d97706;
             --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             --safe-top: env(safe-area-inset-top);
             --safe-bottom: env(safe-area-inset-bottom);
@@ -43,7 +45,7 @@
         }
         .theme-switch-wrapper { display: none !important; }
 
-        * { 
+        * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
@@ -147,15 +149,35 @@
         .tech-list .filter-bar .search-wrap input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; background: var(--bg-white); color: var(--text-primary); transition: border-color 0.2s; -webkit-appearance: none; appearance: none; }
         .tech-list .filter-bar .search-wrap input:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         .tech-list .filter-bar .filter-actions { display: none; }
-        
+
         .tech-list .table-responsive { overflow-x: auto; }
-        .tech-list table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }
+        .tech-list table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 700px; }
         .tech-list th { text-align: left; padding: 10px 12px; background: var(--bg-main); border-bottom: 2px solid var(--border-color); font-weight: 600; color: var(--text-secondary); }
         .tech-list td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); color: var(--text-primary); }
-        .tech-list tr:hover { background: var(--bg-main); cursor: pointer; }
+        .tech-list tr:hover { background: var(--bg-main); }
         .tech-list .btn-link { padding: 6px 14px; border-radius: 6px; background: var(--primary-blue); color: #fff; text-decoration: none; font-size: 13px; border: none; cursor: pointer; display: inline-block; min-height: 32px; line-height: 20px; }
         .tech-list .btn-link:hover { opacity: 0.85; }
         .tech-list .empty-msg { padding: 30px; text-align: center; color: var(--text-secondary); font-style: italic; }
+
+        /* Кнопки отправки на склад (список) */
+        .btn-send-full, .btn-send-partial {
+            padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; border: none;
+            cursor: pointer; display: inline-block; min-height: 32px; line-height: 20px; font-weight: 600; color: #fff;
+        }
+        .btn-send-full { background: var(--accent-green); }
+        .btn-send-full:hover { opacity: 0.85; }
+        .btn-send-partial { background: var(--accent-amber); }
+        .btn-send-partial:hover { opacity: 0.85; }
+        .actions-cell-list { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+        .receive-progress {
+            font-size: 12px; color: var(--text-secondary); margin-top: 2px; font-weight: 500;
+        }
+        .receive-progress strong { color: var(--accent-amber); }
+        .receive-progress-bar {
+            width: 100%; max-width: 140px; height: 6px; background: var(--border-color); border-radius: 4px; overflow: hidden; margin-top: 4px;
+        }
+        .receive-progress-bar-fill { height: 100%; background: var(--accent-amber); border-radius: 4px; }
 
         .tech-cards { display: none; }
         .tech-card-item {
@@ -165,12 +187,6 @@
             padding: 16px;
             margin-bottom: 12px;
             box-shadow: 0 1px 3px rgba(15,23,42,0.06);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .tech-card-item:active {
-            transform: scale(0.98);
-            background: var(--bg-main);
         }
         .tech-card-header {
             display: flex;
@@ -206,10 +222,11 @@
             padding-top: 12px;
             border-top: 1px solid var(--border-color);
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
         }
         .tech-card-actions .btn-link {
-            flex: 1;
+            flex: 1 1 auto;
             text-align: center;
             padding: 10px 14px;
             border-radius: 8px;
@@ -223,15 +240,21 @@
             align-items: center;
             justify-content: center;
         }
+        .tech-card-actions .btn-send-full,
+        .tech-card-actions .btn-send-partial {
+            flex: 1 1 auto;
+            min-height: 44px;
+            font-size: 13px;
+        }
 
         .tech-card-container { max-width: 1100px; margin: 0 auto; }
-        .tech-card-container .back-link { 
+        .tech-card-container .back-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            margin-bottom: 16px; 
-            color: var(--primary-blue); 
-            text-decoration: none; 
+            margin-bottom: 16px;
+            color: var(--primary-blue);
+            text-decoration: none;
             font-weight: 600;
             font-size: 14px;
             padding: 8px 14px;
@@ -241,7 +264,7 @@
             transition: all 0.2s;
             min-height: 40px;
         }
-        .tech-card-container .back-link:hover { 
+        .tech-card-container .back-link:hover {
             background: var(--bg-main);
             border-color: var(--primary-blue);
         }
@@ -283,6 +306,16 @@
             letter-spacing: 1px;
         }
 
+        .warehouse-badge {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            background: var(--accent-amber);
+            padding: 6px 14px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
         .tech-card .order-meta { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 2px solid var(--border-color); }
         .tech-card .order-meta .meta-row { display: flex; flex-wrap: wrap; gap: 12px 40px; align-items: baseline; margin-bottom: 8px; }
         .tech-card .order-meta .meta-row p { margin: 0; display: flex; align-items: baseline; gap: 8px; }
@@ -316,30 +349,30 @@
         .tech-op-mobile .service-card .service-row .service-label { color: var(--text-secondary); font-weight: 500; }
         .tech-op-mobile .service-card .service-row .service-value { font-weight: 700; color: var(--text-primary); }
 
-        .tech-card .file-block { 
-            margin-top: 20px; 
+        .tech-card .file-block {
+            margin-top: 20px;
             display: block;
             width: 100%;
         }
-        .tech-card .file-block .file-row { 
-            display: flex; 
-            flex-wrap: wrap; 
-            align-items: center; 
-            gap: 8px 16px; 
+        .tech-card .file-block .file-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 16px;
             width: 100%;
             margin: 12px 0;
         }
         .tech-card .file-block .label { font-weight: 600; color: var(--text-secondary); margin-right: 4px; }
-        .tech-card .pdf-name { 
-            background: var(--bg-main); 
-            padding: 8px 14px; 
-            border-radius: 8px; 
-            border: 1.5px solid var(--border-color); 
-            display: inline-block; 
-            font-family: monospace; 
-            font-size: 13px; 
-            word-break: break-all; 
-            font-weight: 600; 
+        .tech-card .pdf-name {
+            background: var(--bg-main);
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border-color);
+            display: inline-block;
+            font-family: monospace;
+            font-size: 13px;
+            word-break: break-all;
+            font-weight: 600;
         }
 
         .screenshot-with-lines {
@@ -392,7 +425,7 @@
             flex-shrink: 0;
         }
 
-        .action-bar { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+        .action-bar { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; }
         .action-bar button {
             padding: 14px 24px;
             border-radius: 10px;
@@ -412,6 +445,8 @@
             color: var(--text-primary);
             border: 1px solid var(--border-color);
         }
+        .action-bar button.btn-send-full-card { background: var(--accent-green); }
+        .action-bar button.btn-send-partial-card { background: var(--accent-amber); }
         .action-bar button:active { transform: scale(0.97); }
 
         .hidden-input { display: none; }
@@ -423,12 +458,12 @@
         }
         .screenshot-modal img { max-width: 100%; max-height: 90vh; border-radius: 8px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
         .screenshot-modal.visible { display: flex; }
-        .screenshot-modal .close-modal { 
-            position: absolute; 
-            top: calc(20px + var(--safe-top)); 
-            right: 20px; 
-            font-size: 40px; 
-            color: #fff; 
+        .screenshot-modal .close-modal {
+            position: absolute;
+            top: calc(20px + var(--safe-top));
+            right: 20px;
+            font-size: 40px;
+            color: #fff;
             cursor: pointer;
             width: 48px;
             height: 48px;
@@ -445,6 +480,98 @@
 
         .info-title {
             display: flex; justify-content: space-between; align-items: baseline; width: 100%;
+        }
+
+        /* ===== Модалка частичной отправки ===== */
+        .partial-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1200;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+            padding: 16px;
+        }
+        .partial-modal.show { display: flex; }
+        .partial-modal-content {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .partial-modal-content h3 {
+            margin: 0 0 6px 0;
+            font-size: 19px;
+            color: var(--text-primary);
+        }
+        .partial-modal-content .pm-sub {
+            margin: 0 0 20px 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        .partial-modal-content label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .partial-modal-content input,
+        .partial-modal-content textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 15px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            background: var(--bg-main);
+            font-family: inherit;
+        }
+        .partial-modal-content input:focus,
+        .partial-modal-content textarea:focus {
+            outline: none;
+            border-color: var(--accent-amber);
+            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.12);
+        }
+        .partial-modal-content textarea { resize: vertical; min-height: 70px; }
+        .partial-modal-remaining {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        .partial-modal-remaining strong { color: var(--accent-amber); }
+        .partial-modal-error {
+            color: var(--accent-red);
+            font-size: 13px;
+            margin-bottom: 12px;
+            display: none;
+            font-weight: 500;
+        }
+        .partial-modal-error.show { display: block; }
+        .partial-modal-buttons { display: flex; gap: 12px; }
+        .partial-modal-buttons button {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .partial-modal-buttons .btn-cancel {
+            background: var(--bg-main);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .partial-modal-buttons .btn-confirm {
+            background: var(--accent-amber);
+            color: #fff;
         }
 
         .sidebar {
@@ -475,15 +602,15 @@
             .tech-list h2 { font-size: 18px; }
             .tech-list .filter-bar { padding: 10px 12px; }
             .tech-list .filter-bar .search-wrap { width: 100%; }
-            
+
             .tech-list .table-responsive { display: none; }
             .tech-cards { display: block; }
-            
+
             .tech-card { padding: 16px; }
             .tech-card .section-title { font-size: 15px; margin: 18px 0 8px 0; }
-            
-            .tech-card .order-meta .meta-row { 
-                flex-direction: row; 
+
+            .tech-card .order-meta .meta-row {
+                flex-direction: row;
                 flex-wrap: wrap;
                 gap: 6px 20px;
             }
@@ -501,7 +628,7 @@
             .tech-card .order-meta .desc-row .desc-value {
                 text-align: left;
             }
-            
+
             .tech-card .table-responsive { overflow-x: visible; }
             .tech-card table { font-size: 13px; }
             .tech-card table thead { display: none; }
@@ -530,13 +657,13 @@
 
             .tech-op-desktop { display: none; }
             .tech-op-mobile { display: block; }
-            
+
             .tech-card .screenshot-container img { max-height: 250px; }
             .tech-card .pdf-name { font-size: 12px; padding: 4px 10px; }
-            
+
             .action-bar { flex-direction: column; gap: 10px; }
             .action-bar button { width: 100%; padding: 14px 20px; font-size: 14px; }
-            
+
             .info-title { flex-direction: column; gap: 8px; align-items: flex-start; }
 
             .tech-card-header-row {
@@ -576,33 +703,33 @@
                 size: A4;
                 margin: 10mm;
             }
-            
-            body * { 
-                visibility: hidden; 
+
+            body * {
+                visibility: hidden;
             }
-            #techCardContent, 
+            #techCardContent,
             #techCardContent *,
             .screenshot-with-lines,
             .screenshot-with-lines *,
             .lines-side,
             .lines-side *,
-            .comment-line { 
-                visibility: visible !important; 
+            .comment-line {
+                visibility: visible !important;
             }
             #techCardContent {
-                position: absolute; 
+                position: absolute;
                 left: 0;
-                top: 0; 
+                top: 0;
                 width: 100%;
                 padding: 10mm;
                 margin: 0;
-                background: #fff; 
-                border: none; 
-                box-shadow: none; 
+                background: #fff;
+                border: none;
+                box-shadow: none;
                 border-radius: 0;
             }
-            .action-bar, .back-link, .screenshot-modal { 
-                display: none !important; 
+            .action-bar, .back-link, .screenshot-modal, .partial-modal {
+                display: none !important;
             }
             .tech-card {
                 padding: 0 !important;
@@ -647,8 +774,8 @@
                 padding: 2mm 3mm !important;
                 font-size: 8px !important;
             }
-            .tech-card .file-row { 
-                break-inside: avoid; 
+            .tech-card .file-row {
+                break-inside: avoid;
             }
             .screenshot-with-lines {
                 display: flex !important;
@@ -712,6 +839,7 @@
                 <li><a href="otpCex.html">⚙️ На производство</a></li>
                 <li><a href="texKarta.html" class="active">⚙️ Техкарта</a></li>
                 <li><a href="statuses.html">📊 Статусы</a></li>
+                <li><a href="sklad.html">🏬 Склад</a></li>
                 <li><a href="settings.html">⚙️ Настройки</a></li>
             </ul>
             <div class="theme-switch-wrapper">
@@ -728,6 +856,9 @@
                 <div id="actionBar" class="action-bar" style="display:none;">
                     <button id="downloadPdfBtn">📥 Скачать PDF</button>
                     <button id="printBtn" class="secondary">🖨️ Печать</button>
+                    <button id="sendFullBtnCard" class="btn-send-full-card" style="display:none;">✅ Отправить полностью</button>
+                    <button id="sendPartialBtnCard" class="btn-send-partial-card" style="display:none;">📦 Отправить частично</button>
+                    <span id="warehouseBadgeCard" class="warehouse-badge" style="display:none;">📦 На складе</span>
                 </div>
                 <input type="file" id="localPdfInput" accept=".pdf" class="hidden-input">
             </div>
@@ -739,13 +870,33 @@
         <img id="modalImage" src="" alt="Скриншот">
     </div>
 
+    <!-- Модалка частичной отправки -->
+    <div class="partial-modal" id="partialModal">
+        <div class="partial-modal-content">
+            <h3>📦 Отправить частично</h3>
+            <p class="pm-sub">Укажите, сколько продукции сейчас поступает на склад</p>
+            <div class="partial-modal-remaining">Остаток к отправке: <strong id="partialRemainingText">0</strong></div>
+            <label for="partialQtyInput">Количество</label>
+            <input type="number" id="partialQtyInput" min="1" placeholder="Например, 200">
+            <label for="partialDateInput">Дата</label>
+            <input type="date" id="partialDateInput">
+            <label for="partialCommentInput">Комментарий</label>
+            <textarea id="partialCommentInput" placeholder="Например: привезли первую партию"></textarea>
+            <div class="partial-modal-error" id="partialModalError">Проверьте введённое количество</div>
+            <div class="partial-modal-buttons">
+                <button class="btn-cancel" onclick="closePartialModal()">Отмена</button>
+                <button class="btn-confirm" onclick="confirmPartialSend()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
             sidebar.classList.toggle('open');
             overlay.classList.toggle('show');
-            
+
             if (sidebar.classList.contains('open')) {
                 document.body.style.overflow = 'hidden';
             } else {
@@ -791,6 +942,9 @@
             const urlParams = new URLSearchParams(window.location.search);
             const orderId = urlParams.get('id');
 
+            const isWarehouseModuleEnabled = () => localStorage.getItem('pp_warehouse_mode_enabled') === 'true';
+
+            // ===== Хранилище =====
             function loadOrders() {
                 let orders = [];
                 try {
@@ -799,350 +953,571 @@
                 } catch (e) { console.error('Ошибка загрузки заказов:', e); }
                 return orders;
             }
-
-            function renderTechCard(order) {
-    const rawNo = order.techcard_no || order.id;
-    const techcardNoFormatted = String(rawNo).padStart(3, '0');
-
-    const materialType = order.material_type || 'roll';
-    const isDivideByTwo = order.divide_by_two === true;
-
-    // 1. Формируем правильный заголовок материала
-    let materialLabel = '';
-    if (materialType === 'roll') {
-        materialLabel = isDivideByTwo ? 'Флоторезка 1/2' : 'Флоторезка';
-    } else {
-        materialLabel = isDivideByTwo ? 'Листовой 1/2' : 'Листовой';
-    }
-
-    // 2. ОРИГИНАЛЬНЫЙ тираж
-    const originalDisplaySheets = Math.ceil(order.print_sheets || 0);
-    const originalDisplaySheetsFormatted = originalDisplaySheets.toLocaleString('ru-RU');
-
-    // 3. РАЗДЕЛЁННЫЙ тираж (только для таблицы материалов)
-    let materialDisplaySheets = originalDisplaySheets;
-    if (isDivideByTwo) {
-        materialDisplaySheets = Math.ceil(materialDisplaySheets / 2);
-    }
-    const materialDisplaySheetsFormatted = materialDisplaySheets.toLocaleString('ru-RU');
-
-    // 4. Тираж БЕЗ приладки (для таблиц Печать и Пост печать)
-    const postPrintSheets = Math.max(0, originalDisplaySheets - (order.make_ready || 0));
-    const postPrintSheetsFormatted = postPrintSheets.toLocaleString('ru-RU');
-
-    const orderQty = order.order_qty || 0;
-    const orderQtyFormatted = orderQty.toLocaleString('ru-RU');
-    const makeReadyFormatted = (order.make_ready || 0).toLocaleString('ru-RU');
-    const gsmFormatted = (order.gsm || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-    const rollFormatFormatted = (order.roll_format || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-    const hasRollFormat = order.roll_format && String(order.roll_format).trim() !== '';
-
-    // 5. Формируем таблицу материалов
-    let tableHeaders = '';
-    let tableRow = '';
-
-    if (materialType === 'roll') {
-        tableHeaders = `
-            <th>Материал</th>
-            <th>Гр/м2</th>
-            <th>Формат рулона</th>
-            <th>Формат флоторезки</th>
-            <th>Тираж листов</th>
-            <th>Факт листов</th>
-        `;
-        tableRow = `
-            <td data-label="Материал"><strong>${order.paper_type || ''}</strong></td>
-            <td data-label="Гр/м2"><strong>${gsmFormatted}</strong></td>
-            <td data-label="Формат рулона"><strong>${order.flot_length || ''}</strong></td>
-            <td data-label="Формат флоторезки"><strong>${order.roll_width || ''}</strong></td>
-            <td data-label="Тираж листов"><strong>${materialDisplaySheetsFormatted}</strong></td>
-            <td data-label="Факт листов"></td>
-        `;
-    } else {
-        tableHeaders = `
-            <th>Материал</th>
-            <th>Гр/м2</th>
-            <th>Размер листа</th>
-            <th>Тираж листов</th>
-            <th>Факт листов</th>
-        `;
-        tableRow = `
-            <td data-label="Материал"><strong>${order.paper_type || ''}</strong></td>
-            <td data-label="Гр/м2"><strong>${gsmFormatted}</strong></td>
-            <td data-label="Размер листа"><strong>${(order.sheet_width || '')}×${(order.sheet_length || '')}</strong></td>
-            <td data-label="Тираж листов"><strong>${materialDisplaySheetsFormatted}</strong></td>
-            <td data-label="Факт листов"></td>
-        `;
-    }
-
-    const printWidth = order.size_width || 0;
-    const printLength = order.size_length || 0;
-    const printSizeFormatted = `${printWidth}×${printLength}`;
-
-    const serviceMap = {
-        lamination: '', vd_lak: '', embossing: '', kongrev: '',
-        die_cut: '', gluing: '', uv_lak: '', cutting_pre: '', cutting_post: ''
-    };
-
-    if (order.services && Array.isArray(order.services)) {
-        order.services.forEach(s => {
-            if (s.name === 'lamination') serviceMap.lamination = s.type || 'есть';
-            else if (s.name === 'vd_lak') serviceMap.vd_lak = s.type || 'есть';
-            else if (s.name === 'embossing') serviceMap.embossing = s.type || 'есть';
-            else if (s.name === 'kongrev') serviceMap.kongrev = 'есть';
-            else if (s.name === 'die_cut') serviceMap.die_cut = 'есть';
-            else if (s.name === 'gluing') serviceMap.gluing = s.type || 'есть';
-            else if (s.name === 'uv_lak') serviceMap.uv_lak = s.type || 'есть';
-            else if (s.name === 'cutting') {
-                if (s.type === 'pre' || s.type === 'до печать') {
-                    serviceMap.cutting_pre = (s.width && s.length) ? `${s.width}×${s.length}` : 'есть';
-                } else if (s.type === 'post' || s.type === 'пост печать') {
-                    serviceMap.cutting_post = (s.width && s.length) ? `${s.width}×${s.length}` : 'есть';
-                } else if (s.type === 'both' || s.type === 'оба') {
-                    if (s.details) {
-                        const pre = s.details.find(d => d.type === 'до печать');
-                        const post = s.details.find(d => d.type === 'пост печать');
-                        if (pre && pre.width && pre.length) serviceMap.cutting_pre = `${pre.width}×${pre.length}`;
-                        if (post && post.width && post.length) serviceMap.cutting_post = `${post.width}×${post.length}`;
-                    }
-                }
+            function saveOrders(orders) {
+                localStorage.setItem('pp_orders', JSON.stringify(orders));
             }
-        });
-    }
+            function loadWarehouseOrders() {
+                let orders = [];
+                try {
+                    const raw = localStorage.getItem('pp_warehouse_orders');
+                    if (raw) orders = JSON.parse(raw);
+                } catch (e) { console.error('Ошибка загрузки заказов склада:', e); }
+                return orders;
+            }
+            function saveWarehouseOrders(orders) {
+                localStorage.setItem('pp_warehouse_orders', JSON.stringify(orders));
+            }
 
-    const printType = order.print_type || 'A1';
-    const printLabel = `Печать ${printType}`;
+            function getRemaining(order) {
+                const total = order.order_qty || 0;
+                const received = order.received_qty || 0;
+                return Math.max(0, total - received);
+            }
 
-    const serviceList = [
-        { key: 'lamination', label: 'Ламинация' },
-        { key: 'vd_lak', label: 'ВД Лак' },
-        { key: 'embossing', label: 'Тиснения' },
-        { key: 'kongrev', label: 'Конгрев' },
-        { key: 'die_cut', label: 'Высечка' },
-        { key: 'gluing', label: 'Склейка' },
-        { key: 'cutting_pre', label: 'Резка до печати' },
-        { key: 'cutting_post', label: 'Резка пост печати' }
-    ];
-    const activeServices = serviceList.filter(item => serviceMap[item.key] !== '');
+            // Переносит заказ в pp_warehouse_orders, если он полностью принят.
+            // Возвращает true, если заказ был перенесён (и удалён из pp_orders).
+            function moveToWarehouseIfComplete(order, orders) {
+                if (getRemaining(order) > 0) return false;
+                const idx = orders.findIndex(o => o.id === order.id);
+                if (idx > -1) orders.splice(idx, 1);
+                saveOrders(orders);
 
-    // 6. Формируем блок Пост печать
-    let techOpHTML = '';
-    if (activeServices.length > 0) {
-        const techOpRow = activeServices.map(item => `<td>${item.label}</td>`).join('');
-        const paramsRow = activeServices.map(item => {
-            let val = serviceMap[item.key];
-            if (item.key === 'die_cut' || item.key === 'gluing') val = 'есть';
-            return `<td><strong>${val}</strong></td>`;
-        }).join('');
-        
-        const planRow = activeServices.map(item => {
-            let val = '';
-            if (item.key === 'gluing') val = orderQtyFormatted;
-            else val = postPrintSheetsFormatted;  // Используем тираж БЕЗ приладки
-            return `<td><strong>${val}</strong></td>`;
-        }).join('');
-        const faktRow = activeServices.map(() => `<td></td>`).join('');
-        const brakRow = activeServices.map(() => `<td></td>`).join('');
+                const warehouseOrders = loadWarehouseOrders();
+                // Сохраняем уже накопленные отгрузки (если заказ отгружали ещё будучи частично принятым),
+                // а не обнуляем их при переезде на склад.
+                const completedOrder = Object.assign({}, order, {
+                    shipped_qty: order.shipped_qty || 0,
+                    shipment_history: order.shipment_history || [],
+                    moved_to_warehouse_at: Date.now()
+                });
+                warehouseOrders.push(completedOrder);
+                saveWarehouseOrders(warehouseOrders);
+                return true;
+            }
 
-        techOpHTML = `
-            <div class="section-title">Пост печать</div>
-            <div class="table-responsive tech-op-desktop">
-              <table class="tech-op-table">
-                <tbody>
-                  <tr><td class="row-label tech-op-header">Пост печать</td>${techOpRow}</tr>
-                  <tr><td class="row-label">Параметры</td>${paramsRow}</tr>
-                  <tr><td class="row-label">План</td>${planRow}</tr>
-                  <tr><td class="row-label">Факт</td>${faktRow}</tr>
-                  <tr><td class="row-label">Брак</td>${brakRow}</tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="tech-op-mobile">
-              ${activeServices.map(item => {
-                  let paramVal = serviceMap[item.key];
-                  if (item.key === 'die_cut' || item.key === 'gluing') paramVal = 'есть';
-                  const planVal = item.key === 'gluing' ? orderQtyFormatted : postPrintSheetsFormatted;
-                  return `
-                    <div class="service-card">
-                        <div class="service-name">${item.label}</div>
-                        <div class="service-row"><span class="service-label">Параметры</span><span class="service-value">${paramVal}</span></div>
-                        <div class="service-row"><span class="service-label">План</span><span class="service-value">${planVal}</span></div>
-                        <div class="service-row"><span class="service-label">Факт</span><span class="service-value"></span></div>
-                        <div class="service-row"><span class="service-label">Брак</span><span class="service-value"></span></div>
-                    </div>
-                  `;
-              }).join('')}
-            </div>
-        `;
-    } else {
-        techOpHTML = `
-            <div class="section-title">Пост печать</div>
-            <p style="color: var(--text-secondary); font-style: italic; margin: 10px 0;">Нет дополнительных услуг</p>
-        `;
-    }
+            // Записывает приход (полный или частичный) в заказ и сохраняет.
+            // Возвращает { completed: bool, order: обновлённый заказ }
+            function registerReceive(orderId, qty, dateStr, comment, type) {
+                let orders = loadOrders();
+                const idx = orders.findIndex(o => String(o.id) === String(orderId));
+                if (idx === -1) return null;
+                const order = orders[idx];
 
-    // 7. Блок файлов
-    let filesHTML = '';
-    if (order.pdf_filename || order.screenshot_base64) {
-        filesHTML = `<div class="section-title files-title">Файлы</div>`;
+                order.received_qty = (order.received_qty || 0) + qty;
+                if (order.received_qty > (order.order_qty || 0)) order.received_qty = order.order_qty || 0;
+                if (!Array.isArray(order.receive_history)) order.receive_history = [];
+                order.receive_history.push({
+                    qty: qty,
+                    date: dateStr || new Date().toISOString().slice(0, 10),
+                    comment: comment || '',
+                    type: type,
+                    timestamp: Date.now()
+                });
 
-        if (order.pdf_filename) {
-            filesHTML += `
-                <div class="file-row pdf-file-row">
-                    <span class="label">Имя PDF:</span> 
-                    <span class="pdf-name">${order.pdf_filename}</span>
-                </div>
-            `;
-        }
+                orders[idx] = order;
+                // Важно: сохраняем сразу, независимо от того, завершён приём или нет.
+                // Иначе частичная отправка не сохраняется, если заказ ещё не закрыт на 100%.
+                saveOrders(orders);
+                const completed = moveToWarehouseIfComplete(order, orders);
+                return { completed: completed, order: order };
+            }
 
-        if (order.screenshot_base64) {
-            filesHTML += `
-                <div class="screenshot-with-lines" id="screenshotLinesBlock">
-                    <div class="screenshot-side">
-                        <div class="screenshot-container">
-                            <img id="techScreenshotImg" src="${order.screenshot_base64}" alt="" class="screenshot-img" onclick="event.stopPropagation(); document.getElementById('screenshotModal').classList.add('visible'); document.getElementById('modalImage').src='${order.screenshot_base64}';">
-                        </div>
-                    </div>
-                    <div class="lines-side" id="linesSide">
-                        <div class="comment-line"></div>
-                        <div class="comment-line"></div>
-                        <div class="comment-line"></div>
-                        <div class="comment-line"></div>
-                        <div class="comment-line"></div>
-                        <div class="comment-line"></div>
-                    </div>
-                </div>
-            `;
-        }
-    }
+            // ===== Модалка частичной отправки =====
+            let partialTargetOrderId = null;
+            const partialModal = document.getElementById('partialModal');
+            const partialQtyInput = document.getElementById('partialQtyInput');
+            const partialDateInput = document.getElementById('partialDateInput');
+            const partialCommentInput = document.getElementById('partialCommentInput');
+            const partialModalError = document.getElementById('partialModalError');
+            const partialRemainingText = document.getElementById('partialRemainingText');
 
-    // 8. Собираем итоговый HTML
-    let html = `
-        <div class="tech-card-container">
-            <a href="texKarta.html" class="back-link">← Назад к списку</a>
-            <div class="tech-card" id="techCardContent">
-                <div class="tech-card-header-row">
-                    <h2>Технологическая карта</h2>
-                    <div class="tech-card-number">№ ${techcardNoFormatted}</div>
-                </div>
-                <div class="order-meta">
-                    <div class="meta-row">
-                        <p><span class="label">Заказчик</span> <span class="value">${order.customer || ''}</span></p>
-                        <p><span class="label">Название продукции</span> <span class="value">${order.product_name || ''}</span></p>
-                        <p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>
-                    </div>
-                    <div class="desc-row">
-                        <span class="desc-label label">Примечание</span>
-                        <span class="desc-value value">${order.description || ''}</span>
-                    </div>
-                </div>
-                <div class="section-title" style="margin: 24px 0 10px 0;">
-                    ${materialLabel}
-                </div>
-                <div class="table-responsive">
-                    <table>
-                        <thead><tr>
-                            ${tableHeaders}
-                        </tr></thead>
-                        <tbody><tr>
-                            ${tableRow}
-                        </tr></tbody>
-                    </table>
-                </div>
-                <div class="section-title">${printLabel}</div>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Печатный формат</th><th>Красочность</th><th>тираж</th><th>приладка</th><th>ВД лак</th><th>Кол-во брака</th><th>Кол-во факта печати</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td data-label="Печатный формат"><strong>${printSizeFormatted}</strong></td>
-                                <td data-label="Красочность"><strong>${order.color || ''}</strong></td>
-                                <td data-label="тираж"><strong>${postPrintSheetsFormatted}</strong></td>
-                                <td data-label="приладка"><strong>${makeReadyFormatted}</strong></td>
-                                <td data-label="ВД лак"><strong>${serviceMap.vd_lak || ''}</strong></td>
-                                <td data-label="Кол-во брака"></td>
-                                <td data-label="Кол-во факта печати"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                ${techOpHTML}
-                ${filesHTML}
-            </div>
-        </div>
-    `;
+            window.openPartialModal = function(orderIdForModal) {
+                const orders = loadOrders();
+                const order = orders.find(o => String(o.id) === String(orderIdForModal));
+                if (!order) return;
+                partialTargetOrderId = orderIdForModal;
+                partialQtyInput.value = '';
+                partialCommentInput.value = '';
+                partialDateInput.value = new Date().toISOString().slice(0, 10);
+                partialModalError.classList.remove('show');
+                partialRemainingText.textContent = getRemaining(order).toLocaleString('ru-RU');
+                partialModal.classList.add('show');
+                setTimeout(() => partialQtyInput.focus(), 100);
+            };
 
-    content.innerHTML = html;
-    actionBar.style.display = 'flex';
+            window.closePartialModal = function() {
+                partialModal.classList.remove('show');
+                partialTargetOrderId = null;
+            };
 
-    printBtn.onclick = function() { window.print(); };
+            window.confirmPartialSend = function() {
+                if (!partialTargetOrderId) return;
+                const orders = loadOrders();
+                const order = orders.find(o => String(o.id) === String(partialTargetOrderId));
+                if (!order) return;
 
-    setTimeout(() => {
-        const img = document.getElementById('techScreenshotImg');
-        const linesSide = document.getElementById('linesSide');
-        if (img && linesSide) {
-            const syncHeight = () => {
-                const imgHeight = img.offsetHeight;
-                if (imgHeight > 0) {
-                    linesSide.style.height = imgHeight + 'px';
-                    linesSide.style.minHeight = imgHeight + 'px';
+                const qty = parseInt(partialQtyInput.value, 10);
+                const remaining = getRemaining(order);
+                if (!qty || qty <= 0 || qty > remaining) {
+                    partialModalError.textContent = `Введите количество от 1 до ${remaining}`;
+                    partialModalError.classList.add('show');
+                    return;
+                }
+
+                const result = registerReceive(
+                    partialTargetOrderId,
+                    qty,
+                    partialDateInput.value,
+                    partialCommentInput.value.trim(),
+                    'partial'
+                );
+                closePartialModal();
+
+                if (result && result.completed) {
+                    alert('✅ Заказ полностью поступил на склад!');
+                    window.location.href = 'sklad.html';
+                } else {
+                    // Обновляем текущий экран (список или карточку)
+                    refreshCurrentView();
                 }
             };
-            
-            if (img.complete) {
-                syncHeight();
-            } else {
-                img.onload = syncHeight;
-            }
-            
-            window.addEventListener('resize', syncHeight);
-        }
-    }, 100);
 
-    downloadPdfBtn.onclick = function() {
-        const element = document.getElementById('techCardContent');
-        if (!element) return;
-        html2canvas(element, { scale: 2, backgroundColor: '#ffffff', allowTaint: true, useCORS: true })
-            .then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                let heightLeft = pdfHeight;
-                let position = 0;
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                heightLeft -= pdf.internal.pageSize.getHeight();
-                while (heightLeft > 0) {
-                    position = heightLeft - pdfHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                    heightLeft -= pdf.internal.pageSize.getHeight();
+            partialModal.addEventListener('click', function(e) {
+                if (e.target === partialModal) closePartialModal();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && partialModal.classList.contains('show')) closePartialModal();
+            });
+
+            window.sendFull = function(orderIdToSend) {
+                const orders = loadOrders();
+                const order = orders.find(o => String(o.id) === String(orderIdToSend));
+                if (!order) return;
+                const remaining = getRemaining(order);
+                if (remaining <= 0) return;
+                if (!confirm(`Подтвердите полное поступление заказа на склад (${remaining.toLocaleString('ru-RU')} шт.)?`)) return;
+
+                const result = registerReceive(orderIdToSend, remaining, new Date().toISOString().slice(0, 10), '', 'full');
+                if (result && result.completed) {
+                    alert('✅ Заказ полностью поступил на склад!');
+                    window.location.href = 'sklad.html';
+                } else {
+                    refreshCurrentView();
                 }
-                pdf.save(`Техкарта_${techcardNoFormatted}.pdf`);
-            })
-            .catch(err => { alert('Ошибка при создании PDF: ' + err.message); });
-    };
+            };
 
-    const modal = document.getElementById('screenshotModal');
-    modal.onclick = function(e) {
-        if (e.target === this) this.classList.remove('visible');
-    };
-}
+            function refreshCurrentView() {
+                if (orderId) {
+                    const orders = loadOrders();
+                    const order = orders.find(o => String(o.id) === String(orderId));
+                    if (order) { renderTechCard(order, false); return; }
+                    const wOrders = loadWarehouseOrders();
+                    const wOrder = wOrders.find(o => String(o.id) === String(orderId));
+                    if (wOrder) { renderTechCard(wOrder, true); return; }
+                } else {
+                    const allOrders = loadOrders();
+                    window._originalOrders = allOrders.slice();
+                    window.applyFilters();
+                }
+            }
+
+            function renderTechCard(order, isWarehouseOrder) {
+                const rawNo = order.techcard_no || order.id;
+                const techcardNoFormatted = String(rawNo).padStart(3, '0');
+
+                const materialType = order.material_type || 'roll';
+                const isDivideByTwo = order.divide_by_two === true;
+
+                const sendFullBtn = document.getElementById('sendFullBtnCard');
+                const sendPartialBtn = document.getElementById('sendPartialBtnCard');
+                const warehouseBadge = document.getElementById('warehouseBadgeCard');
+                const remaining = getRemaining(order);
+
+                if (isWarehouseOrder) {
+                    sendFullBtn.style.display = 'none';
+                    sendPartialBtn.style.display = 'none';
+                    warehouseBadge.style.display = 'inline-flex';
+                } else if (isWarehouseModuleEnabled() && remaining > 0) {
+                    sendFullBtn.style.display = 'inline-flex';
+                    sendPartialBtn.style.display = 'inline-flex';
+                    warehouseBadge.style.display = 'none';
+                    sendFullBtn.onclick = function() { window.sendFull(order.id); };
+                    sendPartialBtn.onclick = function() { window.openPartialModal(order.id); };
+                } else {
+                    sendFullBtn.style.display = 'none';
+                    sendPartialBtn.style.display = 'none';
+                    warehouseBadge.style.display = 'none';
+                }
+
+                // 1. Формируем правильный заголовок материала
+                let materialLabel = '';
+                if (materialType === 'roll') {
+                    materialLabel = isDivideByTwo ? 'Флоторезка 1/2' : 'Флоторезка';
+                } else {
+                    materialLabel = isDivideByTwo ? 'Листовой 1/2' : 'Листовой';
+                }
+
+                // 2. ОРИГИНАЛЬНЫЙ тираж
+                const originalDisplaySheets = Math.ceil(order.print_sheets || 0);
+
+                // 3. РАЗДЕЛЁННЫЙ тираж (только для таблицы материалов)
+                let materialDisplaySheets = originalDisplaySheets;
+                if (isDivideByTwo) {
+                    materialDisplaySheets = Math.ceil(materialDisplaySheets / 2);
+                }
+                const materialDisplaySheetsFormatted = materialDisplaySheets.toLocaleString('ru-RU');
+
+                // 4. Тираж БЕЗ приладки (для таблиц Печать и Пост печать) — всегда полный, без деления на 2
+                const postPrintSheets = Math.max(0, originalDisplaySheets - (order.make_ready || 0));
+                const postPrintSheetsFormatted = postPrintSheets.toLocaleString('ru-RU');
+
+                const orderQty = order.order_qty || 0;
+                const orderQtyFormatted = orderQty.toLocaleString('ru-RU');
+                const makeReadyFormatted = (order.make_ready || 0).toLocaleString('ru-RU');
+                const gsmFormatted = (order.gsm || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+                // Прогресс приёма
+                const receivedQty = order.received_qty || 0;
+                let receiveProgressHTML = '';
+                if (!isWarehouseOrder && receivedQty > 0 && receivedQty < orderQty) {
+                    const pct = orderQty > 0 ? Math.min(100, Math.round((receivedQty / orderQty) * 100)) : 0;
+                    receiveProgressHTML = `
+                        <p>
+                            <span class="label">Принято на склад</span>
+                            <span class="value">${receivedQty.toLocaleString('ru-RU')} / ${orderQtyFormatted} (${pct}%)</span>
+                        </p>
+                    `;
+                }
+
+                // 5. Формируем таблицу материалов
+                let tableHeaders = '';
+                let tableRow = '';
+
+                if (materialType === 'roll') {
+                    tableHeaders = `
+                        <th>Материал</th>
+                        <th>Гр/м2</th>
+                        <th>Формат рулона</th>
+                        <th>Формат флоторезки</th>
+                        <th>Тираж листов</th>
+                        <th>Факт листов</th>
+                    `;
+                    tableRow = `
+                        <td data-label="Материал"><strong>${order.paper_type || ''}</strong></td>
+                        <td data-label="Гр/м2"><strong>${gsmFormatted}</strong></td>
+                        <td data-label="Формат рулона"><strong>${order.flot_length || ''}</strong></td>
+                        <td data-label="Формат флоторезки"><strong>${order.roll_width || ''}</strong></td>
+                        <td data-label="Тираж листов"><strong>${materialDisplaySheetsFormatted}</strong></td>
+                        <td data-label="Факт листов"></td>
+                    `;
+                } else {
+                    tableHeaders = `
+                        <th>Материал</th>
+                        <th>Гр/м2</th>
+                        <th>Размер листа</th>
+                        <th>Тираж листов</th>
+                        <th>Факт листов</th>
+                    `;
+                    tableRow = `
+                        <td data-label="Материал"><strong>${order.paper_type || ''}</strong></td>
+                        <td data-label="Гр/м2"><strong>${gsmFormatted}</strong></td>
+                        <td data-label="Размер листа"><strong>${(order.sheet_width || '')}×${(order.sheet_length || '')}</strong></td>
+                        <td data-label="Тираж листов"><strong>${materialDisplaySheetsFormatted}</strong></td>
+                        <td data-label="Факт листов"></td>
+                    `;
+                }
+
+                const printWidth = order.size_width || 0;
+                const printLength = order.size_length || 0;
+                const printSizeFormatted = `${printWidth}×${printLength}`;
+
+                const serviceMap = {
+                    lamination: '', vd_lak: '', embossing: '', kongrev: '',
+                    die_cut: '', gluing: '', uv_lak: '', cutting_pre: '', cutting_post: ''
+                };
+
+                if (order.services && Array.isArray(order.services)) {
+                    order.services.forEach(s => {
+                        if (s.name === 'lamination') serviceMap.lamination = s.type || 'есть';
+                        else if (s.name === 'vd_lak') serviceMap.vd_lak = s.type || 'есть';
+                        else if (s.name === 'embossing') serviceMap.embossing = s.type || 'есть';
+                        else if (s.name === 'kongrev') serviceMap.kongrev = 'есть';
+                        else if (s.name === 'die_cut') serviceMap.die_cut = 'есть';
+                        else if (s.name === 'gluing') serviceMap.gluing = s.type || 'есть';
+                        else if (s.name === 'uv_lak') serviceMap.uv_lak = s.type || 'есть';
+                        else if (s.name === 'cutting') {
+                            if (s.type === 'pre' || s.type === 'до печать') {
+                                serviceMap.cutting_pre = (s.width && s.length) ? `${s.width}×${s.length}` : 'есть';
+                            } else if (s.type === 'post' || s.type === 'пост печать') {
+                                serviceMap.cutting_post = (s.width && s.length) ? `${s.width}×${s.length}` : 'есть';
+                            } else if (s.type === 'both' || s.type === 'оба') {
+                                if (s.details) {
+                                    const pre = s.details.find(d => d.type === 'до печать');
+                                    const post = s.details.find(d => d.type === 'пост печать');
+                                    if (pre && pre.width && pre.length) serviceMap.cutting_pre = `${pre.width}×${pre.length}`;
+                                    if (post && post.width && post.length) serviceMap.cutting_post = `${post.width}×${post.length}`;
+                                }
+                            }
+                        }
+                    });
+                }
+
+                const printType = order.print_type || 'A1';
+                const printLabel = `Печать ${printType}`;
+
+                const serviceList = [
+                    { key: 'lamination', label: 'Ламинация' },
+                    { key: 'vd_lak', label: 'ВД Лак' },
+                    { key: 'embossing', label: 'Тиснения' },
+                    { key: 'kongrev', label: 'Конгрев' },
+                    { key: 'die_cut', label: 'Высечка' },
+                    { key: 'gluing', label: 'Склейка' },
+                    { key: 'cutting_pre', label: 'Резка до печати' },
+                    { key: 'cutting_post', label: 'Резка пост печати' }
+                ];
+                const activeServices = serviceList.filter(item => serviceMap[item.key] !== '');
+
+                // 6. Формируем блок Пост печать
+                let techOpHTML = '';
+                if (activeServices.length > 0) {
+                    const techOpRow = activeServices.map(item => `<td>${item.label}</td>`).join('');
+                    const paramsRow = activeServices.map(item => {
+                        let val = serviceMap[item.key];
+                        if (item.key === 'die_cut' || item.key === 'gluing') val = 'есть';
+                        return `<td><strong>${val}</strong></td>`;
+                    }).join('');
+
+                    const planRow = activeServices.map(item => {
+                        let val = '';
+                        if (item.key === 'gluing') val = orderQtyFormatted;
+                        else val = postPrintSheetsFormatted;
+                        return `<td><strong>${val}</strong></td>`;
+                    }).join('');
+                    const faktRow = activeServices.map(() => `<td></td>`).join('');
+                    const brakRow = activeServices.map(() => `<td></td>`).join('');
+
+                    techOpHTML = `
+                        <div class="section-title">Пост печать</div>
+                        <div class="table-responsive tech-op-desktop">
+                          <table class="tech-op-table">
+                            <tbody>
+                              <tr><td class="row-label tech-op-header">Пост печать</td>${techOpRow}</tr>
+                              <tr><td class="row-label">Параметры</td>${paramsRow}</tr>
+                              <tr><td class="row-label">План</td>${planRow}</tr>
+                              <tr><td class="row-label">Факт</td>${faktRow}</tr>
+                              <tr><td class="row-label">Брак</td>${brakRow}</tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div class="tech-op-mobile">
+                          ${activeServices.map(item => {
+                              let paramVal = serviceMap[item.key];
+                              if (item.key === 'die_cut' || item.key === 'gluing') paramVal = 'есть';
+                              const planVal = item.key === 'gluing' ? orderQtyFormatted : postPrintSheetsFormatted;
+                              return `
+                                <div class="service-card">
+                                    <div class="service-name">${item.label}</div>
+                                    <div class="service-row"><span class="service-label">Параметры</span><span class="service-value">${paramVal}</span></div>
+                                    <div class="service-row"><span class="service-label">План</span><span class="service-value">${planVal}</span></div>
+                                    <div class="service-row"><span class="service-label">Факт</span><span class="service-value"></span></div>
+                                    <div class="service-row"><span class="service-label">Брак</span><span class="service-value"></span></div>
+                                </div>
+                              `;
+                          }).join('')}
+                        </div>
+                    `;
+                } else {
+                    techOpHTML = `
+                        <div class="section-title">Пост печать</div>
+                        <p style="color: var(--text-secondary); font-style: italic; margin: 10px 0;">Нет дополнительных услуг</p>
+                    `;
+                }
+
+                // 7. Блок файлов
+                let filesHTML = '';
+                const hasAnyScreenshot = !!(order.screenshot_base64 || order.has_screenshot);
+                if (order.pdf_filename || hasAnyScreenshot) {
+                    filesHTML = `<div class="section-title files-title">Файлы</div>`;
+
+                    if (order.pdf_filename) {
+                        filesHTML += `
+                            <div class="file-row pdf-file-row">
+                                <span class="label">Имя PDF:</span>
+                                <span class="pdf-name">${order.pdf_filename}</span>
+                            </div>
+                        `;
+                    }
+
+                    if (hasAnyScreenshot) {
+                        // Если скриншот ещё старого формата (лежит прямо в заказе) — показываем сразу.
+                        // Если он уже в IndexedDB (has_screenshot) — оставляем img без src,
+                        // подгружаем асинхронно чуть ниже (см. loadScreenshotAsync).
+                        const immediateSrc = order.screenshot_base64 || '';
+                        filesHTML += `
+                            <div class="screenshot-with-lines" id="screenshotLinesBlock">
+                                <div class="screenshot-side">
+                                    <div class="screenshot-container">
+                                        <img id="techScreenshotImg" src="${immediateSrc}" alt="" class="screenshot-img" onclick="event.stopPropagation(); document.getElementById('screenshotModal').classList.add('visible'); document.getElementById('modalImage').src=this.src;">
+                                    </div>
+                                </div>
+                                <div class="lines-side" id="linesSide">
+                                    <div class="comment-line"></div>
+                                    <div class="comment-line"></div>
+                                    <div class="comment-line"></div>
+                                    <div class="comment-line"></div>
+                                    <div class="comment-line"></div>
+                                    <div class="comment-line"></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+
+                // 8. Собираем итоговый HTML
+                let html = `
+                    <div class="tech-card-container">
+                        <a href="texKarta.html" class="back-link">← Назад к списку</a>
+                        <div class="tech-card" id="techCardContent">
+                            <div class="tech-card-header-row">
+                                <h2>Технологическая карта</h2>
+                                <div class="tech-card-number">№ ${techcardNoFormatted}</div>
+                            </div>
+                            <div class="order-meta">
+                                <div class="meta-row">
+                                    <p><span class="label">Заказчик</span> <span class="value">${order.customer || ''}</span></p>
+                                    <p><span class="label">Название продукции</span> <span class="value">${order.product_name || ''}</span></p>
+                                    <p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>
+                                    ${receiveProgressHTML}
+                                </div>
+                                <div class="desc-row">
+                                    <span class="desc-label label">Примечание</span>
+                                    <span class="desc-value value">${order.description || ''}</span>
+                                </div>
+                            </div>
+                            <div class="section-title" style="margin: 24px 0 10px 0;">
+                                ${materialLabel}
+                            </div>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead><tr>
+                                        ${tableHeaders}
+                                    </tr></thead>
+                                    <tbody><tr>
+                                        ${tableRow}
+                                    </tr></tbody>
+                                </table>
+                            </div>
+                            <div class="section-title">${printLabel}</div>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Печатный формат</th><th>Красочность</th><th>тираж</th><th>приладка</th><th>ВД лак</th><th>Кол-во брака</th><th>Кол-во факта печати</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td data-label="Печатный формат"><strong>${printSizeFormatted}</strong></td>
+                                            <td data-label="Красочность"><strong>${order.color || ''}</strong></td>
+                                            <td data-label="тираж"><strong>${postPrintSheetsFormatted}</strong></td>
+                                            <td data-label="приладка"><strong>${makeReadyFormatted}</strong></td>
+                                            <td data-label="ВД лак"><strong>${serviceMap.vd_lak || ''}</strong></td>
+                                            <td data-label="Кол-во брака"></td>
+                                            <td data-label="Кол-во факта печати"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            ${techOpHTML}
+                            ${filesHTML}
+                        </div>
+                    </div>
+                `;
+
+                content.innerHTML = html;
+                actionBar.style.display = 'flex';
+
+                printBtn.onclick = function() { window.print(); };
+
+                // Если скриншот хранится в IndexedDB (order.has_screenshot), а не прямо в заказе —
+                // подгружаем его асинхронно и вставляем в уже отрисованную карточку.
+                if (order.has_screenshot && !order.screenshot_base64 && window.ppScreenshotStore) {
+                    window.ppScreenshotStore.getScreenshot(order.id).then(function(dataUrl) {
+                        const img = document.getElementById('techScreenshotImg');
+                        if (img && dataUrl) img.src = dataUrl;
+                    }).catch(function(err) {
+                        console.error('Не удалось загрузить скриншот из IndexedDB:', err);
+                    });
+                }
+
+                setTimeout(() => {
+                    const img = document.getElementById('techScreenshotImg');
+                    const linesSide = document.getElementById('linesSide');
+                    if (img && linesSide) {
+                        const syncHeight = () => {
+                            const imgHeight = img.offsetHeight;
+                            if (imgHeight > 0) {
+                                linesSide.style.height = imgHeight + 'px';
+                                linesSide.style.minHeight = imgHeight + 'px';
+                            }
+                        };
+
+                        if (img.complete) {
+                            syncHeight();
+                        } else {
+                            img.onload = syncHeight;
+                        }
+
+                        window.addEventListener('resize', syncHeight);
+                    }
+                }, 100);
+
+                downloadPdfBtn.onclick = function() {
+                    const element = document.getElementById('techCardContent');
+                    if (!element) return;
+                    html2canvas(element, { scale: 2, backgroundColor: '#ffffff', allowTaint: true, useCORS: true })
+                        .then(canvas => {
+                            const imgData = canvas.toDataURL('image/png');
+                            const { jsPDF } = window.jspdf;
+                            const pdf = new jsPDF('p', 'mm', 'a4');
+                            const pdfWidth = pdf.internal.pageSize.getWidth();
+                            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                            let heightLeft = pdfHeight;
+                            let position = 0;
+                            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                            heightLeft -= pdf.internal.pageSize.getHeight();
+                            while (heightLeft > 0) {
+                                position = heightLeft - pdfHeight;
+                                pdf.addPage();
+                                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                                heightLeft -= pdf.internal.pageSize.getHeight();
+                            }
+                            pdf.save(`Техкарта_${techcardNoFormatted}.pdf`);
+                        })
+                        .catch(err => { alert('Ошибка при создании PDF: ' + err.message); });
+                };
+
+                const modal = document.getElementById('screenshotModal');
+                modal.onclick = function(e) {
+                    if (e.target === this) this.classList.remove('visible');
+                };
+            }
 
             if (orderId) {
                 const orders = loadOrders();
                 const order = orders.find(o => String(o.id) === String(orderId));
-                if (!order) {
-                    content.innerHTML = `<div class="tech-card"><h2>Ошибка</h2><p>Заказ с ID ${orderId} не найден. <a href="texKarta.html">Вернуться к списку</a></p></div>`;
-                    actionBar.style.display = 'none';
+                if (order) {
+                    renderTechCard(order, false);
                     return;
                 }
-                renderTechCard(order);
+                const wOrders = loadWarehouseOrders();
+                const wOrder = wOrders.find(o => String(o.id) === String(orderId));
+                if (wOrder) {
+                    renderTechCard(wOrder, true);
+                    return;
+                }
+                content.innerHTML = `<div class="tech-card"><h2>Ошибка</h2><p>Заказ с ID ${orderId} не найден. <a href="texKarta.html">Вернуться к списку</a></p></div>`;
+                actionBar.style.display = 'none';
                 return;
             }
 
@@ -1153,14 +1528,36 @@
                 const tableContainer = document.getElementById('tableContainer');
                 const cardsContainer = document.getElementById('techCardsContainer');
                 if (!tableContainer || !cardsContainer) return;
-                
+
                 if (orders.length === 0) {
                     tableContainer.innerHTML = `<div class="empty-msg">Нет заказов, соответствующих фильтру.</div>`;
                     cardsContainer.innerHTML = `<div class="empty-msg">Нет заказов, соответствующих фильтру.</div>`;
                     return;
                 }
                 orders.sort((a, b) => b.id - a.id);
-                
+
+                const warehouseEnabled = isWarehouseModuleEnabled();
+
+                function progressBlock(o) {
+                    const total = o.order_qty || 0;
+                    const received = o.received_qty || 0;
+                    if (!received || !total) return '';
+                    const pct = Math.min(100, Math.round((received / total) * 100));
+                    return `
+                        <div class="receive-progress">Принято: <strong>${received.toLocaleString('ru-RU')}/${total.toLocaleString('ru-RU')}</strong> (${pct}%)
+                            <div class="receive-progress-bar"><div class="receive-progress-bar-fill" style="width:${pct}%;"></div></div>
+                        </div>
+                    `;
+                }
+
+                function sendButtons(o) {
+                    if (!warehouseEnabled) return '';
+                    return `
+                        <button class="btn-send-full" onclick="event.stopPropagation(); window.sendFull(${o.id}); return false;">✅ Полностью</button>
+                        <button class="btn-send-partial" onclick="event.stopPropagation(); window.openPartialModal(${o.id}); return false;">📦 Частично</button>
+                    `;
+                }
+
                 let tableRows = orders.map(o => {
                     const rawNo = o.techcard_no || o.id;
                     const formattedNo = String(rawNo).padStart(3, '0');
@@ -1170,9 +1567,14 @@
                             <td>${o.customer || ''}</td>
                             <td>${o.product_name || ''}</td>
                             <td>${o.manager || ''}</td>
-                            <td>${(o.order_qty || 0).toLocaleString('ru-RU')}</td>
+                            <td>${(o.order_qty || 0).toLocaleString('ru-RU')}${progressBlock(o)}</td>
                             <td>${Math.ceil(o.print_sheets || 0).toLocaleString('ru-RU')}</td>
-                            <td><a href="texKarta.html?id=${o.id}" class="btn-link" onclick="event.stopPropagation()">Открыть</a></td>
+                            <td>
+                                <div class="actions-cell-list">
+                                    <a href="texKarta.html?id=${o.id}" class="btn-link" onclick="event.stopPropagation()">Открыть</a>
+                                    ${sendButtons(o)}
+                                </div>
+                            </td>
                         </tr>
                     `;
                 }).join('');
@@ -1186,37 +1588,41 @@
                         </table>
                     </div>
                 `;
-                
+
                 let cardsHTML = orders.map(o => {
                     const rawNo = o.techcard_no || o.id;
                     const formattedNo = String(rawNo).padStart(3, '0');
                     return `
-                        <div class="tech-card-item" onclick="window.location.href='texKarta.html?id=${o.id}'">
-                            <div class="tech-card-header">
-                                <div class="tech-card-no">№${formattedNo}</div>
-                            </div>
-                            <div class="tech-card-row">
-                                <span class="tech-card-label">Заказчик</span>
-                                <span class="tech-card-value">${o.customer || '—'}</span>
-                            </div>
-                            <div class="tech-card-row">
-                                <span class="tech-card-label">Продукция</span>
-                                <span class="tech-card-value">${o.product_name || '—'}</span>
-                            </div>
-                            <div class="tech-card-row">
-                                <span class="tech-card-label">Менеджер</span>
-                                <span class="tech-card-value">${o.manager || '—'}</span>
-                            </div>
-                            <div class="tech-card-row">
-                                <span class="tech-card-label">Кол-во</span>
-                                <span class="tech-card-value">${(o.order_qty || 0).toLocaleString('ru-RU')}</span>
-                            </div>
-                            <div class="tech-card-row">
-                                <span class="tech-card-label">Тираж</span>
-                                <span class="tech-card-value"><strong>${Math.ceil(o.print_sheets || 0).toLocaleString('ru-RU')}</strong></span>
+                        <div class="tech-card-item">
+                            <div onclick="window.location.href='texKarta.html?id=${o.id}'" style="cursor:pointer;">
+                                <div class="tech-card-header">
+                                    <div class="tech-card-no">№${formattedNo}</div>
+                                </div>
+                                <div class="tech-card-row">
+                                    <span class="tech-card-label">Заказчик</span>
+                                    <span class="tech-card-value">${o.customer || '—'}</span>
+                                </div>
+                                <div class="tech-card-row">
+                                    <span class="tech-card-label">Продукция</span>
+                                    <span class="tech-card-value">${o.product_name || '—'}</span>
+                                </div>
+                                <div class="tech-card-row">
+                                    <span class="tech-card-label">Менеджер</span>
+                                    <span class="tech-card-value">${o.manager || '—'}</span>
+                                </div>
+                                <div class="tech-card-row">
+                                    <span class="tech-card-label">Кол-во</span>
+                                    <span class="tech-card-value">${(o.order_qty || 0).toLocaleString('ru-RU')}</span>
+                                </div>
+                                <div class="tech-card-row">
+                                    <span class="tech-card-label">Тираж</span>
+                                    <span class="tech-card-value"><strong>${Math.ceil(o.print_sheets || 0).toLocaleString('ru-RU')}</strong></span>
+                                </div>
+                                ${progressBlock(o)}
                             </div>
                             <div class="tech-card-actions">
-                                <a href="texKarta.html?id=${o.id}" class="btn-link" onclick="event.stopPropagation()">📄 Открыть техкарту</a>
+                                <a href="texKarta.html?id=${o.id}" class="btn-link" onclick="event.stopPropagation()">📄 Открыть</a>
+                                ${sendButtons(o)}
                             </div>
                         </div>
                     `;
@@ -1268,6 +1674,7 @@
             buildListPage();
         });
     </script>
+    <script src="js/screenshot-store.js"></script>
     <script src="js/auth-check.js"></script>
     <script src="js/nav-filter.js"></script>
 </body>
