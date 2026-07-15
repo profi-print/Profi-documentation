@@ -128,7 +128,6 @@
         .inv-modal-buttons .btn-confirm-rashod { background: var(--primary-amber); color: #fff; }
         .inv-available-note { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
         .inv-available-note strong { color: var(--primary-amber-dark); }
-        
     </style>
 </head>
 <body>
@@ -177,6 +176,11 @@
             <label for="createContractorInput">Контрагент</label>
             <input type="text" id="createContractorInput" list="contractorOptionsList" placeholder="Начните вводить название...">
             <datalist id="contractorOptionsList"></datalist>
+            <label for="createContractorTypeSelect">Тип контрагента</label>
+            <select id="createContractorTypeSelect">
+                <option value="davalcheskiy">Давальский</option>
+                <option value="nash">Наш контрагент</option>
+            </select>
             <label for="createQtyInput">Количество (шт)</label>
             <input type="number" id="createQtyInput" min="1" placeholder="Например, 20">
             <label for="createDateInput">Дата</label>
@@ -197,6 +201,11 @@
             <h3>📤 Расход палет</h3>
             <p class="im-sub" id="rashodContractorName">Списание под отгрузку</p>
             <div class="inv-available-note">Доступно: <strong id="rashodAvailableText">0</strong> шт</div>
+            <label for="rashodContractorTypeSelect">Тип контрагента (для этого списания)</label>
+            <select id="rashodContractorTypeSelect">
+                <option value="davalcheskiy">Давальский</option>
+                <option value="nash">Наш контрагент</option>
+            </select>
             <label for="rashodQtyInput">Количество (шт)</label>
             <input type="number" id="rashodQtyInput" min="1" placeholder="Например, 5">
             <label for="rashodDateInput">Дата</label>
@@ -257,6 +266,8 @@
                 return stock;
             }
 
+            const CONTRACTOR_TYPE_LABELS = { davalcheskiy: 'Давальский', nash: 'Наш контрагент' };
+
             function buildHistoryHTML(hist) {
                 if (hist.length === 0) return '<div class="inv-history-empty">История пуста</div>';
                 const sorted = hist.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
@@ -269,6 +280,7 @@
                             <div class="inv-history-body">
                                 <span class="inv-history-qty">${label}: ${h.qty.toLocaleString('ru-RU')} шт</span>
                                 <span class="inv-history-date">${h.date || ''}</span>
+                                ${h.contractorType ? `<div class="inv-history-comment">Тип: ${CONTRACTOR_TYPE_LABELS[h.contractorType] || h.contractorType}</div>` : ''}
                                 ${h.comment ? `<div class="inv-history-comment">${h.comment}</div>` : ''}
                             </div>
                         </div>
@@ -341,10 +353,13 @@
                 datalist.innerHTML = names.map(n => `<option value="${n}"></option>`).join('');
             }
 
+            const createContractorTypeSelect = document.getElementById('createContractorTypeSelect');
+
             window.openCreateModal = function(prefillName) {
                 createContractorInput.value = prefillName || '';
                 createQtyInput.value = '';
                 createDateInput.value = new Date().toISOString().slice(0, 10);
+                createContractorTypeSelect.value = 'davalcheskiy';
                 createCommentInput.value = '';
                 createModalError.classList.remove('show');
                 populateContractorDatalist();
@@ -367,6 +382,7 @@
                 data[name].history.push({
                     type: 'prihod',
                     qty: qty,
+                    contractorType: createContractorTypeSelect.value,
                     date: createDateInput.value || new Date().toISOString().slice(0, 10),
                     comment: createCommentInput.value.trim(),
                     timestamp: Date.now()
@@ -384,6 +400,7 @@
             const rashodAvailableText = document.getElementById('rashodAvailableText');
             const rashodQtyInput = document.getElementById('rashodQtyInput');
             const rashodDateInput = document.getElementById('rashodDateInput');
+            const rashodContractorTypeSelect = document.getElementById('rashodContractorTypeSelect');
             const rashodCommentInput = document.getElementById('rashodCommentInput');
             const rashodModalError = document.getElementById('rashodModalError');
             let rashodTargetName = null;
@@ -395,6 +412,7 @@
                 rashodAvailableText.textContent = getStock(data, name).toLocaleString('ru-RU');
                 rashodQtyInput.value = '';
                 rashodDateInput.value = new Date().toISOString().slice(0, 10);
+                rashodContractorTypeSelect.value = 'davalcheskiy';
                 rashodCommentInput.value = '';
                 rashodModalError.classList.remove('show');
                 rashodModal.classList.add('show');
@@ -415,6 +433,7 @@
                 data[rashodTargetName].history.push({
                     type: 'rashod',
                     qty: qty,
+                    contractorType: rashodContractorTypeSelect.value,
                     date: rashodDateInput.value || new Date().toISOString().slice(0, 10),
                     comment: rashodCommentInput.value.trim(),
                     timestamp: Date.now()

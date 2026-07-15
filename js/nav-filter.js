@@ -9,6 +9,8 @@
     const forbiddenForManager = ['otpcex.html', 'texkarta.html', 'index2.html', 'statuses.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'];
     const allowedForDesigner = ['clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html', 'index2.html', 'settings.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'];
     const allowedForWarehouse = ['sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html', 'settings.html'];
+    const allowedForFlotorezka = ['texkarta.html'];
+    const allowedForPechat = ['texkarta.html'];
 
     menuItems.forEach(link => {
         const href = link.getAttribute('href');
@@ -30,6 +32,16 @@
             }
         } else if (role === 'warehouse') {
             if (!allowedForWarehouse.includes(page)) {
+                link.closest('li')?.style.setProperty('display', 'none', 'important');
+                link.style.display = 'none';
+            }
+        } else if (role === 'flotorezka') {
+            if (!allowedForFlotorezka.includes(page)) {
+                link.closest('li')?.style.setProperty('display', 'none', 'important');
+                link.style.display = 'none';
+            }
+        } else if (role === 'pechat') {
+            if (!allowedForPechat.includes(page)) {
                 link.closest('li')?.style.setProperty('display', 'none', 'important');
                 link.style.display = 'none';
             }

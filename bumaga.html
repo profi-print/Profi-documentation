@@ -181,6 +181,14 @@
             </div>
             <label for="prihodDateInput">Дата</label>
             <input type="date" id="prihodDateInput">
+            <label for="prihodContractorTypeSelect">Тип контрагента</label>
+            <select id="prihodContractorTypeSelect">
+                <option value="davalcheskiy">Давальский</option>
+                <option value="nash">Наш контрагент</option>
+            </select>
+            <label for="prihodContractorInput">Контрагент</label>
+            <input type="text" id="prihodContractorInput" list="contractorOptionsListPrihod" placeholder="Начните вводить название...">
+            <datalist id="contractorOptionsListPrihod"></datalist>
             <label for="prihodCommentInput">Комментарий</label>
             <textarea id="prihodCommentInput" placeholder="Например: закупили у поставщика"></textarea>
             <div class="inv-modal-error" id="prihodModalError">Введите корректное количество</div>
@@ -214,6 +222,14 @@
             <datalist id="techcardOptionsList"></datalist>
             <label for="rashodDateInput">Дата</label>
             <input type="date" id="rashodDateInput">
+            <label for="rashodContractorTypeSelect">Тип контрагента</label>
+            <select id="rashodContractorTypeSelect">
+                <option value="davalcheskiy">Давальский</option>
+                <option value="nash">Наш контрагент</option>
+            </select>
+            <label for="rashodContractorInput">Контрагент</label>
+            <input type="text" id="rashodContractorInput" list="contractorOptionsListRashod" placeholder="Начните вводить название...">
+            <datalist id="contractorOptionsListRashod"></datalist>
             <label for="rashodCommentInput">Комментарий</label>
             <textarea id="rashodCommentInput" placeholder="Например: ушло на заказ Nanopharmaceuticals"></textarea>
             <div class="inv-modal-error" id="rashodModalError">Введите корректное количество</div>
@@ -262,6 +278,8 @@
 
             const unitLabels = { unit: '', pachka: 'пачка', korobka: 'коробка', palet: 'палет' };
 
+            const CONTRACTOR_TYPE_LABELS = { davalcheskiy: 'Давальский', nash: 'Наш контрагент' };
+
             function buildHistoryHTML(hist) {
                 if (hist.length === 0) return '<div class="inv-history-empty">История пуста</div>';
                 const sorted = hist.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
@@ -275,6 +293,7 @@
                             <div class="inv-history-body">
                                 <span class="inv-history-qty">${label}: ${h.qty.toLocaleString('ru-RU')}${unitTag}</span>
                                 <span class="inv-history-date">${h.date || ''}</span>
+                                ${h.contractorName ? `<div class="inv-history-meta">Контрагент: ${h.contractorName}${h.contractorType ? ` (${CONTRACTOR_TYPE_LABELS[h.contractorType] || h.contractorType})` : ''}</div>` : ''}
                                 ${h.techcardNo ? (h.techcardId
                                     ? `<div class="inv-history-meta">Заказ: <a class="tk-link" href="texKarta.html?id=${h.techcardId}">№ ${h.techcardNo}</a></div>`
                                     : `<div class="inv-history-meta">Заказ: № ${h.techcardNo}</div>`) : ''}
@@ -283,6 +302,19 @@
                         </div>
                     `;
                 }).join('');
+            }
+
+            function loadClientNames() {
+                try {
+                    const clients = JSON.parse(localStorage.getItem('pp_clients') || '[]');
+                    return clients.map(c => c.name).filter(Boolean);
+                } catch (e) { return []; }
+            }
+            function populateContractorDatalist(datalistId) {
+                const datalist = document.getElementById(datalistId);
+                if (!datalist) return;
+                const names = loadClientNames();
+                datalist.innerHTML = names.map(n => `<option value="${n}"></option>`).join('');
             }
 
             function loadAllTechcards() {
@@ -362,6 +394,8 @@
             const prihodQtyInput = document.getElementById('prihodQtyInput');
             const prihodUnitSelect = document.getElementById('prihodUnitSelect');
             const prihodDateInput = document.getElementById('prihodDateInput');
+            const prihodContractorTypeSelect = document.getElementById('prihodContractorTypeSelect');
+            const prihodContractorInput = document.getElementById('prihodContractorInput');
             const prihodCommentInput = document.getElementById('prihodCommentInput');
             const prihodModalError = document.getElementById('prihodModalError');
 
@@ -373,8 +407,11 @@
                 prihodQtyInput.value = '';
                 prihodUnitSelect.value = 'unit';
                 prihodDateInput.value = new Date().toISOString().slice(0, 10);
+                prihodContractorTypeSelect.value = 'davalcheskiy';
+                prihodContractorInput.value = '';
                 prihodCommentInput.value = '';
                 prihodModalError.classList.remove('show');
+                populateContractorDatalist('contractorOptionsListPrihod');
                 prihodModal.classList.add('show');
                 setTimeout(() => prihodQtyInput.focus(), 100);
             };
@@ -387,12 +424,20 @@
                     prihodModalError.classList.add('show');
                     return;
                 }
+                const contractorName = prihodContractorInput.value.trim();
+                if (!contractorName) {
+                    prihodModalError.textContent = 'Укажите контрагента';
+                    prihodModalError.classList.add('show');
+                    return;
+                }
                 const data = loadData();
                 if (!data[prihodTargetId]) data[prihodTargetId] = { history: [] };
                 data[prihodTargetId].history.push({
                     type: 'prihod',
                     qty: qty,
                     unitLabel: unitLabels[prihodUnitSelect.value] || '',
+                    contractorType: prihodContractorTypeSelect.value,
+                    contractorName: contractorName,
                     date: prihodDateInput.value || new Date().toISOString().slice(0, 10),
                     comment: prihodCommentInput.value.trim(),
                     timestamp: Date.now()
@@ -412,6 +457,8 @@
             const rashodAvailableText = document.getElementById('rashodAvailableText');
             const rashodTechcardInput = document.getElementById('rashodTechcardInput');
             const rashodDateInput = document.getElementById('rashodDateInput');
+            const rashodContractorTypeSelect = document.getElementById('rashodContractorTypeSelect');
+            const rashodContractorInput = document.getElementById('rashodContractorInput');
             const rashodCommentInput = document.getElementById('rashodCommentInput');
             const rashodModalError = document.getElementById('rashodModalError');
 
@@ -426,9 +473,12 @@
                 rashodUnitSelect.value = 'unit';
                 rashodTechcardInput.value = '';
                 rashodDateInput.value = new Date().toISOString().slice(0, 10);
+                rashodContractorTypeSelect.value = 'davalcheskiy';
+                rashodContractorInput.value = '';
                 rashodCommentInput.value = '';
                 rashodModalError.classList.remove('show');
                 populateTechcardDatalist();
+                populateContractorDatalist('contractorOptionsListRashod');
                 rashodModal.classList.add('show');
                 setTimeout(() => rashodQtyInput.focus(), 100);
             };
@@ -443,6 +493,12 @@
                     rashodModalError.classList.add('show');
                     return;
                 }
+                const contractorName = rashodContractorInput.value.trim();
+                if (!contractorName) {
+                    rashodModalError.textContent = 'Укажите контрагента';
+                    rashodModalError.classList.add('show');
+                    return;
+                }
                 if (!data[rashodTargetId]) data[rashodTargetId] = { history: [] };
                 const techcard = resolveTechcardFromInput(rashodTechcardInput.value);
                 data[rashodTargetId].history.push({
@@ -451,6 +507,8 @@
                     unitLabel: unitLabels[rashodUnitSelect.value] || '',
                     techcardNo: techcard ? techcard.no : null,
                     techcardId: techcard ? techcard.id : null,
+                    contractorType: rashodContractorTypeSelect.value,
+                    contractorName: contractorName,
                     date: rashodDateInput.value || new Date().toISOString().slice(0, 10),
                     comment: rashodCommentInput.value.trim(),
                     timestamp: Date.now()

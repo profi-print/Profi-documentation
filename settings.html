@@ -419,6 +419,34 @@
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Отправка на этапах (Флоторезка/Печать)</div>
+                            <div class="setting-description">
+                                Показывает кнопки «Отправить полностью» / «Отправить частично» у ролей Флоторезка и Печать внутри техкарты — чтобы передавать работу на следующий этап
+                            </div>
+                            <span class="status-badge disabled" id="stageSendStatusBadge">Выключено</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="stageSendModeToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Личные заметки в техкарте</div>
+                            <div class="setting-description">
+                                Разрешает ролям Флоторезка и Печать писать и сохранять свои личные заметки прямо в техкарте (видны только им самим)
+                            </div>
+                            <span class="status-badge disabled" id="stageNotesStatusBadge">Выключено</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="stageNotesModeToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </main>
@@ -450,11 +478,18 @@
 
         const ADMIN_PASSWORD = '1001';
 
-        const editToggle = document.getElementById('editModeToggle');
-        const editStatusBadge = document.getElementById('editStatusBadge');
-
-        const warehouseToggle = document.getElementById('warehouseModeToggle');
-        const warehouseStatusBadge = document.getElementById('warehouseStatusBadge');
+        // Конфигурация всех тумблеров: id элементов, localStorage-ключ, id бейджа статуса
+        const TOGGLES = {
+            edit:       { toggleId: 'editModeToggle',       badgeId: 'editStatusBadge',       key: 'pp_edit_mode_enabled' },
+            warehouse:  { toggleId: 'warehouseModeToggle',  badgeId: 'warehouseStatusBadge',  key: 'pp_warehouse_mode_enabled' },
+            stageSend:  { toggleId: 'stageSendModeToggle',  badgeId: 'stageSendStatusBadge',  key: 'pp_stage_send_enabled' },
+            stageNotes: { toggleId: 'stageNotesModeToggle', badgeId: 'stageNotesStatusBadge', key: 'pp_stage_notes_enabled' }
+        };
+        Object.keys(TOGGLES).forEach(name => {
+            const cfg = TOGGLES[name];
+            cfg.toggleEl = document.getElementById(cfg.toggleId);
+            cfg.badgeEl = document.getElementById(cfg.badgeId);
+        });
 
         const passwordModal = document.getElementById('passwordModal');
         const passwordInput = document.getElementById('passwordInput');
@@ -462,55 +497,36 @@
 
         let currentToggle = null;
 
+        function updateBadge(cfg, isEnabled) {
+            if (isEnabled) {
+                cfg.badgeEl.textContent = 'Включено';
+                cfg.badgeEl.className = 'status-badge enabled';
+            } else {
+                cfg.badgeEl.textContent = 'Выключено';
+                cfg.badgeEl.className = 'status-badge disabled';
+            }
+        }
+
         function loadState() {
-            const isEditEnabled = localStorage.getItem('pp_edit_mode_enabled') === 'true';
-            const isWarehouseEnabled = localStorage.getItem('pp_warehouse_mode_enabled') === 'true';
-
-            editToggle.checked = isEditEnabled;
-            updateEditBadge(isEditEnabled);
-
-            warehouseToggle.checked = isWarehouseEnabled;
-            updateWarehouseBadge(isWarehouseEnabled);
+            Object.keys(TOGGLES).forEach(name => {
+                const cfg = TOGGLES[name];
+                const isEnabled = localStorage.getItem(cfg.key) === 'true';
+                cfg.toggleEl.checked = isEnabled;
+                updateBadge(cfg, isEnabled);
+            });
         }
 
-        function updateEditBadge(isEnabled) {
-            if (isEnabled) {
-                editStatusBadge.textContent = 'Включено';
-                editStatusBadge.className = 'status-badge enabled';
-            } else {
-                editStatusBadge.textContent = 'Выключено';
-                editStatusBadge.className = 'status-badge disabled';
-            }
-        }
-
-        function updateWarehouseBadge(isEnabled) {
-            if (isEnabled) {
-                warehouseStatusBadge.textContent = 'Включено';
-                warehouseStatusBadge.className = 'status-badge enabled';
-            } else {
-                warehouseStatusBadge.textContent = 'Выключено';
-                warehouseStatusBadge.className = 'status-badge disabled';
-            }
-        }
-
-        editToggle.addEventListener('change', function() {
-            if (this.checked) {
-                currentToggle = 'edit';
-                openPasswordModal();
-            } else {
-                localStorage.setItem('pp_edit_mode_enabled', 'false');
-                updateEditBadge(false);
-            }
-        });
-
-        warehouseToggle.addEventListener('change', function() {
-            if (this.checked) {
-                currentToggle = 'warehouse';
-                openPasswordModal();
-            } else {
-                localStorage.setItem('pp_warehouse_mode_enabled', 'false');
-                updateWarehouseBadge(false);
-            }
+        Object.keys(TOGGLES).forEach(name => {
+            const cfg = TOGGLES[name];
+            cfg.toggleEl.addEventListener('change', function() {
+                if (this.checked) {
+                    currentToggle = name;
+                    openPasswordModal();
+                } else {
+                    localStorage.setItem(cfg.key, 'false');
+                    updateBadge(cfg, false);
+                }
+            });
         });
 
         function openPasswordModal() {
@@ -522,10 +538,9 @@
 
         function closePasswordModal() {
             passwordModal.classList.remove('show');
-            if (currentToggle === 'edit') {
-                editToggle.checked = localStorage.getItem('pp_edit_mode_enabled') === 'true';
-            } else if (currentToggle === 'warehouse') {
-                warehouseToggle.checked = localStorage.getItem('pp_warehouse_mode_enabled') === 'true';
+            if (currentToggle && TOGGLES[currentToggle]) {
+                const cfg = TOGGLES[currentToggle];
+                cfg.toggleEl.checked = localStorage.getItem(cfg.key) === 'true';
             }
             currentToggle = null;
         }
@@ -534,12 +549,10 @@
             const enteredPassword = passwordInput.value.trim();
 
             if (enteredPassword === ADMIN_PASSWORD) {
-                if (currentToggle === 'edit') {
-                    localStorage.setItem('pp_edit_mode_enabled', 'true');
-                    updateEditBadge(true);
-                } else if (currentToggle === 'warehouse') {
-                    localStorage.setItem('pp_warehouse_mode_enabled', 'true');
-                    updateWarehouseBadge(true);
+                if (currentToggle && TOGGLES[currentToggle]) {
+                    const cfg = TOGGLES[currentToggle];
+                    localStorage.setItem(cfg.key, 'true');
+                    updateBadge(cfg, true);
                 }
                 closePasswordModal();
             } else {
@@ -548,6 +561,7 @@
                 passwordInput.focus();
             }
         }
+
 
         passwordModal.addEventListener('click', function(e) {
             if (e.target === passwordModal) {

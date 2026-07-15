@@ -152,6 +152,10 @@
         .wh-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); color: var(--text-primary); vertical-align: middle; }
         .wh-table tr.wh-row:hover { background: var(--bg-main); }
         .wh-table td strong { font-weight: 700; }
+        .wh-contractor-type-select {
+            padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border-color);
+            background: var(--bg-white); color: var(--text-primary); font-size: 12px; max-width: 140px;
+        }
 
         .wh-qty-cell .wh-mini-progress {
             width: 90px; height: 5px; background: var(--border-color); border-radius: 4px; overflow: hidden; margin-top: 4px;
@@ -353,6 +357,16 @@
                 localStorage.setItem('pp_orders', JSON.stringify(orders));
             }
 
+            window.setContractorType = function(orderId, source, value) {
+                const orders = source === 'warehouse' ? loadWarehouseOrders() : loadProductionOrders();
+                const idx = orders.findIndex(o => String(o.id) === String(orderId));
+                if (idx === -1) return;
+                orders[idx].contractor_type = value;
+                if (source === 'warehouse') saveWarehouseOrders(orders);
+                else saveProductionOrders(orders);
+                window._allRows = buildUnifiedRows();
+            };
+
             // ===== Палеты (общий склад с palety.html, ключ pp_inventory_palety) =====
             const PALETY_KEY = 'pp_inventory_palety';
             function loadPaletyData() {
@@ -399,6 +413,7 @@
                         customer: o.customer,
                         product_name: o.product_name,
                         manager: o.manager,
+                        contractor_type: o.contractor_type || '',
                         total: o.order_qty || 0,
                         received: o.order_qty || 0, // на складе всегда принято 100%
                         shipped: o.shipped_qty || 0,
@@ -419,6 +434,7 @@
                             customer: o.customer,
                             product_name: o.product_name,
                             manager: o.manager,
+                            contractor_type: o.contractor_type || '',
                             total: o.order_qty || 0,
                             received: received,
                             shipped: o.shipped_qty || 0,
@@ -513,10 +529,19 @@
                         <a href="texKarta.html?id=${row.id}" class="btn-open-card">📄 Техкарта</a>
                     `;
 
+                    const contractorTypeCellHTML = `
+                        <select class="wh-contractor-type-select" onchange="window.setContractorType(${row.id}, '${row.source}', this.value)">
+                            <option value="" ${!row.contractor_type ? 'selected' : ''}>—</option>
+                            <option value="davalcheskiy" ${row.contractor_type === 'davalcheskiy' ? 'selected' : ''}>Давальский</option>
+                            <option value="nash" ${row.contractor_type === 'nash' ? 'selected' : ''}>Наш контрагент</option>
+                        </select>
+                    `;
+
                     return `
                         <tr class="wh-row">
                             <td><strong>№${formattedNo}</strong></td>
                             <td>${row.customer || ''}</td>
+                            <td>${contractorTypeCellHTML}</td>
                             <td>${row.product_name || ''}</td>
                             <td><strong>${row.total.toLocaleString('ru-RU')}</strong></td>
                             <td class="wh-qty-cell">${receivedCellHTML}</td>
@@ -526,7 +551,7 @@
                             <td><div class="wh-actions-cell">${actionsHTML}</div></td>
                         </tr>
                         <tr class="wh-history-row" id="history-row-${row.id}" style="display:none;">
-                            <td colspan="9">
+                            <td colspan="10">
                                 <div class="wh-history-title">Приход и отгрузки — № ${formattedNo}</div>
                                 ${buildHistoryTimeline(row)}
                             </td>
@@ -547,6 +572,13 @@
                                 ${receiveBadgeHTML(row)}
                             </div>
                             <div class="wh-card-row"><span class="wh-card-label">Заказчик</span><span class="wh-card-value">${row.customer || '—'}</span></div>
+                            <div class="wh-card-row"><span class="wh-card-label">Тип контрагента</span><span class="wh-card-value">
+                                <select class="wh-contractor-type-select" onchange="window.setContractorType(${row.id}, '${row.source}', this.value)">
+                                    <option value="" ${!row.contractor_type ? 'selected' : ''}>—</option>
+                                    <option value="davalcheskiy" ${row.contractor_type === 'davalcheskiy' ? 'selected' : ''}>Давальский</option>
+                                    <option value="nash" ${row.contractor_type === 'nash' ? 'selected' : ''}>Наш контрагент</option>
+                                </select>
+                            </span></div>
                             <div class="wh-card-row"><span class="wh-card-label">Продукция</span><span class="wh-card-value">${row.product_name || '—'}</span></div>
                             <div class="wh-card-row"><span class="wh-card-label">Общее кол-во</span><span class="wh-card-value">${row.total.toLocaleString('ru-RU')}</span></div>
                             <div class="wh-card-row"><span class="wh-card-label">Пришло</span><span class="wh-card-value">${row.received.toLocaleString('ru-RU')}${!row.isComplete ? ` (${pct}%)` : ''}</span></div>
@@ -579,6 +611,7 @@
                                     <tr>
                                         <th>№ техкарты</th>
                                         <th>Заказчик</th>
+                                        <th>Тип контрагента</th>
                                         <th>Продукция</th>
                                         <th>Общее кол-во</th>
                                         <th>Пришло</th>

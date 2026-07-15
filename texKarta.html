@@ -179,6 +179,64 @@
         }
         .receive-progress-bar-fill { height: 100%; background: var(--accent-amber); border-radius: 4px; }
 
+        .next-stage-block { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+        .next-stage-label { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
+        .next-stage-label strong { color: var(--primary-blue); }
+        .next-stage-done { font-size: 12px; font-weight: 700; color: var(--accent-green); white-space: nowrap; }
+        .btn-advance-stage {
+            padding: 6px 10px; border-radius: 6px; background: var(--accent-green); color: #fff; border: none;
+            font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap;
+        }
+        .btn-advance-stage:hover { opacity: 0.85; }
+
+        .stage-red { color: var(--accent-red) !important; }
+
+        .stage-work-box {
+            background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 16px; margin-bottom: 16px;
+        }
+        .stage-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px 20px; margin-bottom: 14px; font-size: 13px; }
+        .stage-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .stage-buttons button {
+            padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; color: #fff;
+        }
+        .btn-stage-start { background: var(--primary-blue); }
+        .btn-stage-pause { background: var(--text-secondary); }
+        .btn-stage-finish { background: var(--accent-green); }
+        .btn-stage-send-full { background: var(--accent-green); }
+        .btn-stage-send-partial { background: #d97706; }
+        .stage-status-done { font-size: 13px; font-weight: 700; color: var(--accent-green); padding: 10px 0; }
+        .stage-buttons button:disabled { background: var(--border-color) !important; color: var(--text-secondary) !important; cursor: not-allowed; }
+        .stage-history-title { font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px; margin: 10px 0 8px; }
+        .stage-history-list { max-height: 220px; overflow-y: auto; }
+        .stage-history-item {
+            display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; padding: 6px 10px; border-radius: 6px;
+            background: var(--bg-white); margin-bottom: 6px; font-size: 12px;
+        }
+        .stage-history-label { font-weight: 600; }
+        .stage-history-date { color: var(--text-secondary); font-size: 11px; }
+        .stage-history-comment { width: 100%; color: var(--text-secondary); font-size: 11px; font-style: italic; }
+        .stage-history-empty { color: var(--text-secondary); font-style: italic; font-size: 13px; }
+        .btn-edit-history {
+            border: none; background: transparent; cursor: pointer; font-size: 13px; padding: 2px 6px;
+            border-radius: 4px; opacity: 0.6;
+        }
+        .btn-edit-history:hover { opacity: 1; background: var(--border-color); }
+
+        .upstream-note { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
+        .upstream-note.upstream-pending { background: rgba(220, 38, 38, 0.08); color: var(--text-primary); }
+        .upstream-note.upstream-ok { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); font-weight: 600; }
+
+        .my-notes-textarea {
+            width: 100%; min-height: 90px; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 8px;
+            font-size: 14px; font-family: inherit; color: var(--text-primary); background: var(--bg-white); resize: vertical; margin-bottom: 10px;
+        }
+        .btn-save-notes {
+            padding: 10px 18px; border-radius: 8px; background: var(--primary-blue); color: #fff; border: none;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+        }
+
+
         .tech-cards { display: none; }
         .tech-card-item {
             background: var(--bg-white);
@@ -317,11 +375,11 @@
         }
 
         .tech-card .order-meta { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 2px solid var(--border-color); }
-        .tech-card .order-meta .meta-row { display: flex; flex-wrap: wrap; gap: 12px 40px; align-items: baseline; margin-bottom: 8px; }
-        .tech-card .order-meta .meta-row p { margin: 0; display: flex; align-items: baseline; gap: 8px; }
-        .tech-card .order-meta .label { font-weight: 400; color: var(--text-primary); white-space: nowrap; }
+        .tech-card .order-meta .meta-row { display: flex; flex-direction: column; gap: 10px; align-items: stretch; margin-bottom: 8px; }
+        .tech-card .order-meta .meta-row p { margin: 0; display: flex; align-items: baseline; gap: 10px; width: 100%; font-size: 19px; }
+        .tech-card .order-meta .label { font-weight: 400; color: var(--text-primary); white-space: nowrap; font-size: 17px; }
         .tech-card .order-meta .label::after { content: " —"; font-weight: 400; color: var(--text-secondary); margin-left: 2px; }
-        .tech-card .order-meta .value { font-weight: 700; color: var(--text-primary); }
+        .tech-card .order-meta .value { font-weight: 700; color: var(--text-primary); font-size: 19px; }
         .tech-card .order-meta .value.qty { font-weight: 700; color: var(--primary-blue); }
         .tech-card .order-meta .desc-row { display: flex; align-items: baseline; gap: 8px; background: var(--bg-main); padding: 8px 16px; border-radius: 6px; margin: 0; width: 100%; }
         .tech-card .order-meta .desc-row .desc-label { font-weight: 400; color: var(--text-primary); flex-shrink: 0; }
@@ -330,7 +388,7 @@
 
         .tech-card .section-title { font-weight: 700; font-size: 16px; margin: 24px 0 10px 0; color: var(--primary-blue); border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
         .tech-card .table-responsive { overflow-x: auto; margin-bottom: 12px; -webkit-overflow-scrolling: touch; }
-        .tech-card table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .tech-card table { width: 100%; border-collapse: collapse; font-size: 17px; }
         .tech-card table th { background: var(--bg-main); padding: 10px 12px; border: 1px solid var(--border-color); text-align: center; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
         .tech-card table td { padding: 10px 12px; border: 1px solid var(--border-color); text-align: center; color: var(--text-primary); white-space: nowrap; }
         .tech-card table td strong { font-weight: 700; color: var(--text-primary); }
@@ -343,8 +401,8 @@
 
         .tech-op-mobile { display: none; }
         .tech-op-mobile .service-card { border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; background: var(--bg-white); }
-        .tech-op-mobile .service-card .service-name { font-weight: 700; color: var(--primary-blue); margin-bottom: 6px; font-size: 14px; }
-        .tech-op-mobile .service-card .service-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 13px; border-bottom: 1px dashed var(--border-color); }
+        .tech-op-mobile .service-card .service-name { font-weight: 700; color: var(--primary-blue); margin-bottom: 6px; font-size: 17px; }
+        .tech-op-mobile .service-card .service-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 16px; border-bottom: 1px dashed var(--border-color); }
         .tech-op-mobile .service-card .service-row:last-child { border-bottom: none; }
         .tech-op-mobile .service-card .service-row .service-label { color: var(--text-secondary); font-weight: 500; }
         .tech-op-mobile .service-card .service-row .service-value { font-weight: 700; color: var(--text-primary); }
@@ -375,55 +433,23 @@
             font-weight: 600;
         }
 
-        .screenshot-with-lines {
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
+        .screenshot-full-block {
             margin-top: 16px;
             width: 100%;
         }
 
-        .screenshot-side {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .screenshot-container {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .screenshot-img {
+        .screenshot-img-full {
+            width: 100%;
             max-width: 100%;
-            max-height: 400px;
+            height: auto;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             cursor: pointer;
             display: block;
         }
 
-        .screenshot-img:hover { transform: scale(1.02); }
-        .screenshot-img:active { transform: scale(0.98); }
-
-        .lines-side {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 0;
-            min-height: 300px;
-        }
-
-        .comment-line {
-            width: 100%;
-            height: 2px;
-            background: #666 !important;
-            display: block;
-            flex-shrink: 0;
-        }
+        .screenshot-img-full:hover { transform: scale(1.005); }
+        .screenshot-img-full:active { transform: scale(0.995); }
 
         .action-bar { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; }
         .action-bar button {
@@ -637,16 +663,17 @@
             .tech-card .section-title { font-size: 15px; margin: 18px 0 8px 0; }
 
             .tech-card .order-meta .meta-row {
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 6px 20px;
+                flex-direction: column;
+                gap: 8px;
             }
             .tech-card .order-meta .meta-row p {
                 flex-direction: row;
                 justify-content: flex-start;
-                width: auto;
-                gap: 6px;
+                width: 100%;
+                gap: 8px;
+                font-size: 16px;
             }
+            .tech-card .order-meta .label { font-size: 14px; }
             .tech-card .order-meta .desc-row {
                 flex-direction: column;
                 gap: 4px;
@@ -657,7 +684,7 @@
             }
 
             .tech-card .table-responsive { overflow-x: visible; }
-            .tech-card table { font-size: 13px; }
+            .tech-card table { font-size: 16px; }
             .tech-card table thead { display: none; }
             .tech-card table, .tech-card table tbody, .tech-card table tr { display: block; width: 100%; }
             .tech-card table tr { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
@@ -685,7 +712,6 @@
             .tech-op-desktop { display: none; }
             .tech-op-mobile { display: block; }
 
-            .tech-card .screenshot-container img { max-height: 250px; }
             .tech-card .pdf-name { font-size: 12px; padding: 4px 10px; }
 
             .action-bar { flex-direction: column; gap: 10px; }
@@ -712,7 +738,7 @@
             .tech-list { padding: 12px; }
             .tech-card-item { padding: 14px; }
             .tech-card { padding: 14px; }
-            .tech-card table { font-size: 11px; }
+            .tech-card table { font-size: 14px; }
             .tech-card table td { padding: 8px 10px; }
             .tech-op-mobile .service-card { padding: 8px 12px; }
             .action-bar button { font-size: 13px; padding: 12px 16px; }
@@ -720,7 +746,7 @@
 
         @media screen and (max-height: 500px) and (orientation: landscape) {
             .tech-card { padding: 16px; }
-            .tech-card .screenshot-container img { max-height: 200px; }
+            .tech-card .screenshot-img-full { max-height: 200px; object-fit: contain; }
             .action-bar { flex-direction: row; }
             .action-bar button { width: auto; }
         }
@@ -736,11 +762,8 @@
             }
             #techCardContent,
             #techCardContent *,
-            .screenshot-with-lines,
-            .screenshot-with-lines *,
-            .lines-side,
-            .lines-side *,
-            .comment-line {
+            .screenshot-full-block,
+            .screenshot-full-block * {
                 visibility: visible !important;
             }
             #techCardContent {
@@ -792,10 +815,6 @@
                 gap: 3mm 8mm !important;
                 margin-bottom: 2mm !important;
             }
-            .tech-card .screenshot-container img {
-                max-width: 80mm !important;
-                max-height: 60mm !important;
-            }
             .tech-card .tech-op-table th,
             .tech-card .tech-op-table td {
                 padding: 2mm 3mm !important;
@@ -804,46 +823,18 @@
             .tech-card .file-row {
                 break-inside: avoid;
             }
-            .screenshot-with-lines {
-                display: flex !important;
-                gap: 5mm !important;
-                align-items: flex-start !important;
-                margin-top: 4mm !important;
+            .screenshot-full-block {
                 width: 100% !important;
+                margin-top: 4mm !important;
                 visibility: visible !important;
             }
-            .screenshot-side {
-                flex: 0 0 80mm !important;
-                min-width: 0 !important;
-                display: flex !important;
-                align-items: flex-start !important;
-                visibility: visible !important;
-            }
-            .screenshot-img {
-                max-width: 80mm !important;
-                max-height: 60mm !important;
+            .screenshot-img-full {
+                width: 100% !important;
+                height: auto !important;
                 border: 1px solid #ccc !important;
                 visibility: visible !important;
             }
-            .lines-side {
-                flex: 1 !important;
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: space-between !important;
-                min-height: 60mm !important;
-                visibility: visible !important;
             }
-            .comment-line {
-                width: 100% !important;
-                height: 1px !important;
-                background: #666 !important;
-                display: block !important;
-                visibility: visible !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-            }
-        }
     </style>
 </head>
 <body>
@@ -928,6 +919,41 @@
         </div>
     </div>
 
+    <!-- Модалка "Пауза" — сколько сделано на этапе (Флоторезка/Печать) -->
+    <div class="partial-modal" id="stagePauseModal">
+        <div class="partial-modal-content">
+            <h3>⏸️ Пауза</h3>
+            <p class="pm-sub">Сколько сделано за это время?</p>
+            <label for="stagePauseQtyInput">Количество</label>
+            <input type="number" id="stagePauseQtyInput" min="1" placeholder="Например, 300">
+            <label for="stagePauseCommentInput">Комментарий (необязательно)</label>
+            <textarea id="stagePauseCommentInput" placeholder="Например: закончили первую партию"></textarea>
+            <div class="partial-modal-error" id="stagePauseModalError">Проверьте введённое количество</div>
+            <div class="partial-modal-buttons">
+                <button class="btn-cancel" onclick="closeStagePauseModal()">Отмена</button>
+                <button class="btn-confirm" onclick="confirmStagePause()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка "Отправить частично" на этапе (Флоторезка/Печать) -->
+    <div class="partial-modal" id="stageSendPartialModal">
+        <div class="partial-modal-content">
+            <h3>📦 Отправить частично</h3>
+            <p class="pm-sub">Сколько сейчас передать на следующий этап?</p>
+            <div class="partial-modal-remaining">Осталось отправить: <strong id="stageSendRemainingText">0</strong></div>
+            <label for="stageSendQtyInput">Количество</label>
+            <input type="number" id="stageSendQtyInput" min="1" placeholder="Например, 10000">
+            <label for="stageSendCommentInput">Комментарий (необязательно)</label>
+            <textarea id="stageSendCommentInput" placeholder="Например: первая партия готова"></textarea>
+            <div class="partial-modal-error" id="stageSendModalError">Проверьте введённое количество</div>
+            <div class="partial-modal-buttons">
+                <button class="btn-cancel" onclick="closeStageSendPartialModal()">Отмена</button>
+                <button class="btn-confirm" onclick="confirmStageSendPartial()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -981,8 +1007,157 @@
             const orderId = urlParams.get('id');
 
             const isWarehouseModuleEnabled = () => localStorage.getItem('pp_warehouse_mode_enabled') === 'true';
+            const isStageSendEnabled = () => localStorage.getItem('pp_stage_send_enabled') === 'true';
+            const isStageNotesEnabled = () => localStorage.getItem('pp_stage_notes_enabled') === 'true';
+
+            // ===== Роли с ограниченным видом техкарты =====
+            const currentRole = sessionStorage.getItem('profitprint_role') || '';
+            const RESTRICTED_ROLES = ['flotorezka', 'pechat'];
+            const isRestrictedRole = RESTRICTED_ROLES.includes(currentRole);
+            const ROLE_STAGE_KEY = { flotorezka: 'flotorezka', pechat: 'pechat' };
+
+            // ===== Этапы производства заказа (зависят от материала и выбранных пост-печатных услуг) =====
+            const STAGE_SERVICE_LABELS = {
+                vd_lak: 'ВД лак', lamination: 'Ламинация', embossing: 'Тиснение',
+                cutting: 'Резка', gluing: 'Склейка', uv_lak: 'УФ лак',
+                die_cut: 'Высечка', kongrev: 'Конгрев'
+            };
+            function getOrderStages(order) {
+                const stages = [];
+                if ((order.material_type || 'roll') === 'roll') {
+                    stages.push({ key: 'flotorezka', label: 'Флоторезка' });
+                }
+                stages.push({ key: 'pechat', label: 'Печать' });
+                (order.services || []).forEach(s => {
+                    if (STAGE_SERVICE_LABELS[s.name]) {
+                        stages.push({ key: s.name, label: STAGE_SERVICE_LABELS[s.name] });
+                    }
+                });
+                stages.push({ key: 'sklad', label: 'Склад' });
+                return stages;
+            }
+
+            // ===== Пооперационный учёт (Начать/Пауза/Завершить + Отправить) для Флоторезки и Печати =====
+            function ensureStageProgress(order) {
+                if (!order.stage_progress) order.stage_progress = {};
+                ['flotorezka', 'pechat'].forEach(key => {
+                    if (key === 'flotorezka' && (order.material_type || 'roll') !== 'roll') return;
+                    if (!order.stage_progress[key]) {
+                        order.stage_progress[key] = { status: 'not_started', doneQty: 0, sentQty: 0, history: [] };
+                    }
+                });
+                return order.stage_progress;
+            }
+            function getStageTotal(order, stageKey) {
+                const originalSheets = Math.ceil(order.print_sheets || 0);
+                if (stageKey === 'flotorezka') {
+                    return order.divide_by_two === true ? Math.ceil(originalSheets / 2) : originalSheets;
+                }
+                if (stageKey === 'pechat') {
+                    return Math.max(0, originalSheets - (order.make_ready || 0));
+                }
+                return 0;
+            }
+            function saveStageEvent(orderId, stageKey, type, qty, comment) {
+                let orders = loadOrders();
+                const idx = orders.findIndex(o => String(o.id) === String(orderId));
+                if (idx === -1) return null;
+                const order = orders[idx];
+                ensureStageProgress(order);
+                const sp = order.stage_progress[stageKey];
+                if (!sp) return null;
+                const total = getStageTotal(order, stageKey);
+                const dateStr = new Date().toISOString().slice(0, 10);
+
+                if (type === 'start') {
+                    sp.status = 'running';
+                } else if (type === 'pause') {
+                    // Больше не обрезаем до total — разрешаем перевыполнение плана
+                    // (подтверждение уже спрошено до вызова этой функции).
+                    sp.doneQty = (sp.doneQty || 0) + qty;
+                    sp.status = 'paused';
+                } else if (type === 'finish') {
+                    sp.doneQty = Math.max(sp.doneQty || 0, total);
+                    sp.status = 'completed';
+                } else if (type === 'send_full' || type === 'send_partial') {
+                    sp.sentQty = (sp.sentQty || 0) + qty;
+                }
+                sp.history.push({ type: type, qty: qty || 0, date: dateStr, comment: comment || '', timestamp: Date.now() });
+                orders[idx] = order;
+                saveOrders(orders);
+                return order;
+            }
+
+            // Текущий этап заказа: пока Флоторезка/Печать не отправлены полностью (sentQty < total) —
+            // это и есть текущий активный этап. После — переходим на обычный счётчик этапов
+            // (пост-печатные услуги/склад), который двигается вручную кнопкой "Готово, передать дальше".
+            function getCurrentStageInfo(order) {
+                const stages = getOrderStages(order);
+                ensureStageProgress(order);
+                let baselineIndex = 0;
+
+                if (stages[0] && stages[0].key === 'flotorezka') {
+                    const total = getStageTotal(order, 'flotorezka');
+                    const sent = (order.stage_progress.flotorezka && order.stage_progress.flotorezka.sentQty) || 0;
+                    if (sent < total) {
+                        return { stages: stages, index: 0, stage: stages[0] };
+                    }
+                    baselineIndex = 1;
+                }
+
+                const pechatIdx = stages.findIndex(s => s.key === 'pechat');
+                if (pechatIdx !== -1) {
+                    const total = getStageTotal(order, 'pechat');
+                    const sent = (order.stage_progress.pechat && order.stage_progress.pechat.sentQty) || 0;
+                    if (sent < total) {
+                        return { stages: stages, index: pechatIdx, stage: stages[pechatIdx] };
+                    }
+                    baselineIndex = pechatIdx + 1;
+                }
+
+                const idx = Math.min(Math.max(order.workflow_stage_index || 0, baselineIndex), stages.length - 1);
+                return { stages: stages, index: idx, stage: stages[idx] };
+            }
+            function getNextStageLabel(order) {
+                const { stages, index } = getCurrentStageInfo(order);
+                if (index >= stages.length - 1) return null; // уже на складе — дальше передавать некому
+                return stages[index + 1].label;
+            }
+            // Видимость заказа в очереди конкретной роли: Печать должна видеть заказ, как только
+            // Флоторезка отправила хоть что-то (не обязательно всё) — можно начинать печатать частями.
+            function isOrderRelevantForRole(order, roleKey) {
+                ensureStageProgress(order);
+                if (roleKey === 'flotorezka') {
+                    if ((order.material_type || 'roll') !== 'roll') return false;
+                    const total = getStageTotal(order, 'flotorezka');
+                    const sent = (order.stage_progress.flotorezka && order.stage_progress.flotorezka.sentQty) || 0;
+                    return sent < total;
+                }
+                if (roleKey === 'pechat') {
+                    const total = getStageTotal(order, 'pechat');
+                    const sent = (order.stage_progress.pechat && order.stage_progress.pechat.sentQty) || 0;
+                    if (sent >= total) return false;
+                    if ((order.material_type || 'roll') === 'roll') {
+                        const flotoSent = (order.stage_progress.flotorezka && order.stage_progress.flotorezka.sentQty) || 0;
+                        if (flotoSent <= 0) return false; // печать ждёт, пока флоторезка не отправит хоть что-то
+                    }
+                    return true;
+                }
+                return false;
+            }
+            function advanceOrderStage(orderId) {
+                let orders = loadOrders();
+                const idx = orders.findIndex(o => String(o.id) === String(orderId));
+                if (idx === -1) return;
+                const order = orders[idx];
+                const { stages, index } = getCurrentStageInfo(order);
+                order.workflow_stage_index = Math.min(index + 1, stages.length - 1);
+                orders[idx] = order;
+                saveOrders(orders);
+            }
 
             // ===== Хранилище =====
+
             function loadOrders() {
                 let orders = [];
                 try {
@@ -1042,7 +1217,9 @@
                 const order = orders[idx];
 
                 order.received_qty = (order.received_qty || 0) + qty;
-                if (order.received_qty > (order.order_qty || 0)) order.received_qty = order.order_qty || 0;
+                // Раньше здесь жёстко обрезали received_qty до order_qty — теперь разрешаем превышение
+                // плана (например, реально пришло больше, чем заказывали), подтверждение уже спросили
+                // до вызова этой функции. getRemaining() всё равно никогда не покажет отрицательный остаток.
                 if (!Array.isArray(order.receive_history)) order.receive_history = [];
                 order.receive_history.push({
                     qty: qty,
@@ -1096,10 +1273,17 @@
 
                 const qty = parseInt(partialQtyInput.value, 10);
                 const remaining = getRemaining(order);
-                if (!qty || qty <= 0 || qty > remaining) {
-                    partialModalError.textContent = `Введите количество от 1 до ${remaining}`;
+                if (!qty || qty <= 0) {
+                    partialModalError.textContent = 'Введите количество больше нуля';
                     partialModalError.classList.add('show');
                     return;
+                }
+                // Разрешаем превышение плана (реально пришло больше, чем заказывали) — но переспрашиваем
+                if (qty > remaining) {
+                    const over = qty - remaining;
+                    if (!confirm(`Вы вводите больше, чем осталось по плану (осталось ${remaining.toLocaleString('ru-RU')}, вы ввели ${qty.toLocaleString('ru-RU')} — превышение на ${over.toLocaleString('ru-RU')}).\n\nВсё равно продолжить?`)) {
+                        return;
+                    }
                 }
 
                 const result = registerReceive(
@@ -1125,6 +1309,20 @@
             });
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && partialModal.classList.contains('show')) closePartialModal();
+            });
+
+            const stagePauseModalEl = document.getElementById('stagePauseModal');
+            const stageSendPartialModalEl = document.getElementById('stageSendPartialModal');
+            stagePauseModalEl.addEventListener('click', function(e) {
+                if (e.target === stagePauseModalEl) window.closeStagePauseModal();
+            });
+            stageSendPartialModalEl.addEventListener('click', function(e) {
+                if (e.target === stageSendPartialModalEl) window.closeStageSendPartialModal();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key !== 'Escape') return;
+                if (stagePauseModalEl.classList.contains('show')) window.closeStagePauseModal();
+                if (stageSendPartialModalEl.classList.contains('show')) window.closeStageSendPartialModal();
             });
 
             window.sendFull = function(orderIdToSend) {
@@ -1153,10 +1351,306 @@
                     const wOrder = wOrders.find(o => String(o.id) === String(orderId));
                     if (wOrder) { renderTechCard(wOrder, true); return; }
                 } else {
-                    const allOrders = loadOrders();
+                    let allOrders = loadOrders();
+                    if (isRestrictedRole) {
+                        const myStageKey = ROLE_STAGE_KEY[currentRole];
+                        allOrders = allOrders.filter(o => isOrderRelevantForRole(o, myStageKey));
+                    }
                     window._originalOrders = allOrders.slice();
                     window.applyFilters();
                 }
+            }
+
+            // ===== Пооперационные действия: Начать / Пауза / Завершить / Отправить =====
+            const STAGE_STATUS_LABELS = { not_started: '⏳ Не начато', running: '▶️ В работе', paused: '⏸️ На паузе', completed: '✅ Завершено' };
+            const STAGE_HISTORY_LABELS = {
+                start: '▶️ Начал работу', pause: '⏸️ Сделано на паузе', finish: '✅ Отмечено завершённым',
+                send_full: '📤 Отправлено полностью', send_partial: '📤 Отправлено частично'
+            };
+
+            window.stageAction = function(orderId, stageKey, type) {
+                saveStageEvent(orderId, stageKey, type, 0, '');
+                refreshCurrentView();
+            };
+
+            window.stageFinish = function(orderId, stageKey) {
+                if (!confirm('Отметить этот этап как полностью выполненный?')) return;
+                saveStageEvent(orderId, stageKey, 'finish', 0, '');
+                refreshCurrentView();
+            };
+
+            let stagePauseTarget = null;
+            window.openStagePauseModal = function(orderId, stageKey) {
+                stagePauseTarget = { orderId: orderId, stageKey: stageKey };
+                document.getElementById('stagePauseQtyInput').value = '';
+                document.getElementById('stagePauseCommentInput').value = '';
+                document.getElementById('stagePauseModalError').classList.remove('show');
+                document.getElementById('stagePauseModal').classList.add('show');
+                setTimeout(() => document.getElementById('stagePauseQtyInput').focus(), 100);
+            };
+            window.closeStagePauseModal = function() {
+                document.getElementById('stagePauseModal').classList.remove('show');
+                stagePauseTarget = null;
+            };
+            window.confirmStagePause = function() {
+                if (!stagePauseTarget) return;
+                const qty = parseInt(document.getElementById('stagePauseQtyInput').value, 10);
+                const errorEl = document.getElementById('stagePauseModalError');
+                if (!qty || qty <= 0) {
+                    errorEl.textContent = 'Введите количество больше нуля';
+                    errorEl.classList.add('show');
+                    return;
+                }
+                const orders = loadOrders();
+                const order = orders.find(o => String(o.id) === String(stagePauseTarget.orderId));
+                if (order) {
+                    ensureStageProgress(order);
+                    const sp = order.stage_progress[stagePauseTarget.stageKey];
+                    const total = getStageTotal(order, stagePauseTarget.stageKey);
+                    const remainingToDo = Math.max(0, total - ((sp && sp.doneQty) || 0));
+                    if (qty > remainingToDo) {
+                        const over = qty - remainingToDo;
+                        if (!confirm(`Вы вводите больше, чем осталось по плану (осталось ${remainingToDo.toLocaleString('ru-RU')}, вы ввели ${qty.toLocaleString('ru-RU')} — превышение на ${over.toLocaleString('ru-RU')}).\n\nВсё равно продолжить?`)) {
+                            return;
+                        }
+                    }
+                }
+                const comment = document.getElementById('stagePauseCommentInput').value.trim();
+                saveStageEvent(stagePauseTarget.orderId, stagePauseTarget.stageKey, 'pause', qty, comment);
+                document.getElementById('stagePauseModal').classList.remove('show');
+                stagePauseTarget = null;
+                refreshCurrentView();
+            };
+
+            window.stageSendFull = function(orderId, stageKey) {
+                const orders = loadOrders();
+                const order = orders.find(o => String(o.id) === String(orderId));
+                if (!order) return;
+                ensureStageProgress(order);
+                const sp = order.stage_progress[stageKey];
+                const total = getStageTotal(order, stageKey);
+                const remaining = Math.max(0, total - ((sp && sp.sentQty) || 0));
+                if (remaining <= 0) return;
+                if (!confirm(`Отправить оставшиеся ${remaining.toLocaleString('ru-RU')} дальше?`)) return;
+                saveStageEvent(orderId, stageKey, 'send_full', remaining, '');
+                refreshCurrentView();
+            };
+
+            let stageSendPartialTarget = null;
+            window.openStageSendPartialModal = function(orderId, stageKey) {
+                const orders = loadOrders();
+                const order = orders.find(o => String(o.id) === String(orderId));
+                if (!order) return;
+                ensureStageProgress(order);
+                const sp = order.stage_progress[stageKey];
+                const total = getStageTotal(order, stageKey);
+                const remaining = Math.max(0, total - ((sp && sp.sentQty) || 0));
+                stageSendPartialTarget = { orderId: orderId, stageKey: stageKey };
+                document.getElementById('stageSendQtyInput').value = '';
+                document.getElementById('stageSendCommentInput').value = '';
+                document.getElementById('stageSendModalError').classList.remove('show');
+                document.getElementById('stageSendRemainingText').textContent = remaining.toLocaleString('ru-RU');
+                document.getElementById('stageSendPartialModal').classList.add('show');
+                setTimeout(() => document.getElementById('stageSendQtyInput').focus(), 100);
+            };
+            window.closeStageSendPartialModal = function() {
+                document.getElementById('stageSendPartialModal').classList.remove('show');
+                stageSendPartialTarget = null;
+            };
+            window.confirmStageSendPartial = function() {
+                if (!stageSendPartialTarget) return;
+                const orders = loadOrders();
+                const order = orders.find(o => String(o.id) === String(stageSendPartialTarget.orderId));
+                if (!order) return;
+                ensureStageProgress(order);
+                const sp = order.stage_progress[stageSendPartialTarget.stageKey];
+                const total = getStageTotal(order, stageSendPartialTarget.stageKey);
+                const remaining = Math.max(0, total - ((sp && sp.sentQty) || 0));
+                const qty = parseInt(document.getElementById('stageSendQtyInput').value, 10);
+                const errorEl = document.getElementById('stageSendModalError');
+                if (!qty || qty <= 0) {
+                    errorEl.textContent = 'Введите количество больше нуля';
+                    errorEl.classList.add('show');
+                    return;
+                }
+                if (qty > remaining) {
+                    const over = qty - remaining;
+                    if (!confirm(`Вы вводите больше, чем осталось отправить (осталось ${remaining.toLocaleString('ru-RU')}, вы ввели ${qty.toLocaleString('ru-RU')} — превышение на ${over.toLocaleString('ru-RU')}).\n\nВсё равно продолжить?`)) {
+                        return;
+                    }
+                }
+                const comment = document.getElementById('stageSendCommentInput').value.trim();
+                saveStageEvent(stageSendPartialTarget.orderId, stageSendPartialTarget.stageKey, 'send_partial', qty, comment);
+                document.getElementById('stageSendPartialModal').classList.remove('show');
+                stageSendPartialTarget = null;
+                refreshCurrentView();
+            };
+
+            const STAGE_EDIT_PASSWORD = '1001'; // тот же пароль, что и в Настройках
+
+            // Пересчитывает doneQty/sentQty с нуля из истории — так безопаснее, чем прибавлять/вычитать
+            // дельты вручную, риск накопить ошибку меньше.
+            function recomputeStageProgressFromHistory(sp, total) {
+                let doneQty = 0;
+                let sentQty = 0;
+                (sp.history || []).forEach(h => {
+                    if (h.type === 'pause') doneQty += (h.qty || 0);
+                    else if (h.type === 'finish') doneQty = Math.max(doneQty, total);
+                    else if (h.type === 'send_full' || h.type === 'send_partial') sentQty += (h.qty || 0);
+                });
+                sp.doneQty = doneQty;
+                sp.sentQty = sentQty;
+            }
+
+            window.editStageHistoryEntry = function(orderId, stageKey, timestamp) {
+                const enteredPassword = prompt('🔒 Введите пароль администратора, чтобы исправить запись:');
+                if (enteredPassword === null) return; // отменили
+                if (enteredPassword.trim() !== STAGE_EDIT_PASSWORD) {
+                    alert('Неверный пароль');
+                    return;
+                }
+                const orders = loadOrders();
+                const order = orders.find(o => String(o.id) === String(orderId));
+                if (!order) return;
+                ensureStageProgress(order);
+                const sp = order.stage_progress[stageKey];
+                if (!sp) return;
+                const entry = (sp.history || []).find(h => h.timestamp === timestamp);
+                if (!entry) { alert('Запись не найдена'); return; }
+
+                const newQtyRaw = prompt(`Исправить количество (сейчас: ${entry.qty})`, String(entry.qty));
+                if (newQtyRaw === null) return;
+                const newQty = parseInt(newQtyRaw, 10);
+                if (!newQty || newQty <= 0) {
+                    alert('Количество должно быть больше нуля');
+                    return;
+                }
+
+                entry.qty = newQty;
+                const total = getStageTotal(order, stageKey);
+                recomputeStageProgressFromHistory(sp, total);
+
+                let ordersFull = loadOrders();
+                const idx = ordersFull.findIndex(o => String(o.id) === String(orderId));
+                if (idx === -1) return;
+                ordersFull[idx] = order;
+                saveOrders(ordersFull);
+                refreshCurrentView();
+            };
+
+            window.saveMyNotes = function(orderId) {
+                let orders = loadOrders();
+                const idx = orders.findIndex(o => String(o.id) === String(orderId));
+                if (idx === -1) return;
+                if (!orders[idx].role_notes) orders[idx].role_notes = {};
+                orders[idx].role_notes[currentRole] = document.getElementById('myNotesInput').value;
+                saveOrders(orders);
+                alert('Заметка сохранена');
+            };
+
+            // ===== HTML-блоки: работа по этапу + предупреждение о недополученном от предыдущего этапа =====
+            function buildStageHistoryHTML(sp, orderId, stageKey) {
+                const hist = (sp && sp.history) || [];
+                if (hist.length === 0) return '<div class="stage-history-empty">История пуста</div>';
+                const EDITABLE_TYPES = ['pause', 'send_full', 'send_partial'];
+                return hist.slice().reverse().map(h => {
+                    const label = STAGE_HISTORY_LABELS[h.type] || h.type;
+                    const qtyText = h.qty ? `: ${h.qty.toLocaleString('ru-RU')}` : '';
+                    const canEdit = EDITABLE_TYPES.includes(h.type);
+                    return `
+                        <div class="stage-history-item">
+                            <span class="stage-history-label">${label}${qtyText}</span>
+                            <span class="stage-history-date">${h.date || ''}</span>
+                            ${canEdit ? `<button class="btn-edit-history" onclick="window.editStageHistoryEntry(${orderId}, '${stageKey}', ${h.timestamp})" title="Исправить (нужен пароль)">✏️</button>` : ''}
+                            ${h.comment ? `<div class="stage-history-comment">${h.comment}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function buildStageWorkSectionHTML(order, stageKey, stageLabel) {
+                ensureStageProgress(order);
+                const sp = order.stage_progress[stageKey];
+                if (!sp) return '';
+                const total = getStageTotal(order, stageKey);
+                const doneQty = sp.doneQty || 0;
+                const sentQty = sp.sentQty || 0;
+                const remainingToDo = Math.max(0, total - doneQty);
+                const remainingToSend = Math.max(0, total - sentQty);
+                const canSend = isStageSendEnabled();
+
+                // Кнопки зависят от текущего статуса — нельзя "начать" уже начатую работу,
+                // нельзя поставить на паузу то, что уже на паузе, и т.д. Это и убирает мусор в истории.
+                const isCompleted = sp.status === 'completed' || remainingToDo <= 0;
+                let actionButtonsHTML = '';
+                if (isCompleted) {
+                    actionButtonsHTML = `<div class="stage-status-done">✅ Работа полностью выполнена</div>`;
+                } else if (sp.status === 'running') {
+                    actionButtonsHTML = `
+                        <button class="btn-stage-pause" onclick="window.openStagePauseModal(${order.id}, '${stageKey}')">⏸️ Пауза</button>
+                        <button class="btn-stage-finish" onclick="window.stageFinish(${order.id}, '${stageKey}')">✅ Завершить</button>
+                    `;
+                } else if (sp.status === 'paused') {
+                    actionButtonsHTML = `
+                        <button class="btn-stage-start" onclick="window.stageAction(${order.id}, '${stageKey}', 'start')">▶️ Продолжить</button>
+                        <button class="btn-stage-finish" onclick="window.stageFinish(${order.id}, '${stageKey}')">✅ Завершить</button>
+                    `;
+                } else {
+                    // not_started
+                    actionButtonsHTML = `
+                        <button class="btn-stage-start" onclick="window.stageAction(${order.id}, '${stageKey}', 'start')">▶️ Начать</button>
+                    `;
+                }
+
+                return `
+                    <div class="section-title">Работа — ${stageLabel}</div>
+                    <div class="stage-work-box">
+                        <div class="stage-stats">
+                            <div>Статус: <strong>${STAGE_STATUS_LABELS[sp.status] || sp.status}</strong></div>
+                            <div>Тираж: <strong>${total.toLocaleString('ru-RU')}</strong></div>
+                            <div>Сделано: <strong>${doneQty.toLocaleString('ru-RU')}</strong></div>
+                            <div>Осталось сделать: <strong class="${remainingToDo > 0 ? 'stage-red' : ''}">${remainingToDo.toLocaleString('ru-RU')}</strong></div>
+                            <div>Отправлено дальше: <strong>${sentQty.toLocaleString('ru-RU')}</strong></div>
+                            <div>Осталось отправить: <strong class="${remainingToSend > 0 ? 'stage-red' : ''}">${remainingToSend.toLocaleString('ru-RU')}</strong></div>
+                        </div>
+                        <div class="stage-buttons">
+                            ${actionButtonsHTML}
+                        </div>
+                        ${canSend ? `
+                        <div class="stage-buttons">
+                            <button class="btn-stage-send-full" ${remainingToSend <= 0 ? 'disabled' : ''} onclick="window.stageSendFull(${order.id}, '${stageKey}')">✅ Отправить полностью</button>
+                            <button class="btn-stage-send-partial" ${remainingToSend <= 0 ? 'disabled' : ''} onclick="window.openStageSendPartialModal(${order.id}, '${stageKey}')">📦 Отправить частично</button>
+                        </div>
+                        ` : ''}
+                        <div class="stage-history-title">История</div>
+                        <div class="stage-history-list">${buildStageHistoryHTML(sp, order.id, stageKey)}</div>
+                    </div>
+                `;
+            }
+
+            // Предупреждение над секцией "Печать": сколько уже передала Флоторезка и сколько ещё должна.
+            function buildUpstreamNoteHTML(order) {
+                if ((order.material_type || 'roll') !== 'roll') return '';
+                ensureStageProgress(order);
+                const sp = order.stage_progress.flotorezka;
+                if (!sp) return '';
+                const total = getStageTotal(order, 'flotorezka');
+                const sent = sp.sentQty || 0;
+                const remaining = Math.max(0, total - sent);
+                if (remaining <= 0) {
+                    return `<div class="upstream-note upstream-ok">✔️ Флоторезка передала всё: ${sent.toLocaleString('ru-RU')}</div>`;
+                }
+                return `<div class="upstream-note upstream-pending">Пришло от Флоторезки: <strong>${sent.toLocaleString('ru-RU')}</strong> — ещё осталось у Флоторезки: <strong class="stage-red">${remaining.toLocaleString('ru-RU')}</strong></div>`;
+            }
+
+            function buildMyNotesSectionHTML(order) {
+                if (!isRestrictedRole || !isStageNotesEnabled()) return '';
+                const existing = (order.role_notes && order.role_notes[currentRole]) || '';
+                return `
+                    <div class="section-title">Мои заметки</div>
+                    <textarea id="myNotesInput" class="my-notes-textarea" placeholder="Свои заметки по этому заказу (видны только вам)">${existing}</textarea>
+                    <button class="btn-save-notes" onclick="window.saveMyNotes(${order.id})">💾 Сохранить заметку</button>
+                `;
             }
 
             function renderTechCard(order, isWarehouseOrder) {
@@ -1175,7 +1669,7 @@
                     sendFullBtn.style.display = 'none';
                     sendPartialBtn.style.display = 'none';
                     warehouseBadge.style.display = 'inline-flex';
-                } else if (isWarehouseModuleEnabled() && remaining > 0) {
+                } else if (!isRestrictedRole && isWarehouseModuleEnabled() && remaining > 0) {
                     sendFullBtn.style.display = 'inline-flex';
                     sendPartialBtn.style.display = 'inline-flex';
                     warehouseBadge.style.display = 'none';
@@ -1392,46 +1886,20 @@
                         // подгружаем асинхронно чуть ниже (см. loadScreenshotAsync).
                         const immediateSrc = order.screenshot_base64 || '';
                         filesHTML += `
-                            <div class="screenshot-with-lines" id="screenshotLinesBlock">
-                                <div class="screenshot-side">
-                                    <div class="screenshot-container">
-                                        <img id="techScreenshotImg" src="${immediateSrc}" alt="" class="screenshot-img" onclick="event.stopPropagation(); document.getElementById('screenshotModal').classList.add('visible'); document.getElementById('modalImage').src=this.src;">
-                                    </div>
-                                </div>
-                                <div class="lines-side" id="linesSide">
-                                    <div class="comment-line"></div>
-                                    <div class="comment-line"></div>
-                                    <div class="comment-line"></div>
-                                    <div class="comment-line"></div>
-                                    <div class="comment-line"></div>
-                                    <div class="comment-line"></div>
-                                </div>
+                            <div class="screenshot-full-block" id="screenshotLinesBlock">
+                                <img id="techScreenshotImg" src="${immediateSrc}" alt="" class="screenshot-img-full" onclick="event.stopPropagation(); document.getElementById('screenshotModal').classList.add('visible'); document.getElementById('modalImage').src=this.src;">
                             </div>
                         `;
                     }
                 }
 
                 // 8. Собираем итоговый HTML
-                let html = `
-                    <div class="tech-card-container">
-                        <a href="texKarta.html" class="back-link">← Назад к списку</a>
-                        <div class="tech-card" id="techCardContent">
-                            <div class="tech-card-header-row">
-                                <h2>Технологическая карта</h2>
-                                <div class="tech-card-number">№ ${techcardNoFormatted}</div>
-                            </div>
-                            <div class="order-meta">
-                                <div class="meta-row">
-                                    <p><span class="label">Заказчик</span> <span class="value">${order.customer || ''}</span></p>
-                                    <p><span class="label">Название продукции</span> <span class="value">${order.product_name || ''}</span></p>
-                                    <p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>
-                                    ${receiveProgressHTML}
-                                </div>
-                                <div class="desc-row">
-                                    <span class="desc-label label">Примечание</span>
-                                    <span class="desc-value value">${order.description || ''}</span>
-                                </div>
-                            </div>
+                // Ограниченный вид для ролей "flotorezka"/"pechat": без общего количества продукции,
+                // и только своя секция (материал либо печать), плюс файлы/скриншот — как договорились.
+                const qtyLineHTML = isRestrictedRole ? '' : `<p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>`;
+
+                const showMaterialSection = !isRestrictedRole || (currentRole === 'flotorezka' && materialType === 'roll');
+                const materialSectionHTML = showMaterialSection ? `
                             <div class="section-title" style="margin: 24px 0 10px 0;">
                                 ${materialLabel}
                             </div>
@@ -1445,6 +1913,10 @@
                                     </tr></tbody>
                                 </table>
                             </div>
+                ` : '';
+
+                const showPrintSection = !isRestrictedRole || currentRole === 'pechat';
+                const printSectionHTML = showPrintSection ? `
                             <div class="section-title">${printLabel}</div>
                             <div class="table-responsive">
                                 <table>
@@ -1466,7 +1938,50 @@
                                     </tbody>
                                 </table>
                             </div>
-                            ${techOpHTML}
+                ` : '';
+
+                const techOpSectionHTML = isRestrictedRole ? '' : techOpHTML;
+
+                // Пооперационный учёт: показываем секцию "Работа" для флоторезки/печати —
+                // и в ограниченном виде своей роли, и в полном виде (для контроля менеджером/дизайнером).
+                const flotorezkaWorkHTML = (currentRole === 'flotorezka' && materialType === 'roll')
+                    ? buildStageWorkSectionHTML(order, 'flotorezka', 'Флоторезка')
+                    : '';
+                const upstreamNoteHTML = (currentRole === 'pechat')
+                    ? buildUpstreamNoteHTML(order)
+                    : '';
+                const pechatWorkHTML = (currentRole === 'pechat')
+                    ? buildStageWorkSectionHTML(order, 'pechat', 'Печать')
+                    : '';
+                const myNotesSectionHTML = buildMyNotesSectionHTML(order);
+
+                let html = `
+                    <div class="tech-card-container">
+                        <a href="texKarta.html" class="back-link">← Назад к списку</a>
+                        <div class="tech-card" id="techCardContent">
+                            <div class="tech-card-header-row">
+                                <h2>Технологическая карта</h2>
+                                <div class="tech-card-number">№ ${techcardNoFormatted}</div>
+                            </div>
+                            <div class="order-meta">
+                                <div class="meta-row">
+                                    <p><span class="label">Заказчик</span> <span class="value">${order.customer || ''}</span></p>
+                                    <p><span class="label">Название продукции</span> <span class="value">${order.product_name || ''}</span></p>
+                                    ${qtyLineHTML}
+                                    ${isRestrictedRole ? '' : receiveProgressHTML}
+                                </div>
+                                <div class="desc-row">
+                                    <span class="desc-label label">Примечание</span>
+                                    <span class="desc-value value">${order.description || ''}</span>
+                                </div>
+                            </div>
+                            ${materialSectionHTML}
+                            ${flotorezkaWorkHTML}
+                            ${upstreamNoteHTML}
+                            ${printSectionHTML}
+                            ${pechatWorkHTML}
+                            ${techOpSectionHTML}
+                            ${myNotesSectionHTML}
                             ${filesHTML}
                         </div>
                     </div>
@@ -1487,28 +2002,6 @@
                         console.error('Не удалось загрузить скриншот из IndexedDB:', err);
                     });
                 }
-
-                setTimeout(() => {
-                    const img = document.getElementById('techScreenshotImg');
-                    const linesSide = document.getElementById('linesSide');
-                    if (img && linesSide) {
-                        const syncHeight = () => {
-                            const imgHeight = img.offsetHeight;
-                            if (imgHeight > 0) {
-                                linesSide.style.height = imgHeight + 'px';
-                                linesSide.style.minHeight = imgHeight + 'px';
-                            }
-                        };
-
-                        if (img.complete) {
-                            syncHeight();
-                        } else {
-                            img.onload = syncHeight;
-                        }
-
-                        window.addEventListener('resize', syncHeight);
-                    }
-                }, 100);
 
                 downloadPdfBtn.onclick = function() {
                     const element = document.getElementById('techCardContent');
@@ -1559,7 +2052,11 @@
                 return;
             }
 
-            const allOrders = loadOrders();
+            let allOrders = loadOrders();
+            if (isRestrictedRole) {
+                const myStageKey = ROLE_STAGE_KEY[currentRole];
+                allOrders = allOrders.filter(o => isOrderRelevantForRole(o, myStageKey));
+            }
             window._originalOrders = allOrders.slice();
 
             function renderList(orders) {
@@ -1590,9 +2087,41 @@
 
                 function sendButtons(o) {
                     if (!warehouseEnabled) return '';
+                    // Приём ГОТОВОЙ ПРОДУКЦИИ на склад (в штуках, "Кол-во продукции") имеет смысл только
+                    // когда заказ уже прошёл ВСЕ производственные этапы (Флоторезка/Печать/Пост-печать)
+                    // и реально находится на этапе "Склад". Раньше эти кнопки показывались всегда,
+                    // из-за чего они путались с учётом по этапам (тираж, другая цифра, другой смысл).
+                    if (getCurrentStageInfo(o).stage.key !== 'sklad') return '';
                     return `
                         <button class="btn-send-full" onclick="event.stopPropagation(); window.sendFull(${o.id}); return false;">✅ Полностью</button>
                         <button class="btn-send-partial" onclick="event.stopPropagation(); window.openPartialModal(${o.id}); return false;">📦 Частично</button>
+                    `;
+                }
+
+                function nextStageBlock(o) {
+                    const { stage } = getCurrentStageInfo(o);
+                    if (stage.key === 'flotorezka' || stage.key === 'pechat') {
+                        const total = getStageTotal(o, stage.key);
+                        ensureStageProgress(o);
+                        const sp = (o.stage_progress && o.stage_progress[stage.key]) || { sentQty: 0 };
+                        const sent = sp.sentQty || 0;
+                        const remaining = Math.max(0, total - sent);
+                        return `
+                            <div class="next-stage-block">
+                                <span class="next-stage-label">Сейчас: <strong>${stage.label}</strong></span>
+                                <span class="next-stage-label">Отправлено: <strong>${sent.toLocaleString('ru-RU')}</strong> / Осталось: <strong class="${remaining > 0 ? 'stage-red' : ''}">${remaining.toLocaleString('ru-RU')}</strong></span>
+                            </div>
+                        `;
+                    }
+                    const nextLabel = getNextStageLabel(o);
+                    if (!nextLabel) {
+                        return `<div class="next-stage-block"><span class="next-stage-done">✔️ Готово — на складе</span></div>`;
+                    }
+                    return `
+                        <div class="next-stage-block">
+                            <span class="next-stage-label">После: <strong>${nextLabel}</strong></span>
+                            <button class="btn-advance-stage" onclick="event.stopPropagation(); window.advanceStageAndRefresh(${o.id}); return false;">✅ Готово, передать дальше</button>
+                        </div>
                     `;
                 }
 
@@ -1607,6 +2136,7 @@
                             <td>${o.manager || ''}</td>
                             <td>${(o.order_qty || 0).toLocaleString('ru-RU')}${progressBlock(o)}</td>
                             <td>${Math.ceil(o.print_sheets || 0).toLocaleString('ru-RU')}</td>
+                            <td>${nextStageBlock(o)}</td>
                             <td>
                                 <div class="actions-cell-list">
                                     <a href="texKarta.html?id=${o.id}" class="btn-link" onclick="event.stopPropagation()">Открыть</a>
@@ -1620,7 +2150,7 @@
                     <div class="table-responsive">
                         <table>
                             <thead>
-                                <tr><th>№ техкарты</th><th>Заказчик</th><th>Продукция</th><th>Менеджер</th><th>Кол-во</th><th>Тираж</th><th>Действие</th></tr>
+                                <tr><th>№ техкарты</th><th>Заказчик</th><th>Продукция</th><th>Менеджер</th><th>Кол-во</th><th>Тираж</th><th>После</th><th>Действие</th></tr>
                             </thead>
                             <tbody>${tableRows}</tbody>
                         </table>
@@ -1658,6 +2188,7 @@
                                 </div>
                                 ${progressBlock(o)}
                             </div>
+                            ${nextStageBlock(o)}
                             <div class="tech-card-actions">
                                 <a href="texKarta.html?id=${o.id}" class="btn-link" onclick="event.stopPropagation()">📄 Открыть</a>
                                 ${sendButtons(o)}
@@ -1667,6 +2198,17 @@
                 }).join('');
                 cardsContainer.innerHTML = cardsHTML;
             }
+
+            window.advanceStageAndRefresh = function(orderId) {
+                advanceOrderStage(orderId);
+                let orders = loadOrders();
+                if (isRestrictedRole) {
+                    const myStageKey = ROLE_STAGE_KEY[currentRole];
+                    orders = orders.filter(o => isOrderRelevantForRole(o, myStageKey));
+                }
+                window._originalOrders = orders.slice();
+                window.applyFilters();
+            };
 
             window.applyFilters = function() {
                 const searchVal = document.getElementById('searchInput')?.value.toLowerCase().trim() || '';

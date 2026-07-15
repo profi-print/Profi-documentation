@@ -143,16 +143,20 @@
     // ========== АККАУНТЫ ==========
     // Сюда позже добавятся: печатник, флоторезка, склейка и т.д.
     const ACCOUNTS = [
-        { login: 'Bekzod', password: '0505',     role: 'manager'   },
-        { login: 'Diyor',  password: 'diyorbek', role: 'designer'  },
-        { login: 'Sklad',  password: '123',      role: 'warehouse' }
+        { login: 'Bekzod', password: '0505',     role: 'manager'    },
+        { login: 'Diyor',  password: 'diyorbek', role: 'designer'   },
+        { login: 'Sklad',  password: '123',      role: 'warehouse' },
+        { login: 'Flotorezka', password: '1234', role: 'flotorezka' },
+        { login: 'Pechat',     password: '1234', role: 'pechat'     }
     ];
 
     // Единая карта "роль -> куда вести после логина"
     const ROLE_REDIRECT = {
         manager:   'index.html',
         designer:  'index2.html',
-        warehouse: 'sklad.html'
+        warehouse: 'sklad.html',
+        flotorezka: 'texKarta.html',
+        pechat:     'texKarta.html'
     };
 
     const loginInput = document.getElementById('loginInput');

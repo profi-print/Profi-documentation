@@ -17,6 +17,14 @@
     warehouse: {
         allowed: ['sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html', 'settings.html'],
         defaultRedirect: 'sklad.html'
+    },
+    flotorezka: {
+        allowed: ['texkarta.html'],
+        defaultRedirect: 'texkarta.html'
+    },
+    pechat: {
+        allowed: ['texkarta.html'],
+        defaultRedirect: 'texkarta.html'
     }
   };
 
