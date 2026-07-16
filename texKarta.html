@@ -1011,28 +1011,27 @@
             const isStageNotesEnabled = () => (window.PPSettings ? PPSettings.get('pp_stage_notes_enabled') : localStorage.getItem('pp_stage_notes_enabled') === 'true');
 
             // ===== Роли с ограниченным видом техкарты =====
-            const currentRole = sessionStorage.getItem('profitprint_role') || '';
-            const ROLE_STATION_CONFIG = {
-                flotorezka: { type: 'material', label: 'Флоторезка' },
-                pechat:     { type: 'print',    label: 'Печать' },
-                vysechka:   { type: 'service',  label: 'Высечка',  serviceKeys: ['die_cut'] },
-                tisnenie:   { type: 'service',  label: 'Тиснение', serviceKeys: ['embossing'] },
-                rezka:      { type: 'service',  label: 'Резка',    serviceKeys: ['cutting_pre', 'cutting_post'] },
-                skleyka:    { type: 'service',  label: 'Склейка',  serviceKeys: ['gluing'] },
-                lak:        { type: 'service',  label: 'Лак',      serviceKeys: ['vd_lak', 'uv_lak'] },
-                ctp:        { type: 'overview', label: 'СТП' },
-                archish:    { type: 'overview', label: 'Арчиш' },
-                sklad_otgruzka: { type: 'sklad', label: 'Склад / отгрузка' }
-            };
+           const currentRole = sessionStorage.getItem('profitprint_role') || '';
+const ROLE_STATION_CONFIG = {
+    flotorezka: { type: 'material', label: 'Флоторезка' },
+    pechat:     { type: 'print',    label: 'Печать' },
+    vysechka:   { type: 'service',  label: 'Высечка',  serviceKeys: ['die_cut'] },
+    tisnenie:   { type: 'service',  label: 'Тиснение', serviceKeys: ['embossing'] },
+    rezka:      { type: 'service',  label: 'Резка',    serviceKeys: ['cutting_pre', 'cutting_post'] },
+    skleyka:    { type: 'service',  label: 'Склейка',  serviceKeys: ['gluing'] },
+    lak:        { type: 'service',  label: 'Лак',      serviceKeys: ['vd_lak', 'uv_lak'] },
+    stp:        { type: 'overview', label: 'СТП' },
+    archish:    { type: 'overview', label: 'Арчиш' },
+    sklad_otgruzka: { type: 'sklad', label: 'Склад / отгрузка' }
+};
             const STATION_SERVICE_LABELS = {
                 die_cut: 'Высечка', embossing: 'Тиснение', gluing: 'Склейка',
                 cutting_pre: 'Резка до печати', cutting_post: 'Резка пост печати',
                 vd_lak: 'ВД Лак', uv_lak: 'УФ Лак'
             };
-            const stationConfig = ROLE_STATION_CONFIG[currentRole] || null;
-            const isRestrictedRole = !!stationConfig;
-            const ROLE_STAGE_KEY = { flotorezka: 'flotorezka', pechat: 'pechat' };
-
+         const stationConfig = ROLE_STATION_CONFIG[currentRole] || null;
+const isRestrictedRole = stationConfig ? stationConfig.type !== 'overview' : false;
+const ROLE_STAGE_KEY = { flotorezka: 'flotorezka', pechat: 'pechat' };
             // ===== Этапы производства заказа (зависят от материала и выбранных пост-печатных услуг) =====
             const STAGE_SERVICE_LABELS_LEGACY = {
                 vd_lak: 'ВД лак', lamination: 'Ламинация', embossing: 'Тиснение',
