@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Локальная база данных MongoDB
   mongodb:
     image: mongo:6.0
     container_name: profitprint-mongodb
@@ -9,10 +8,8 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      # Все данные базы будут надежно лежать в этой папке на твоем ПК
       - ./mongodb_data:/data/db
 
-  # Твой бэкенд + фронтенд
   profitprint-app:
     build:
       context: .
@@ -20,12 +17,16 @@ services:
     container_name: profitprint-app
     restart: unless-stopped
     ports:
-      # Пробрасываем порт 8080 твоего ПК на внутренний порт сервера 3000
-      - "8080:3000"
+      - "8090:3000"
     environment:
       - PORT=3000
-      # Указываем серверу адрес базы данных внутри сети Docker
       - MONGODB_URI=mongodb://mongodb:27017/profitprint
+    volumes:
+      # Техкарты и PDF заказов сохраняются в ОДНУ общую папку на диске D:
+      - "D:/rabota/printmax_storage/Техкарты_и_Заказы_PDF:/app/server/uploads/pdf"
+      - "D:/rabota/printmax_storage/Техкарты_и_Заказы_PDF:/app/server/uploads/tech_cards"
+      
+      # Складские документы сохраняются в другую отдельную папку
+      - "D:/rabota/printmax_storage/Документы_Склада:/app/server/uploads/sklad"
     depends_on:
       - mongodb
-      

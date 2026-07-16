@@ -5,33 +5,40 @@
 
   const currentPage = window.location.pathname.split('/').pop().toLowerCase();
 
+  // Все производственные станции имеют одинаковый доступ: техкарта + свои настройки.
+  const stationRule = { allowed: ['texkarta.html', 'settings.html'], defaultRedirect: 'texkarta.html' };
+
   const ACCESS = {
     manager: {
         forbidden: ['otpcex.html', 'texkarta.html', 'statuses.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'],
         defaultRedirect: 'index.html'
     },
     designer: {
-        allowed: ['index2.html', 'clients.html', 'otpCex.html', 'texKarta.html', 'statuses.html', 'settings.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'],
+        allowed: ['index2.html', 'clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html', 'settings.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'],
         defaultRedirect: 'index2.html'
     },
     warehouse: {
         allowed: ['sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html', 'settings.html'],
         defaultRedirect: 'sklad.html'
     },
-    flotorezka: {
-        allowed: ['texkarta.html'],
-        defaultRedirect: 'texkarta.html'
-    },
-    pechat: {
-        allowed: ['texkarta.html'],
-        defaultRedirect: 'texkarta.html'
-    }
+
+    // ===== Производственные станции =====
+    flotorezka:     stationRule,
+    pechat:         stationRule,
+    vysechka:       stationRule,
+    tisnenie:       stationRule,
+    rezka:          stationRule,
+    skleyka:        stationRule,
+    stp:            stationRule,
+    lak:            stationRule,
+    archish:        stationRule,
+    sklad_otgruzka: stationRule
   };
 
   const rules = ACCESS[role];
   if (!rules) { sessionStorage.clear(); window.location.href = 'login.html'; return; }
 
-  // Сравниваем без учёта регистра, чтобы 'otpCex.html' в правилах совпадал с 'otpcex.html' из URL
+  // Сравниваем без учёта регистра, чтобы 'texKarta.html' в правилах совпадал с 'texkarta.html' из URL
   const forbidden = (rules.forbidden || []).map(p => p.toLowerCase());
   const allowed = rules.allowed ? rules.allowed.map(p => p.toLowerCase()) : null;
 

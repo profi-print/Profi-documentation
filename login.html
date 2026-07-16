@@ -141,22 +141,39 @@
     })();
 
     // ========== АККАУНТЫ ==========
-    // Сюда позже добавятся: печатник, флоторезка, склейка и т.д.
     const ACCOUNTS = [
-        { login: 'Bekzod', password: '0505',     role: 'manager'    },
-        { login: 'Diyor',  password: 'diyorbek', role: 'designer'   },
-        { login: 'Sklad',  password: '123',      role: 'warehouse' },
-        { login: 'Flotorezka', password: '1234', role: 'flotorezka' },
-        { login: 'Pechat',     password: '1234', role: 'pechat'     }
+        // --- Существующие ---
+        { login: 'Bekzod',     password: '0505',     role: 'manager'    },
+        { login: 'Diyor',      password: 'diyorbek', role: 'designer'   },
+        { login: 'Sklad',      password: '123',      role: 'warehouse'  },
+        { login: 'Flotorezka', password: '1234',     role: 'flotorezka' },
+        { login: 'Pechat',     password: '1234',     role: 'pechat'     },
+        // --- Новые производственные станции (пароли можно поменять) ---
+        { login: 'Vysechka',   password: '1234',     role: 'vysechka'       },
+        { login: 'Tisnenie',   password: '1234',     role: 'tisnenie'       },
+        { login: 'Rezka',      password: '1234',     role: 'rezka'          },
+        { login: 'Skleyka',    password: '1234',     role: 'skleyka'        },
+        { login: 'CTP',        password: '1234',     role: 'ctp'            },
+        { login: 'Lak',        password: '1234',     role: 'lak'            },
+        { login: 'Archish',    password: '1234',     role: 'archish'        },
+        { login: 'Otgruzka',   password: '1234',     role: 'sklad_otgruzka' }
     ];
 
     // Единая карта "роль -> куда вести после логина"
     const ROLE_REDIRECT = {
-        manager:   'index.html',
-        designer:  'index2.html',
-        warehouse: 'sklad.html',
+        manager:    'index.html',
+        designer:   'index2.html',
+        warehouse:  'sklad.html',
         flotorezka: 'texKarta.html',
-        pechat:     'texKarta.html'
+        pechat:     'texKarta.html',
+        vysechka:   'texKarta.html',
+        tisnenie:   'texKarta.html',
+        rezka:      'texKarta.html',
+        skleyka:    'texKarta.html',
+        ctp:        'texKarta.html',
+        lak:        'texKarta.html',
+        archish:    'texKarta.html',
+        sklad_otgruzka: 'texKarta.html'
     };
 
     const loginInput = document.getElementById('loginInput');

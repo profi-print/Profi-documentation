@@ -126,6 +126,16 @@
             font-weight: 700;
         }
 
+        .account-note {
+            margin: -18px 0 24px;
+            padding: 10px 14px;
+            background: rgba(37,99,235,0.08);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .account-note strong { color: var(--text-primary); }
+
         .settings-card {
             background: var(--bg-white);
             border: 1px solid var(--border-color);
@@ -390,6 +400,9 @@
                 <div class="settings-header">
                     <h1>Настройки</h1>
                 </div>
+                <div class="account-note">
+                    Настройки этого аккаунта: <strong id="accountNoteName"></strong>
+                </div>
 
                 <div class="settings-card">
                     <div class="setting-item">
@@ -438,7 +451,7 @@
                         <div class="setting-info">
                             <div class="setting-title">Личные заметки в техкарте</div>
                             <div class="setting-description">
-                                Разрешает ролям Флоторезка и Печать писать и сохранять свои личные заметки прямо в техкарте (видны только им самим)
+                                Разрешает станциям писать и сохранять свои личные заметки прямо в техкарте (видны только им самим)
                             </div>
                             <span class="status-badge disabled" id="stageNotesStatusBadge">Выключено</span>
                         </div>
@@ -465,6 +478,7 @@
         </div>
     </div>
 
+    <script src="js/role-settings.js"></script>
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
@@ -478,7 +492,8 @@
 
         const ADMIN_PASSWORD = '1001';
 
-        // Конфигурация всех тумблеров: id элементов, localStorage-ключ, id бейджа статуса
+        // Конфигурация всех тумблеров: id элементов, базовый ключ настройки, id бейджа статуса.
+        // Реальные значения сохраняются по аккаунту через PPSettings (ключ + "::<роль>").
         const TOGGLES = {
             edit:       { toggleId: 'editModeToggle',       badgeId: 'editStatusBadge',       key: 'pp_edit_mode_enabled' },
             warehouse:  { toggleId: 'warehouseModeToggle',  badgeId: 'warehouseStatusBadge',  key: 'pp_warehouse_mode_enabled' },
@@ -510,7 +525,7 @@
         function loadState() {
             Object.keys(TOGGLES).forEach(name => {
                 const cfg = TOGGLES[name];
-                const isEnabled = localStorage.getItem(cfg.key) === 'true';
+                const isEnabled = PPSettings.get(cfg.key);
                 cfg.toggleEl.checked = isEnabled;
                 updateBadge(cfg, isEnabled);
             });
@@ -523,7 +538,7 @@
                     currentToggle = name;
                     openPasswordModal();
                 } else {
-                    localStorage.setItem(cfg.key, 'false');
+                    PPSettings.set(cfg.key, false);
                     updateBadge(cfg, false);
                 }
             });
@@ -540,7 +555,7 @@
             passwordModal.classList.remove('show');
             if (currentToggle && TOGGLES[currentToggle]) {
                 const cfg = TOGGLES[currentToggle];
-                cfg.toggleEl.checked = localStorage.getItem(cfg.key) === 'true';
+                cfg.toggleEl.checked = PPSettings.get(cfg.key);
             }
             currentToggle = null;
         }
@@ -551,7 +566,7 @@
             if (enteredPassword === ADMIN_PASSWORD) {
                 if (currentToggle && TOGGLES[currentToggle]) {
                     const cfg = TOGGLES[currentToggle];
-                    localStorage.setItem(cfg.key, 'true');
+                    PPSettings.set(cfg.key, true);
                     updateBadge(cfg, true);
                 }
                 closePasswordModal();
@@ -582,6 +597,10 @@
         });
 
         loadState();
+        (function(){
+            const el = document.getElementById('accountNoteName');
+            if (el) el.textContent = (sessionStorage.getItem('profitprint_user') || '—') + ' (' + (sessionStorage.getItem('profitprint_role') || '—') + ')';
+        })();
     </script>
     <script src="js/screenshot-store.js"></script>
     <script src="js/auth-check.js"></script>

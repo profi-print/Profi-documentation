@@ -4,55 +4,85 @@
 
     const menuItems = document.querySelectorAll('.nav-menu li a, .sidebar a');
 
-    // Все списки приводим к нижнему регистру заранее, чтобы сравнение не зависело
-    // от того, с какими буквами (otpCex.html / otpcex.html) написан href в разметке.
+    // Все списки — в нижнем регистре, чтобы сравнение не зависело от написания href
+    // (otpCex.html / otpcex.html, texKarta.html / texkarta.html).
     const forbiddenForManager = ['otpcex.html', 'texkarta.html', 'index2.html', 'statuses.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'];
-    const allowedForDesigner = ['clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html', 'index2.html', 'settings.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'];
+    const allowedForDesigner  = ['clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html', 'index2.html', 'settings.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'];
     const allowedForWarehouse = ['sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html', 'settings.html'];
-    const allowedForFlotorezka = ['texkarta.html'];
-    const allowedForPechat = ['texkarta.html'];
+
+    // Производственные станции видят в меню только техкарту и свои настройки.
+    const STATION_ROLES = ['flotorezka', 'pechat', 'vysechka', 'tisnenie', 'rezka', 'skleyka', 'stp', 'lak', 'archish', 'sklad_otgruzka'];
+    const allowedForStation = ['texkarta.html', 'settings.html'];
+
+    function allowedListFor(r) {
+        if (r === 'designer')  return allowedForDesigner;
+        if (r === 'warehouse') return allowedForWarehouse;
+        if (STATION_ROLES.includes(r)) return allowedForStation;
+        return null; // manager обрабатывается через forbidden ниже
+    }
+
+    const allowed = allowedListFor(role);
 
     menuItems.forEach(link => {
         const href = link.getAttribute('href');
         if (!href) return;
-        // Стрелочка-переключатель подменю "Склад" (href="#") видимостью управляется
-        // отдельно ниже (по группе), а не как обычная ссылка на страницу.
+        // Стрелка-переключатель подменю "Склад" (href="#") — управляется отдельно ниже.
         if (href === '#') return;
         const page = href.split('?')[0].split('/').pop().toLowerCase();
 
+        let hide = false;
         if (role === 'manager') {
-            if (forbiddenForManager.includes(page)) {
-                link.closest('li')?.style.setProperty('display', 'none', 'important');
-                link.style.display = 'none';
-            }
-        } else if (role === 'designer') {
-            if (!allowedForDesigner.includes(page)) {
-                link.closest('li')?.style.setProperty('display', 'none', 'important');
-                link.style.display = 'none';
-            }
-        } else if (role === 'warehouse') {
-            if (!allowedForWarehouse.includes(page)) {
-                link.closest('li')?.style.setProperty('display', 'none', 'important');
-                link.style.display = 'none';
-            }
-        } else if (role === 'flotorezka') {
-            if (!allowedForFlotorezka.includes(page)) {
-                link.closest('li')?.style.setProperty('display', 'none', 'important');
-                link.style.display = 'none';
-            }
-        } else if (role === 'pechat') {
-            if (!allowedForPechat.includes(page)) {
-                link.closest('li')?.style.setProperty('display', 'none', 'important');
-                link.style.display = 'none';
-            }
+            hide = forbiddenForManager.includes(page);
+        } else if (allowed) {
+            hide = !allowed.includes(page);
+        }
+
+        if (hide) {
+            link.closest('li')?.style.setProperty('display', 'none', 'important');
+            link.style.display = 'none';
         }
     });
 
-    // Группа "Склад" (аккордеон) в общем синем сайдбаре — видна только Диёру (designer).
-    // Менеджеру скрываем целиком (все страницы склада ему и так запрещены индивидуально,
-    // но без этой строчки родительский пункт "Склад" остался бы висеть пустым).
+    // Группа "Склад" (аккордеон) — видна только дизайнеру.
     const skladGroup = document.getElementById('skladNavGroup');
     if (skladGroup && role !== 'designer') {
         skladGroup.style.setProperty('display', 'none', 'important');
+    }
+
+    // ===== Кнопка "Выйти" — добавляется автоматически в меню на всех страницах =====
+    function injectLogout() {
+        const menu = document.querySelector('.nav-menu');
+        if (!menu || document.getElementById('ppLogoutItem')) return;
+
+        // Имя текущего аккаунта — маленькой подписью над кнопкой выхода
+        const user = sessionStorage.getItem('profitprint_user') || '';
+        const infoLi = document.createElement('li');
+        infoLi.id = 'ppAccountInfo';
+        infoLi.style.cssText = 'margin-top:12px;padding:8px 14px;color:rgba(255,255,255,0.6);font-size:12px;border-top:1px solid rgba(255,255,255,0.12);';
+        infoLi.textContent = 'Аккаунт: ' + user;
+        menu.appendChild(infoLi);
+
+        const li = document.createElement('li');
+        li.id = 'ppLogoutItem';
+        const a = document.createElement('a');
+        a.href = '#';
+        a.id = 'ppLogout';
+        a.textContent = '🚪 Выйти';
+        a.style.color = '#fecaca';
+        a.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Выйти из аккаунта?')) {
+                try { sessionStorage.clear(); } catch (_) {}
+                window.location.href = 'login.html';
+            }
+        });
+        li.appendChild(a);
+        menu.appendChild(li);
+    }
+
+    if (document.querySelector('.nav-menu')) {
+        injectLogout();
+    } else {
+        document.addEventListener('DOMContentLoaded', injectLogout);
     }
 })();

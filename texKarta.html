@@ -1006,18 +1006,35 @@
             const urlParams = new URLSearchParams(window.location.search);
             const orderId = urlParams.get('id');
 
-            const isWarehouseModuleEnabled = () => localStorage.getItem('pp_warehouse_mode_enabled') === 'true';
-            const isStageSendEnabled = () => localStorage.getItem('pp_stage_send_enabled') === 'true';
-            const isStageNotesEnabled = () => localStorage.getItem('pp_stage_notes_enabled') === 'true';
+            const isWarehouseModuleEnabled = () => (window.PPSettings ? PPSettings.get('pp_warehouse_mode_enabled') : localStorage.getItem('pp_warehouse_mode_enabled') === 'true');
+            const isStageSendEnabled = () => (window.PPSettings ? PPSettings.get('pp_stage_send_enabled') : localStorage.getItem('pp_stage_send_enabled') === 'true');
+            const isStageNotesEnabled = () => (window.PPSettings ? PPSettings.get('pp_stage_notes_enabled') : localStorage.getItem('pp_stage_notes_enabled') === 'true');
 
             // ===== Роли с ограниченным видом техкарты =====
             const currentRole = sessionStorage.getItem('profitprint_role') || '';
-            const RESTRICTED_ROLES = ['flotorezka', 'pechat'];
-            const isRestrictedRole = RESTRICTED_ROLES.includes(currentRole);
+            const ROLE_STATION_CONFIG = {
+                flotorezka: { type: 'material', label: 'Флоторезка' },
+                pechat:     { type: 'print',    label: 'Печать' },
+                vysechka:   { type: 'service',  label: 'Высечка',  serviceKeys: ['die_cut'] },
+                tisnenie:   { type: 'service',  label: 'Тиснение', serviceKeys: ['embossing'] },
+                rezka:      { type: 'service',  label: 'Резка',    serviceKeys: ['cutting_pre', 'cutting_post'] },
+                skleyka:    { type: 'service',  label: 'Склейка',  serviceKeys: ['gluing'] },
+                lak:        { type: 'service',  label: 'Лак',      serviceKeys: ['vd_lak', 'uv_lak'] },
+                ctp:        { type: 'overview', label: 'СТП' },
+                archish:    { type: 'overview', label: 'Арчиш' },
+                sklad_otgruzka: { type: 'sklad', label: 'Склад / отгрузка' }
+            };
+            const STATION_SERVICE_LABELS = {
+                die_cut: 'Высечка', embossing: 'Тиснение', gluing: 'Склейка',
+                cutting_pre: 'Резка до печати', cutting_post: 'Резка пост печати',
+                vd_lak: 'ВД Лак', uv_lak: 'УФ Лак'
+            };
+            const stationConfig = ROLE_STATION_CONFIG[currentRole] || null;
+            const isRestrictedRole = !!stationConfig;
             const ROLE_STAGE_KEY = { flotorezka: 'flotorezka', pechat: 'pechat' };
 
             // ===== Этапы производства заказа (зависят от материала и выбранных пост-печатных услуг) =====
-            const STAGE_SERVICE_LABELS = {
+            const STAGE_SERVICE_LABELS_LEGACY = {
                 vd_lak: 'ВД лак', lamination: 'Ламинация', embossing: 'Тиснение',
                 cutting: 'Резка', gluing: 'Склейка', uv_lak: 'УФ лак',
                 die_cut: 'Высечка', kongrev: 'Конгрев'
@@ -1029,8 +1046,8 @@
                 }
                 stages.push({ key: 'pechat', label: 'Печать' });
                 (order.services || []).forEach(s => {
-                    if (STAGE_SERVICE_LABELS[s.name]) {
-                        stages.push({ key: s.name, label: STAGE_SERVICE_LABELS[s.name] });
+                    if (STAGE_SERVICE_LABELS_LEGACY[s.name]) {
+                        stages.push({ key: s.name, label: STAGE_SERVICE_LABELS_LEGACY[s.name] });
                     }
                 });
                 stages.push({ key: 'sklad', label: 'Склад' });
@@ -1072,8 +1089,6 @@
                 if (type === 'start') {
                     sp.status = 'running';
                 } else if (type === 'pause') {
-                    // Больше не обрезаем до total — разрешаем перевыполнение плана
-                    // (подтверждение уже спрошено до вызова этой функции).
                     sp.doneQty = (sp.doneQty || 0) + qty;
                     sp.status = 'paused';
                 } else if (type === 'finish') {
@@ -1088,9 +1103,6 @@
                 return order;
             }
 
-            // Текущий этап заказа: пока Флоторезка/Печать не отправлены полностью (sentQty < total) —
-            // это и есть текущий активный этап. После — переходим на обычный счётчик этапов
-            // (пост-печатные услуги/склад), который двигается вручную кнопкой "Готово, передать дальше".
             function getCurrentStageInfo(order) {
                 const stages = getOrderStages(order);
                 ensureStageProgress(order);
@@ -1120,11 +1132,9 @@
             }
             function getNextStageLabel(order) {
                 const { stages, index } = getCurrentStageInfo(order);
-                if (index >= stages.length - 1) return null; // уже на складе — дальше передавать некому
+                if (index >= stages.length - 1) return null;
                 return stages[index + 1].label;
             }
-            // Видимость заказа в очереди конкретной роли: Печать должна видеть заказ, как только
-            // Флоторезка отправила хоть что-то (не обязательно всё) — можно начинать печатать частями.
             function isOrderRelevantForRole(order, roleKey) {
                 ensureStageProgress(order);
                 if (roleKey === 'flotorezka') {
@@ -1139,11 +1149,27 @@
                     if (sent >= total) return false;
                     if ((order.material_type || 'roll') === 'roll') {
                         const flotoSent = (order.stage_progress.flotorezka && order.stage_progress.flotorezka.sentQty) || 0;
-                        if (flotoSent <= 0) return false; // печать ждёт, пока флоторезка не отправит хоть что-то
+                        if (flotoSent <= 0) return false;
                     }
                     return true;
                 }
                 return false;
+            }
+            function orderHasService(order, serviceKeys) {
+                const services = order.services || [];
+                return services.some(s => {
+                    if (serviceKeys.includes(s.name)) return true;
+                    if (s.name === 'cutting' && (serviceKeys.includes('cutting_pre') || serviceKeys.includes('cutting_post'))) return true;
+                    return false;
+                });
+            }
+            function isOrderRelevantForStation(order, role) {
+                const cfg = ROLE_STATION_CONFIG[role];
+                if (!cfg) return true;
+                if (cfg.type === 'material') return isOrderRelevantForRole(order, 'flotorezka');
+                if (cfg.type === 'print')    return isOrderRelevantForRole(order, 'pechat');
+                if (cfg.type === 'service')  return orderHasService(order, cfg.serviceKeys || []);
+                return true;
             }
             function advanceOrderStage(orderId) {
                 let orders = loadOrders();
@@ -1187,8 +1213,6 @@
                 return Math.max(0, total - received);
             }
 
-            // Переносит заказ в pp_warehouse_orders, если он полностью принят.
-            // Возвращает true, если заказ был перенесён (и удалён из pp_orders).
             function moveToWarehouseIfComplete(order, orders) {
                 if (getRemaining(order) > 0) return false;
                 const idx = orders.findIndex(o => o.id === order.id);
@@ -1196,8 +1220,6 @@
                 saveOrders(orders);
 
                 const warehouseOrders = loadWarehouseOrders();
-                // Сохраняем уже накопленные отгрузки (если заказ отгружали ещё будучи частично принятым),
-                // а не обнуляем их при переезде на склад.
                 const completedOrder = Object.assign({}, order, {
                     shipped_qty: order.shipped_qty || 0,
                     shipment_history: order.shipment_history || [],
@@ -1208,8 +1230,6 @@
                 return true;
             }
 
-            // Записывает приход (полный или частичный) в заказ и сохраняет.
-            // Возвращает { completed: bool, order: обновлённый заказ }
             function registerReceive(orderId, qty, dateStr, comment, type) {
                 let orders = loadOrders();
                 const idx = orders.findIndex(o => String(o.id) === String(orderId));
@@ -1217,9 +1237,6 @@
                 const order = orders[idx];
 
                 order.received_qty = (order.received_qty || 0) + qty;
-                // Раньше здесь жёстко обрезали received_qty до order_qty — теперь разрешаем превышение
-                // плана (например, реально пришло больше, чем заказывали), подтверждение уже спросили
-                // до вызова этой функции. getRemaining() всё равно никогда не покажет отрицательный остаток.
                 if (!Array.isArray(order.receive_history)) order.receive_history = [];
                 order.receive_history.push({
                     qty: qty,
@@ -1230,8 +1247,6 @@
                 });
 
                 orders[idx] = order;
-                // Важно: сохраняем сразу, независимо от того, завершён приём или нет.
-                // Иначе частичная отправка не сохраняется, если заказ ещё не закрыт на 100%.
                 saveOrders(orders);
                 const completed = moveToWarehouseIfComplete(order, orders);
                 return { completed: completed, order: order };
@@ -1278,7 +1293,6 @@
                     partialModalError.classList.add('show');
                     return;
                 }
-                // Разрешаем превышение плана (реально пришло больше, чем заказывали) — но переспрашиваем
                 if (qty > remaining) {
                     const over = qty - remaining;
                     if (!confirm(`Вы вводите больше, чем осталось по плану (осталось ${remaining.toLocaleString('ru-RU')}, вы ввели ${qty.toLocaleString('ru-RU')} — превышение на ${over.toLocaleString('ru-RU')}).\n\nВсё равно продолжить?`)) {
@@ -1299,7 +1313,6 @@
                     alert('✅ Заказ полностью поступил на склад!');
                     window.location.href = 'sklad.html';
                 } else {
-                    // Обновляем текущий экран (список или карточку)
                     refreshCurrentView();
                 }
             };
@@ -1353,8 +1366,7 @@
                 } else {
                     let allOrders = loadOrders();
                     if (isRestrictedRole) {
-                        const myStageKey = ROLE_STAGE_KEY[currentRole];
-                        allOrders = allOrders.filter(o => isOrderRelevantForRole(o, myStageKey));
+                        allOrders = allOrders.filter(o => isOrderRelevantForStation(o, currentRole));
                     }
                     window._originalOrders = allOrders.slice();
                     window.applyFilters();
@@ -1486,10 +1498,8 @@
                 refreshCurrentView();
             };
 
-            const STAGE_EDIT_PASSWORD = '1001'; // тот же пароль, что и в Настройках
+            const STAGE_EDIT_PASSWORD = '1001';
 
-            // Пересчитывает doneQty/sentQty с нуля из истории — так безопаснее, чем прибавлять/вычитать
-            // дельты вручную, риск накопить ошибку меньше.
             function recomputeStageProgressFromHistory(sp, total) {
                 let doneQty = 0;
                 let sentQty = 0;
@@ -1504,7 +1514,7 @@
 
             window.editStageHistoryEntry = function(orderId, stageKey, timestamp) {
                 const enteredPassword = prompt('🔒 Введите пароль администратора, чтобы исправить запись:');
-                if (enteredPassword === null) return; // отменили
+                if (enteredPassword === null) return;
                 if (enteredPassword.trim() !== STAGE_EDIT_PASSWORD) {
                     alert('Неверный пароль');
                     return;
@@ -1548,7 +1558,6 @@
                 alert('Заметка сохранена');
             };
 
-            // ===== HTML-блоки: работа по этапу + предупреждение о недополученном от предыдущего этапа =====
             function buildStageHistoryHTML(sp, orderId, stageKey) {
                 const hist = (sp && sp.history) || [];
                 if (hist.length === 0) return '<div class="stage-history-empty">История пуста</div>';
@@ -1579,8 +1588,6 @@
                 const remainingToSend = Math.max(0, total - sentQty);
                 const canSend = isStageSendEnabled();
 
-                // Кнопки зависят от текущего статуса — нельзя "начать" уже начатую работу,
-                // нельзя поставить на паузу то, что уже на паузе, и т.д. Это и убирает мусор в истории.
                 const isCompleted = sp.status === 'completed' || remainingToDo <= 0;
                 let actionButtonsHTML = '';
                 if (isCompleted) {
@@ -1596,7 +1603,6 @@
                         <button class="btn-stage-finish" onclick="window.stageFinish(${order.id}, '${stageKey}')">✅ Завершить</button>
                     `;
                 } else {
-                    // not_started
                     actionButtonsHTML = `
                         <button class="btn-stage-start" onclick="window.stageAction(${order.id}, '${stageKey}', 'start')">▶️ Начать</button>
                     `;
@@ -1628,7 +1634,6 @@
                 `;
             }
 
-            // Предупреждение над секцией "Печать": сколько уже передала Флоторезка и сколько ещё должна.
             function buildUpstreamNoteHTML(order) {
                 if ((order.material_type || 'roll') !== 'roll') return '';
                 ensureStageProgress(order);
@@ -1681,7 +1686,6 @@
                     warehouseBadge.style.display = 'none';
                 }
 
-                // 1. Формируем правильный заголовок материала
                 let materialLabel = '';
                 if (materialType === 'roll') {
                     materialLabel = isDivideByTwo ? 'Флоторезка 1/2' : 'Флоторезка';
@@ -1689,17 +1693,14 @@
                     materialLabel = isDivideByTwo ? 'Листовой 1/2' : 'Листовой';
                 }
 
-                // 2. ОРИГИНАЛЬНЫЙ тираж
                 const originalDisplaySheets = Math.ceil(order.print_sheets || 0);
 
-                // 3. РАЗДЕЛЁННЫЙ тираж (только для таблицы материалов)
                 let materialDisplaySheets = originalDisplaySheets;
                 if (isDivideByTwo) {
                     materialDisplaySheets = Math.ceil(materialDisplaySheets / 2);
                 }
                 const materialDisplaySheetsFormatted = materialDisplaySheets.toLocaleString('ru-RU');
 
-                // 4. Тираж БЕЗ приладки (для таблиц Печать и Пост печать) — всегда полный, без деления на 2
                 const postPrintSheets = Math.max(0, originalDisplaySheets - (order.make_ready || 0));
                 const postPrintSheetsFormatted = postPrintSheets.toLocaleString('ru-RU');
 
@@ -1708,7 +1709,6 @@
                 const makeReadyFormatted = (order.make_ready || 0).toLocaleString('ru-RU');
                 const gsmFormatted = (order.gsm || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
-                // Прогресс приёма
                 const receivedQty = order.received_qty || 0;
                 let receiveProgressHTML = '';
                 if (!isWarehouseOrder && receivedQty > 0 && receivedQty < orderQty) {
@@ -1721,7 +1721,6 @@
                     `;
                 }
 
-                // 5. Формируем таблицу материалов
                 let tableHeaders = '';
                 let tableRow = '';
 
@@ -1809,7 +1808,6 @@
                 ];
                 const activeServices = serviceList.filter(item => serviceMap[item.key] !== '');
 
-                // 6. Формируем блок Пост печать
                 let techOpHTML = '';
                 if (activeServices.length > 0) {
                     const techOpRow = activeServices.map(item => `<td>${item.label}</td>`).join('');
@@ -1865,25 +1863,31 @@
                     `;
                 }
 
-                // 7. Блок файлов
                 let filesHTML = '';
                 const hasAnyScreenshot = !!(order.screenshot_base64 || order.has_screenshot);
                 if (order.pdf_filename || hasAnyScreenshot) {
                     filesHTML = `<div class="section-title files-title">Файлы</div>`;
-
-                    if (order.pdf_filename) {
-                        filesHTML += `
-                            <div class="file-row pdf-file-row">
-                                <span class="label">Имя PDF:</span>
-                                <span class="pdf-name">${order.pdf_filename}</span>
-                            </div>
-                        `;
-                    }
-
+if (order.pdf_filename) {
+  if (order.pdf_originalname) {
+    const viewUrl = `/view/pdf/${order.id}/${order.pdf_filename}?name=${encodeURIComponent(order.pdf_originalname)}`;
+    filesHTML += `
+      <div class="file-row pdf-file-row">
+        <span class="label">PDF файл:</span>
+        <a href="${viewUrl}" target="_blank" class="pdf-name" style="color: var(--primary-blue); text-decoration: underline;">
+          📄 ${order.pdf_originalname}
+        </a>
+      </div>
+    `;
+  } else {
+    filesHTML += `
+      <div class="file-row pdf-file-row">
+        <span class="label">PDF файл:</span>
+        <a href="/uploads/pdf/${order.pdf_filename}" target="_blank" class="pdf-name">📄 Скачать</a>
+      </div>
+    `;
+  }
+}
                     if (hasAnyScreenshot) {
-                        // Если скриншот ещё старого формата (лежит прямо в заказе) — показываем сразу.
-                        // Если он уже в IndexedDB (has_screenshot) — оставляем img без src,
-                        // подгружаем асинхронно чуть ниже (см. loadScreenshotAsync).
                         const immediateSrc = order.screenshot_base64 || '';
                         filesHTML += `
                             <div class="screenshot-full-block" id="screenshotLinesBlock">
@@ -1893,12 +1897,10 @@
                     }
                 }
 
-                // 8. Собираем итоговый HTML
-                // Ограниченный вид для ролей "flotorezka"/"pechat": без общего количества продукции,
-                // и только своя секция (материал либо печать), плюс файлы/скриншот — как договорились.
-                const qtyLineHTML = isRestrictedRole ? '' : `<p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>`;
+                const isSkladStation = !!(stationConfig && stationConfig.type === 'sklad');
+                const qtyLineHTML = (!isRestrictedRole || isSkladStation) ? `<p><span class="label">Кол-во продукции</span> <span class="value qty">${orderQtyFormatted}</span></p>` : '';
 
-                const showMaterialSection = !isRestrictedRole || (currentRole === 'flotorezka' && materialType === 'roll');
+                const showMaterialSection = !isRestrictedRole || (stationConfig && stationConfig.type === 'material' && materialType === 'roll');
                 const materialSectionHTML = showMaterialSection ? `
                             <div class="section-title" style="margin: 24px 0 10px 0;">
                                 ${materialLabel}
@@ -1915,7 +1917,7 @@
                             </div>
                 ` : '';
 
-                const showPrintSection = !isRestrictedRole || currentRole === 'pechat';
+                const showPrintSection = !isRestrictedRole || (stationConfig && stationConfig.type === 'print');
                 const printSectionHTML = showPrintSection ? `
                             <div class="section-title">${printLabel}</div>
                             <div class="table-responsive">
@@ -1940,10 +1942,38 @@
                             </div>
                 ` : '';
 
-                const techOpSectionHTML = isRestrictedRole ? '' : techOpHTML;
+                let techOpSectionHTML = '';
+                if (!isRestrictedRole) {
+                    techOpSectionHTML = techOpHTML;
+                } else if (stationConfig && stationConfig.type === 'service') {
+                    const keys = stationConfig.serviceKeys || [];
+                    const present = keys.filter(k => serviceMap[k] && serviceMap[k] !== '');
+                    if (present.length === 0) {
+                        techOpSectionHTML = `<div class="section-title">${stationConfig.label}</div><p style="color:var(--text-secondary);font-style:italic;margin:10px 0;">Для этого заказа операция «${stationConfig.label}» не требуется</p>`;
+                    } else {
+                        const blocks = present.map(k => {
+                            let paramVal = serviceMap[k];
+                            if (k === 'die_cut' || k === 'gluing') paramVal = 'есть';
+                            const planVal = (k === 'gluing') ? orderQtyFormatted : postPrintSheetsFormatted;
+                            const lbl = STATION_SERVICE_LABELS[k] || k;
+                            return `
+                                <div class="section-title" style="font-size:15px;">${lbl}</div>
+                                <div class="table-responsive">
+                                    <table>
+                                        <thead><tr><th>Параметры</th><th>План</th><th>Факт</th><th>Брак</th></tr></thead>
+                                        <tbody><tr>
+                                            <td data-label="Параметры"><strong>${paramVal}</strong></td>
+                                            <td data-label="План"><strong>${planVal}</strong></td>
+                                            <td data-label="Факт"></td>
+                                            <td data-label="Брак"></td>
+                                        </tr></tbody>
+                                    </table>
+                                </div>`;
+                        }).join('');
+                        techOpSectionHTML = `<div class="section-title">${stationConfig.label}</div>${blocks}`;
+                    }
+                }
 
-                // Пооперационный учёт: показываем секцию "Работа" для флоторезки/печати —
-                // и в ограниченном виде своей роли, и в полном виде (для контроля менеджером/дизайнером).
                 const flotorezkaWorkHTML = (currentRole === 'flotorezka' && materialType === 'roll')
                     ? buildStageWorkSectionHTML(order, 'flotorezka', 'Флоторезка')
                     : '';
@@ -1992,8 +2022,6 @@
 
                 printBtn.onclick = function() { window.print(); };
 
-                // Если скриншот хранится в IndexedDB (order.has_screenshot), а не прямо в заказе —
-                // подгружаем его асинхронно и вставляем в уже отрисованную карточку.
                 if (order.has_screenshot && !order.screenshot_base64 && window.ppScreenshotStore) {
                     window.ppScreenshotStore.getScreenshot(order.id).then(function(dataUrl) {
                         const img = document.getElementById('techScreenshotImg');
@@ -2004,29 +2032,39 @@
                 }
 
                 downloadPdfBtn.onclick = function() {
-                    const element = document.getElementById('techCardContent');
-                    if (!element) return;
-                    html2canvas(element, { scale: 2, backgroundColor: '#ffffff', allowTaint: true, useCORS: true })
-                        .then(canvas => {
-                            const imgData = canvas.toDataURL('image/png');
-                            const { jsPDF } = window.jspdf;
-                            const pdf = new jsPDF('p', 'mm', 'a4');
-                            const pdfWidth = pdf.internal.pageSize.getWidth();
-                            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                            let heightLeft = pdfHeight;
-                            let position = 0;
-                            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                            heightLeft -= pdf.internal.pageSize.getHeight();
-                            while (heightLeft > 0) {
-                                position = heightLeft - pdfHeight;
-                                pdf.addPage();
-                                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                                heightLeft -= pdf.internal.pageSize.getHeight();
-                            }
-                            pdf.save(`Техкарта_${techcardNoFormatted}.pdf`);
-                        })
-                        .catch(err => { alert('Ошибка при создании PDF: ' + err.message); });
-                };
+  const element = document.getElementById('techCardContent');
+  if (!element) return;
+  html2canvas(element, { scale: 2, backgroundColor: '#ffffff', allowTaint: true, useCORS: true })
+    .then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      
+      const pdfBlob = pdf.output('blob');
+      
+      pdf.save(`Техкарта_${techcardNoFormatted}.pdf`);
+      
+      const formData = new FormData();
+      formData.append('techcard', pdfBlob, `Техкарта_${techcardNoFormatted}.pdf`);
+      
+      fetch('/api/upload/techcard', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Техкарта сохранена на сервере:', data.filename);
+        alert('Техкарта сохранена на сервере');
+      })
+      .catch(err => {
+        console.error('Ошибка загрузки техкарты на сервер:', err);
+      });
+    })
+    .catch(err => { alert('Ошибка при создании PDF: ' + err.message); });
+};
 
                 const modal = document.getElementById('screenshotModal');
                 modal.onclick = function(e) {
@@ -2054,8 +2092,7 @@
 
             let allOrders = loadOrders();
             if (isRestrictedRole) {
-                const myStageKey = ROLE_STAGE_KEY[currentRole];
-                allOrders = allOrders.filter(o => isOrderRelevantForRole(o, myStageKey));
+                allOrders = allOrders.filter(o => isOrderRelevantForStation(o, currentRole));
             }
             window._originalOrders = allOrders.slice();
 
@@ -2087,10 +2124,6 @@
 
                 function sendButtons(o) {
                     if (!warehouseEnabled) return '';
-                    // Приём ГОТОВОЙ ПРОДУКЦИИ на склад (в штуках, "Кол-во продукции") имеет смысл только
-                    // когда заказ уже прошёл ВСЕ производственные этапы (Флоторезка/Печать/Пост-печать)
-                    // и реально находится на этапе "Склад". Раньше эти кнопки показывались всегда,
-                    // из-за чего они путались с учётом по этапам (тираж, другая цифра, другой смысл).
                     if (getCurrentStageInfo(o).stage.key !== 'sklad') return '';
                     return `
                         <button class="btn-send-full" onclick="event.stopPropagation(); window.sendFull(${o.id}); return false;">✅ Полностью</button>
@@ -2206,8 +2239,7 @@
                 advanceOrderStage(orderId);
                 let orders = loadOrders();
                 if (isRestrictedRole) {
-                    const myStageKey = ROLE_STAGE_KEY[currentRole];
-                    orders = orders.filter(o => isOrderRelevantForRole(o, myStageKey));
+                    orders = orders.filter(o => isOrderRelevantForStation(o, currentRole));
                 }
                 window._originalOrders = orders.slice();
                 window.applyFilters();
@@ -2258,6 +2290,7 @@
         });
     </script>
     <script src="js/screenshot-store.js"></script>
+    <script src="js/role-settings.js"></script>
     <script src="js/auth-check.js"></script>
     <script src="js/nav-filter.js"></script>
 </body>
