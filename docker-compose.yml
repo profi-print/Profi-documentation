@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Локальная база данных MongoDB
+  mongodb:
+    image: mongo:6.0
+    container_name: profitprint-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      # Все данные базы будут надежно лежать в этой папке на твоем ПК
+      - ./mongodb_data:/data/db
+
+  # Твой бэкенд + фронтенд
+  profitprint-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: profitprint-app
+    restart: unless-stopped
+    ports:
+      # Пробрасываем порт 8080 твоего ПК на внутренний порт сервера 3000
+      - "8080:3000"
+    environment:
+      - PORT=3000
+      # Указываем серверу адрес базы данных внутри сети Docker
+      - MONGODB_URI=mongodb://mongodb:27017/profitprint
+    depends_on:
+      - mongodb
+      

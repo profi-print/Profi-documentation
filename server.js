@@ -1,5 +1,5 @@
 {
-  "name": "profitprint-server",
+  "name": "profitprint-storage",
   "version": "1.0.0",
   "description": "Файловое хранилище техкарт, PDF и склада для ProfitPrint",
   "main": "server.js",
@@ -8,8 +8,7 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "mongoose": "^8.4.4"
+    "multer": "^1.4.5-lts.1"
   }
 }
