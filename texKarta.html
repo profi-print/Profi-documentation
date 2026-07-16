@@ -2103,13 +2103,16 @@
                     if (stage.key === 'flotorezka' || stage.key === 'pechat') {
                         const total = getStageTotal(o, stage.key);
                         ensureStageProgress(o);
-                        const sp = (o.stage_progress && o.stage_progress[stage.key]) || { sentQty: 0 };
+                        const sp = (o.stage_progress && o.stage_progress[stage.key]) || { doneQty: 0, sentQty: 0 };
+                        const done = sp.doneQty || 0;
                         const sent = sp.sentQty || 0;
+                        const remainingToDo = Math.max(0, total - done);
                         const remaining = Math.max(0, total - sent);
                         return `
                             <div class="next-stage-block">
                                 <span class="next-stage-label">Сейчас: <strong>${stage.label}</strong></span>
-                                <span class="next-stage-label">Отправлено: <strong>${sent.toLocaleString('ru-RU')}</strong> / Осталось: <strong class="${remaining > 0 ? 'stage-red' : ''}">${remaining.toLocaleString('ru-RU')}</strong></span>
+                                <span class="next-stage-label">Сделано: <strong>${done.toLocaleString('ru-RU')}</strong> / Осталось сделать: <strong class="${remainingToDo > 0 ? 'stage-red' : ''}">${remainingToDo.toLocaleString('ru-RU')}</strong></span>
+                                <span class="next-stage-label">Отправлено: <strong>${sent.toLocaleString('ru-RU')}</strong> / Осталось отправить: <strong class="${remaining > 0 ? 'stage-red' : ''}">${remaining.toLocaleString('ru-RU')}</strong></span>
                             </div>
                         `;
                     }
