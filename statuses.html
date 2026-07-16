@@ -1,697 +1,414 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Статусы техкарт — PrintMax</title>
-<link rel="stylesheet" href="css/theme.css">
-<link rel="stylesheet" href="css/style.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --paper:#eef0ec;
-  --surface:#ffffff;
-  --surface-2:#f6f7f4;
-  --ink:#12181f;
-  --ink-soft:#5b6470;
-  --line:#dcdfd8;
-  --brand:#1f4d47;
-  --brand-soft:#e4ece9;
-  --shadow: 0 1px 2px rgba(18,24,31,0.04), 0 8px 24px -12px rgba(18,24,31,0.18);
-  --radius: 14px;
-  --st-waiting:#9aa1ab;
-  --st-progress:#2f6fed;
-  --st-done:#1f8a4c;
-  --st-paused:#c8791a;
-  --st-error:#d1352b;
-}
-*{box-sizing:border-box;}
-body{
-  background:var(--paper);
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  color:var(--ink);
-  margin:0;
-}
-.mono{ font-family:'IBM Plex Mono', monospace; }
-
-/* ---------- Бургер‑меню ---------- */
-.burger-btn {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 1100;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  width: 44px;
-  height: 44px;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  color: var(--ink);
-  align-items: center;
-  justify-content: center;
-}
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 1040;
-}
-.sidebar-overlay.show { display: block; }
-
-/* Мобильная версия сайдбара */
-@media screen and (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: -280px;
-    width: 280px;
-    height: 100%;
-    transition: left 0.3s ease;
-    z-index: 1050;
-    background: var(--surface);
-    box-shadow: 2px 0 12px rgba(0,0,0,0.1);
-    overflow-y: auto;
-    padding-top: 16px;
-  }
-  .sidebar.open { left: 0; }
-  .burger-btn { display: flex; }
-  .main-content {
-    margin-left: 0 !important;
-    padding: 60px 12px 20px;
-    width: 100%;
-  }
-  .sidebar .nav-menu li a {
-    color: var(--ink) !important;
-    background: transparent !important;
-    font-weight: 500;
-  }
-  .sidebar .nav-menu li a:hover {
-    background: var(--surface-2) !important;
-  }
-  .sidebar .nav-menu li a.active {
-    background: var(--brand) !important;
-    color: #fff !important;
-  }
-  /* Цепочка в списке становится вертикальной */
-  .pipeline {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
-  .pipeline-connector {
-    display: none;
-  }
-  .stage-row-head { display: none; }
-  .stage-row {
-    grid-template-columns: 30px 1fr;
-    row-gap: 6px;
-  }
-  .row-head { display: none; }
-  .order-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-}
-
-.status-wrapper{ max-width:1320px; margin:0 auto; padding:28px 20px 70px; }
-
-.page-header{
-  display:flex; align-items:flex-end; justify-content:space-between;
-  margin-bottom:22px; flex-wrap:wrap; gap:14px;
-}
-.page-header .eyebrow{
-  font-family:'Space Grotesk',sans-serif; font-size:12px; font-weight:600;
-  letter-spacing:0.14em; text-transform:uppercase; color:var(--brand); margin:0 0 4px;
-}
-.page-header h1{
-  font-family:'Space Grotesk',sans-serif; font-size:28px; font-weight:700; margin:0;
-  letter-spacing:-0.01em;
-}
-.actions{ display:flex; gap:10px; }
-.btn{
-  display:inline-flex; align-items:center; gap:7px;
-  padding:10px 18px; border-radius:9px; font-size:13px; font-weight:600;
-  cursor:pointer; border:1px solid var(--line); background:var(--surface); color:var(--ink);
-  transition:all .15s;
-}
-.btn-primary{ background:var(--brand); color:#fff; border-color:var(--brand); }
-.btn-primary:hover{ filter:brightness(1.12); }
-.btn:hover{ border-color:var(--brand); color:var(--brand); }
-body.dark .btn-primary{ color:#0f1418; }
-
-.legend{
-  display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;
-  padding:12px 14px; background:var(--surface-2); border:1px solid var(--line); border-radius:11px;
-}
-.legend-chip{
-  display:flex; align-items:center; gap:7px; font-size:12px; font-weight:600; color:var(--ink-soft);
-  padding:4px 10px 4px 6px; border-radius:999px; background:var(--surface);
-}
-.legend-chip .swatch{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
-
-.search-section{ display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
-.search-input{
-  flex:1; min-width:220px; padding:11px 14px; border:1.5px solid var(--line); border-radius:9px;
-  font-size:14px; background:var(--surface); color:var(--ink);
-}
-.search-input:focus{ outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
-.filter-select{
-  padding:11px 14px; border:1.5px solid var(--line); border-radius:9px;
-  font-size:13px; background:var(--surface); color:var(--ink); font-weight:600;
-}
-
-.table-container{
-  background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
-}
-.row-list{ display:flex; flex-direction:column; }
-.order-row{
-  display:grid;
-  grid-template-columns: 110px 1fr 1fr 1fr;
-  gap:18px;
-  align-items:center;
-  padding:16px 20px;
-  border-bottom:1px solid var(--line);
-  cursor:pointer;
-  transition:background .12s;
-}
-.order-row:last-child{ border-bottom:none; }
-.order-row:hover{ background:var(--surface-2); }
-.order-no{ font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14px; color:var(--brand); }
-.order-customer{ font-size:13.5px; font-weight:600; }
-.order-product{ font-size:13px; color:var(--ink-soft); }
-.row-head{
-  display:grid; grid-template-columns: 110px 1fr 1fr 1fr; gap:18px;
-  padding:12px 20px; font-family:'Space Grotesk',sans-serif;
-  font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
-  color:var(--ink-soft); background:var(--surface-2); border-bottom:1px solid var(--line);
-}
-
-.pipeline{ display:flex; align-items:center; flex-wrap: wrap; }
-.pipeline-node{
-  width:22px; height:22px; border-radius:50%; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
-  font-size:10px; color:#fff; font-weight:700;
-  background:var(--st-waiting);
-  border:2px solid var(--surface);
-  box-shadow:0 0 0 1.5px var(--line);
-  position:relative;
-}
-.pipeline-node.waiting{ background:var(--surface); box-shadow:0 0 0 1.5px var(--line); }
-.pipeline-node.progress{ background:var(--st-progress); box-shadow:0 0 0 3px rgba(47,111,237,0.22); }
-.pipeline-node.done{ background:var(--st-done); }
-.pipeline-node.paused{ background:var(--st-paused); }
-.pipeline-node.error{ background:var(--st-error); box-shadow:0 0 0 3px rgba(209,53,43,0.2); }
-.pipeline-connector{ flex:1; height:2px; background:var(--line); min-width:8px; }
-.pipeline-connector.filled{ background:var(--st-done); }
-
-.empty-state{ text-align:center; padding:56px 20px; color:var(--ink-soft); }
-.empty-state a{ color:var(--brand); font-weight:700; text-decoration:none; }
-.empty-state a:hover{ text-decoration:underline; }
-
-.card-page{ display:none; }
-.card-page.active{ display:block; }
-
-.breadcrumb{ margin-bottom:16px; }
-.breadcrumb a{
-  color:var(--brand); text-decoration:none; font-weight:600; font-size:13.5px;
-  display:inline-flex; align-items:center; gap:6px;
-}
-.breadcrumb a:hover{ text-decoration:underline; }
-
-.card-page-header{
-  background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow);
-  padding:22px 24px; margin-bottom:20px;
-  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;
-}
-.card-page-header h2{
-  font-family:'Space Grotesk',sans-serif; margin:0 0 4px; font-size:22px; font-weight:700;
-}
-.card-page-sub{ font-size:13px; color:var(--ink-soft); }
-.card-page-status{
-  display:inline-flex; align-items:center; gap:7px; padding:7px 16px; border-radius:999px;
-  font-size:12.5px; font-weight:700; color:#fff; background:var(--st-waiting);
-}
-.card-page-status.progress{ background:var(--st-progress); }
-.card-page-status.done{ background:var(--st-done); }
-.card-page-status.paused{ background:var(--st-paused); }
-.card-page-status.error{ background:var(--st-error); }
-
-.stage-table{
-  background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
-}
-.stage-row{
-  display:grid;
-  grid-template-columns: 34px 1.2fr 90px 90px 80px 150px;
-  gap:12px;
-  align-items:center;
-  padding:11px 18px;
-  border-bottom:1px solid var(--line);
-}
-.stage-row:last-child{ border-bottom:none; }
-.stage-row-head{
-  display:grid;
-  grid-template-columns: 34px 1.2fr 90px 90px 80px 150px;
-  gap:12px;
-  padding:10px 18px;
-  font-family:'Space Grotesk',sans-serif; font-size:10.5px; font-weight:600;
-  letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-soft);
-  background:var(--surface-2); border-bottom:1px solid var(--line);
-}
-.stage-icon{
-  width:26px; height:26px; border-radius:50%; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;
-  background:var(--surface-2); border:2px solid var(--st-waiting); color:var(--st-waiting);
-}
-.stage-icon.waiting{ border-color:var(--st-waiting); color:var(--st-waiting); }
-.stage-icon.progress{ border-color:var(--st-progress); color:var(--st-progress); background:rgba(47,111,237,0.08); }
-.stage-icon.done{ border-color:var(--st-done); color:#fff; background:var(--st-done); }
-.stage-icon.paused{ border-color:var(--st-paused); color:#fff; background:var(--st-paused); }
-.stage-icon.error{ border-color:var(--st-error); color:#fff; background:var(--st-error); }
-.stage-name{ font-size:13.5px; font-weight:700; display:flex; flex-direction:column; gap:4px; }
-.stage-progress{ height:4px; background:var(--line); border-radius:2px; overflow:hidden; width:100%; max-width:140px; }
-.stage-progress .fill{ height:100%; background:var(--st-done); border-radius:2px; }
-.stage-progress .fill.overdue{ background:var(--st-error); }
-.stage-cell-label{ font-size:11px; color:var(--ink-soft); }
-.stage-cell-value{ font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; }
-.status-badge{
-  display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:999px;
-  font-size:10.5px; font-weight:700; color:#fff; background:var(--st-waiting); width:fit-content;
-}
-.status-badge.progress{ background:var(--st-progress); }
-.status-badge.done{ background:var(--st-done); }
-.status-badge.paused{ background:var(--st-paused); }
-.status-badge.error{ background:var(--st-error); }
-
-.status-select-wrap{ position:relative; }
-.status-select{
-  width:100%; appearance:none; -webkit-appearance:none;
-  padding:7px 28px 7px 10px; border-radius:7px; font-size:12px; font-weight:600;
-  border:1.5px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer;
-}
-.status-select:focus{ outline:none; border-color:var(--brand); }
-.status-select-wrap::after{
-  content:'▾'; position:absolute; right:10px; top:50%; transform:translateY(-50%);
-  color:var(--ink-soft); pointer-events:none; font-size:10px;
-}
-
-@media (max-width: 900px){
-  .stage-row-head{ display:none; }
-  .stage-row{ grid-template-columns: 30px 1fr; grid-auto-rows:auto; row-gap:6px; }
-}
-.sidebar {
-  background: #1e3a8a !important;
-}
-
-.sidebar .nav-menu li a {
-  color: #ffffff !important;
-  background: transparent !important;
-}
-
-.sidebar .nav-menu li a:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: #ffffff !important;
-}
-
-.sidebar .nav-menu li a.active {
-  background: #2563eb !important;
-  color: #ffffff !important;
-}
-
-.sidebar .sidebar-header .logo-small span {
-  color: #ffffff !important;
-}
-
-.sidebar .sidebar-header .logo-icon {
-  background: #2563eb !important;
-  color: #ffffff !important;
-}
-
-.sidebar .nav-menu li.nav-group > .nav-group-toggle { display: flex; justify-content: space-between; align-items: center; }
-.sidebar .nav-menu li.nav-group .nav-caret { font-size: 11px; transition: transform 0.2s ease; }
-.sidebar .nav-menu li.nav-group.open .nav-caret { transform: rotate(180deg); }
-.sidebar .nav-menu .nav-submenu { list-style: none; margin: 0; padding: 0; max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
-.sidebar .nav-menu li.nav-group.open .nav-submenu { max-height: 300px; }
-.sidebar .nav-menu .nav-submenu li a { padding-left: 34px; font-size: 13px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Статусы техкарт — PrintMax</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/statuses.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="app-container">
+    <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-  <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PM</div><span>PrintMax</span></div></div>
+        <ul class="nav-menu">
+            <li><a href="index.html">📊 Главная</a></li>
+            <li><a href="index2.html">📊 Главная</a></li>
+            <li><a href="orders.html">📋 Заказы контрагентов</a></li>
+            <li><a href="production.html">🏭 Заказы на производство</a></li>
+            <li><a href="invoices.html">📦 Накладные</a></li>
+            <li><a href="clients.html">👥 Контрагенты</a></li>
+            <li><a href="products.html">📁 Продукты</a></li>
+            <li><a href="reconciliations.html">📑 Акты сверки</a></li>
+            <li><a href="backups.html">🗑️ Резервные копии</a></li>
+            <li><a href="otpCex.html">⚙️ На производство</a></li>
+            <li><a href="texKarta.html">⚙️ Техкарта</a></li>
+            <li><a href="statuses.html" class="active">📊 Статусы</a></li>
+            <li class="nav-group" id="skladNavGroup">
+                <a href="#" class="nav-group-toggle" onclick="event.preventDefault(); this.closest('li').classList.toggle('open');">
+                    <span>🏬 Склад</span><span class="nav-caret">▾</span>
+                </a>
+                <ul class="nav-submenu">
+                    <li><a href="sklad.html">📋 Склад заказов</a></li>
+                    <li><a href="rashodniki.html">🧪 Расходники</a></li>
+                    <li><a href="bumaga.html">📄 Бумага</a></li>
+                    <li><a href="instrumenty.html">🛠️ Инструменты</a></li>
+                    <li><a href="palety.html">🪵 Палеты</a></li>
+                </ul>
+            </li>
+            <li><a href="settings.html">⚙️ Настройки</a></li>
+        </ul>
+    </nav>
 
-  <nav class="sidebar" id="sidebar">
-    <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PM</div><span>PrintMax</span></div></div>
-    <ul class="nav-menu">
-                <li><a href="index2.html" class="active">📊 Главная</a></li>
-                <li><a href="clients.html">👥 Контрагенты</a></li>
-                <li><a href="otpCex.html">⚙️ На производство</a></li>
-                <li><a href="texKarta.html">🛠️ Техкарта</a></li>
-                <li><a href="statuses.html">📊 Статусы</a></li>
-                <li class="nav-group" id="skladNavGroup">
-                    <a href="#" class="nav-group-toggle" onclick="event.preventDefault(); this.closest('li').classList.toggle('open');">
-                        <span>🏬 Склад</span><span class="nav-caret">▾</span>
-                    </a>
-                    <ul class="nav-submenu">
-                        <li><a href="sklad.html">📋 Склад заказов</a></li>
-                        <li><a href="rashodniki.html">🧪 Расходники</a></li>
-                        <li><a href="bumaga.html">📄 Бумага</a></li>
-                        <li><a href="instrumenty.html">🛠️ Инструменты</a></li>
-                        <li><a href="palety.html">🪵 Палеты</a></li>
-                    </ul>
-                </li>
-                <li><a href="settings.html">⚙️ Настройки</a></li>
-            </ul>
-    
-  </nav>
+    <main class="main-content">
+        <div class="status-wrapper">
+            <div id="listView">
+                <div class="page-header">
+                    <div>
+                        <p class="eyebrow">Производство · Трекинг этапов</p>
+                        <h1>Статусы техкарт</h1>
+                    </div>
+                    <div class="actions">
+                        <button class="btn" onclick="resetFilters()">Сброс</button>
+                        <button class="btn btn-primary" onclick="saveAll()">Сохранить</button>
+                    </div>
+                </div>
 
-  <main class="main-content">
-    <div class="status-wrapper">
-      <div id="listView">
-        <div class="page-header">
-          <div>
-            <p class="eyebrow">Производство · Трекинг этапов</p>
-            <h1>Статусы техкарт</h1>
-          </div>
-          <div class="actions">
-            <button class="btn" onclick="resetFilters()">Сброс</button>
-            <button class="btn btn-primary" onclick="saveAll()">Сохранить</button>
-          </div>
+                <div class="legend">
+                    <div class="legend-chip"><span class="swatch" style="background:var(--st-waiting)"></span>В очереди</div>
+                    <div class="legend-chip"><span class="swatch" style="background:var(--st-progress)"></span>В процессе</div>
+                    <div class="legend-chip"><span class="swatch" style="background:var(--st-done)"></span>Завершено</div>
+                    <div class="legend-chip"><span class="swatch" style="background:var(--st-paused)"></span>Приостановлено</div>
+                    <div class="legend-chip"><span class="swatch" style="background:var(--st-error)"></span>Проблема</div>
+                </div>
+
+                <div class="search-section">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Поиск по номеру, заказчику, продукции..." oninput="renderTable()">
+                    <select class="filter-select" id="statusFilter" onchange="renderTable()">
+                        <option value="">Все статусы</option>
+                        <option value="waiting">В очереди</option>
+                        <option value="progress">В процессе</option>
+                        <option value="done">Завершено</option>
+                        <option value="paused">Приостановлено</option>
+                        <option value="error">Проблема</option>
+                    </select>
+                </div>
+
+                <div class="table-container" id="tableContainer"></div>
+            </div>
+
+            <div id="cardPage" class="card-page">
+                <div class="breadcrumb"><a href="#" onclick="goToList(); return false;">← К списку техкарт</a></div>
+                <div class="card-page-header">
+                    <div>
+                        <h2 id="cardTitle">Техкарта</h2>
+                        <div class="card-page-sub" id="cardSub"></div>
+                    </div>
+                    <span class="card-page-status" id="cardOverallStatus"></span>
+                </div>
+                <div class="stage-table" id="cardContent"></div>
+            </div>
         </div>
-
-        <div class="legend">
-          <div class="legend-chip"><span class="swatch" style="background:var(--st-waiting)"></span>В очереди</div>
-          <div class="legend-chip"><span class="swatch" style="background:var(--st-progress)"></span>В процессе</div>
-          <div class="legend-chip"><span class="swatch" style="background:var(--st-done)"></span>Завершено</div>
-          <div class="legend-chip"><span class="swatch" style="background:var(--st-paused)"></span>Приостановлено</div>
-          <div class="legend-chip"><span class="swatch" style="background:var(--st-error)"></span>Проблема</div>
-        </div>
-
-        <div class="search-section">
-          <input type="text" class="search-input" id="searchInput" placeholder="Поиск по номеру, заказчику, продукции..." oninput="renderTable()">
-          <select class="filter-select" id="statusFilter" onchange="renderTable()">
-            <option value="">Все статусы</option>
-            <option value="waiting">В очереди</option>
-            <option value="progress">В процессе</option>
-            <option value="done">Завершено</option>
-            <option value="paused">Приостановлено</option>
-            <option value="error">Проблема</option>
-          </select>
-        </div>
-
-        <div class="table-container" id="tableContainer"></div>
-      </div>
-
-      <div id="cardPage" class="card-page">
-        <div class="breadcrumb"><a href="#" onclick="goToList(); return false;">← К списку техкарт</a></div>
-        <div class="card-page-header">
-          <div>
-            <h2 id="cardTitle">Техкарта</h2>
-            <div class="card-page-sub" id="cardSub"></div>
-          </div>
-          <span class="card-page-status" id="cardOverallStatus"></span>
-        </div>
-        <div class="stage-table" id="cardContent"></div>
-      </div>
-    </div>
-  </main>
+    </main>
 </div>
 
 <script>
-// ---------- Бургер‑меню ----------
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('show');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('show');
-}
-
-
-
-// ---------- Статусы ----------
-const STATUS_META = {
-  waiting:  { label:'В очереди',     icon:'○' },
-  progress: { label:'В процессе',    icon:'▶' },
-  done:     { label:'Завершено',     icon:'✓' },
-  paused:   { label:'Приостановлено',icon:'❚❚' },
-  error:    { label:'Проблема',      icon:'!' }
-};
-const STATUS_ORDER = ['waiting','progress','done','paused','error'];
-
-// Динамические этапы в зависимости от услуг заказа
-function getStages(order) {
-  const serviceMap = {};
-  if (order.services && Array.isArray(order.services)) {
-    order.services.forEach(s => {
-      if (s.name === 'lamination') serviceMap.lamination = s.type || 'есть';
-      else if (s.name === 'embossing') serviceMap.embossing = s.type || 'есть';
-      else if (s.name === 'kongrev') serviceMap.kongrev = 'есть';
-      else if (s.name === 'die_cut') serviceMap.die_cut = 'есть';
-      else if (s.name === 'gluing') serviceMap.gluing = s.type || 'есть';
-    });
-  }
-
-  const stages = [
-    { id: 'ctp',        label: 'CTP' },
-    { id: 'flotorezka', label: 'Флоторезка' },
-    { id: 'pechat',     label: 'Печать' }
-  ];
-  if (serviceMap.lamination) stages.push({ id: 'lamination', label: 'Ламинация', detail: serviceMap.lamination });
-  if (serviceMap.embossing)  stages.push({ id: 'embossing',  label: 'Тиснение',  detail: serviceMap.embossing });
-  if (serviceMap.kongrev)    stages.push({ id: 'kongrev',    label: 'Конгрев',    detail: serviceMap.kongrev });
-  if (serviceMap.die_cut)    stages.push({ id: 'die_cut',    label: 'Высечка',    detail: serviceMap.die_cut });
-  stages.push({ id: 'archish', label: 'Арчиш' });
-  if (serviceMap.gluing)     stages.push({ id: 'gluing',     label: 'Склейка',    detail: serviceMap.gluing });
-  stages.push({ id: 'sklad',  label: 'Склад' });
-  if (serviceMap.gluing)     stages.push({ id: 'netu',       label: 'Netu' });
-  return stages;
-}
-
-function loadOrders(){
-  try{
-    const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
-    return raw ? JSON.parse(raw) : [];
-  }catch(e){ return []; }
-}
-function saveOrders(orders){ localStorage.setItem('pp_orders', JSON.stringify(orders)); }
-
-function initTimeline(order){
-  if(!order.timeline) order.timeline = {};
-  const stages = getStages(order);
-  stages.forEach(s => {
-    if(!order.timeline[s.id]) order.timeline[s.id] = {status:'waiting',start:null,end:null,duration:0};
-    if(!STATUS_ORDER.includes(order.timeline[s.id].status)) order.timeline[s.id].status = 'waiting';
-  });
-}
-
-function setStageStatus(order, stageId, newStatus){
-  initTimeline(order);
-  const data = order.timeline[stageId];
-  const now = Date.now();
-  if(newStatus === 'progress' && data.status !== 'progress'){
-    if(!data.start) data.start = now;
-    data.end = null;
-  } else if(newStatus === 'done'){
-    if(!data.start) data.start = now;
-    data.end = now;
-    data.duration = Math.round((data.end - data.start) / 60000);
-  } else if(newStatus === 'waiting'){
-    data.start = null; data.end = null; data.duration = 0;
-  } else if(newStatus === 'paused' || newStatus === 'error'){
-    if(data.start && !data.end) data.duration = Math.round((now - data.start) / 60000);
-  }
-  data.status = newStatus;
-}
-
-function formatDuration(min){
-  if(!min || min <= 0) return '—';
-  const h = Math.floor(min / 60), m = min % 60;
-  return h ? `${h}ч ${m}м` : `${m}м`;
-}
-function formatDate(ts){
-  if(!ts) return '—';
-  return new Date(ts).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-}
-
-function overallStatus(order){
-  const stages = getStages(order);
-  const statuses = stages.map(s => order.timeline[s.id]?.status || 'waiting');
-  if(statuses.includes('error')) return 'error';
-  if(statuses.every(s => s === 'done')) return 'done';
-  if(statuses.includes('paused')) return 'paused';
-  if(statuses.includes('progress')) return 'progress';
-  return 'waiting';
-}
-
-function renderPipeline(order){
-  const stages = getStages(order);
-  let html = '<div class="pipeline">';
-  stages.forEach((s, i) => {
-    const status = order.timeline[s.id]?.status || 'waiting';
-    const meta = STATUS_META[status];
-    const glyph = status === 'waiting' ? '' : meta.icon;
-    html += `<div class="pipeline-node ${status}" title="${s.label}: ${meta.label}">${glyph}</div>`;
-    if(i < stages.length - 1){
-      const nextDone = (status === 'done');
-      html += `<div class="pipeline-connector ${nextDone ? 'filled' : ''}"></div>`;
+    // ---------- Бургер‑меню ----------
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebarOverlay').classList.toggle('show');
     }
-  });
-  html += '</div>';
-  return html;
-}
-
-function renderTable(){
-  const orders = loadOrders();
-  const container = document.getElementById('tableContainer');
-  if(!orders.length){
-    container.innerHTML = '<div class="empty-state">Нет техкарт. <a href="otpCex.html">Создать заказ</a></div>';
-    return;
-  }
-  const search = document.getElementById('searchInput').value.toLowerCase().trim();
-  const statusFilter = document.getElementById('statusFilter').value;
-
-  orders.forEach(initTimeline);
-
-  let filtered = orders.filter(o => {
-    if(search){
-      const hit = [o.techcard_no, o.customer, o.product_name].some(f => String(f || '').toLowerCase().includes(search));
-      if(!hit) return false;
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('show');
     }
-    if(statusFilter && overallStatus(o) !== statusFilter) return false;
-    return true;
-  });
-  filtered.sort((a,b) => b.id - a.id);
 
-  if(!filtered.length){
-    container.innerHTML = '<div class="empty-state">Ничего не найдено по заданным фильтрам.</div>';
-    return;
-  }
+    // ---------- Статусы ----------
+    const STATUS_META = {
+        waiting:  { label:'В очереди',     icon:'○' },
+        progress: { label:'В процессе',    icon:'▶' },
+        done:     { label:'Завершено',     icon:'✓' },
+        paused:   { label:'Приостановлено',icon:'❚❚' },
+        error:    { label:'Проблема',      icon:'!' }
+    };
+    const STATUS_ORDER = ['waiting','progress','done','paused','error'];
 
-  let html = `<div class="row-head"><div>№</div><div>Заказчик</div><div>Продукция</div><div>Прогресс</div></div><div class="row-list">`;
-  filtered.forEach(order => {
-    html += `<div class="order-row" onclick="openCard('${order.id}')">
-      <div class="order-no mono">№${order.techcard_no || order.id}</div>
-      <div class="order-customer">${order.customer || '—'}</div>
-      <div class="order-product">${order.product_name || '—'}</div>
-      <div>${renderPipeline(order)}</div>
-    </div>`;
-  });
-  html += '</div>';
-  container.innerHTML = html;
-}
+    const ALL_STAGES_ORDER = [
+        { id: 'flotorezka',   label: 'Флоторезка' },
+        { id: 'stp',          label: 'СТП' },
+        { id: 'cutting_pre',  label: 'Резка' },
+        { id: 'pechat',       label: 'Печать' },
+        { id: 'cutting_post', label: 'Резка пост печати' },
+        { id: 'uf_lak',       label: 'УФ лак' },
+        { id: 'tisnenie',     label: 'Тиснение' },
+        { id: 'lamination',   label: 'Ламинация' },
+        { id: 'kongrev',      label: 'Конгрев' },
+        { id: 'vysechka',     label: 'Высечка' },
+        { id: 'obloj_remove', label: 'Удаление облоя' },
+        { id: 'manual_work',  label: 'Ручные работы' },
+        { id: 'skleyka',      label: 'Склейка' },
+        { id: 'sklad',        label: 'Склад' }
+    ];
 
-function renderCardPage(order){
-  initTimeline(order);
-  const stages = getStages(order);
-  document.getElementById('cardTitle').textContent = `Техкарта №${order.techcard_no || order.id}`;
-  document.getElementById('cardSub').textContent = `${order.customer || 'Без заказчика'} · ${order.product_name || ''}`;
+    function getStages(order) {
+        const services = order.services || [];
+        const has = (name) => services.some(s => s.name === name);
+        const hasCuttingPre = services.some(s => s.name === 'cutting' && (s.type === 'pre' || s.type === 'до печать' || s.type === 'оба' || s.type === 'both'));
+        const hasCuttingPost = services.some(s => s.name === 'cutting' && (s.type === 'post' || s.type === 'пост печать' || s.type === 'оба' || s.type === 'both'));
 
-  const overall = overallStatus(order);
-  const overallEl = document.getElementById('cardOverallStatus');
-  overallEl.className = `card-page-status ${overall}`;
-  overallEl.textContent = STATUS_META[overall].label;
+        const stages = [];
+        for (let s of ALL_STAGES_ORDER) {
+            if (s.id === 'flotorezka') {
+                if ((order.material_type || 'roll') !== 'roll') continue;
+            } else if (s.id === 'cutting_pre') {
+                if (!hasCuttingPre) continue;
+            } else if (s.id === 'cutting_post') {
+                if (!hasCuttingPost) continue;
+            } else if (['uf_lak','tisnenie','lamination','kongrev','vysechka','obloj_remove','manual_work','skleyka'].includes(s.id)) {
+                if (!has(s.id)) continue;
+            }
+            stages.push(s);
+        }
+        return stages;
+    }
 
-  let html = `<div class="stage-row-head"><div></div><div>Этап</div><div>Начало</div><div>Конец</div><div>Затрач.</div><div>Прогресс</div><div>Статус</div></div>`;
-  stages.forEach(stage => {
-    const data = order.timeline[stage.id];
-    const status = data.status || 'waiting';
-    const meta = STATUS_META[status];
-    const start = data.start, end = data.end;
-    const duration = data.duration || (start && end ? Math.round((end - start) / 60000) : 0);
-    const elapsed = status === 'progress' && start ? Math.round((Date.now() - start) / 60000) : 0;
-    const started = status !== 'waiting';
+    function isStageAvailable(order, stageId) {
+        const stages = getStages(order);
+        const idx = stages.findIndex(s => s.id === stageId);
+        if (idx === -1) return false;
+        if (idx === 0 || idx === 1) return true;
+        const prev = stages[idx - 1];
+        const prevStatus = order.timeline?.[prev.id]?.status || 'waiting';
+        return prevStatus !== 'waiting';
+    }
 
-    let progressPercent = 0;
-    if (status === 'done') progressPercent = 100;
-    else if (status === 'progress') progressPercent = 50;
-    else if (status === 'paused') progressPercent = 25;
-    else if (status === 'error') progressPercent = 10;
+    function loadOrders(){
+        try{
+            const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
+            return raw ? JSON.parse(raw) : [];
+        }catch(e){ return []; }
+    }
+    function saveOrders(orders){ localStorage.setItem('pp_orders', JSON.stringify(orders)); }
 
-    html += `
-      <div class="stage-row">
-        <div class="stage-icon ${status}">${status === 'waiting' ? '' : meta.icon}</div>
-        <div class="stage-name">
-          ${stage.label}
-          ${stage.detail ? `<span class="stage-cell-label">${stage.detail}</span>` : ''}
-        </div>
-        <div class="stage-cell-value">${started ? formatDate(start).split(', ')[1] || formatDate(start) : '—'}</div>
-        <div class="stage-cell-value">${end ? formatDate(end).split(', ')[1] || formatDate(end) : '—'}</div>
-        <div class="stage-cell-value">${started ? formatDuration(duration || elapsed) : '—'}</div>
-        <div class="stage-progress"><div class="fill ${(status === 'progress' && elapsed > 60) || status === 'error' ? 'overdue' : ''}" style="width:${progressPercent}%"></div></div>
-        <div class="status-select-wrap">
-          <select class="status-select" onchange="changeStatus('${order.id}','${stage.id}', this.value)">
-            ${STATUS_ORDER.map(st => `<option value="${st}" ${status === st ? 'selected' : ''}>${STATUS_META[st].label}</option>`).join('')}
-          </select>
-        </div>
-      </div>`;
-  });
-  document.getElementById('cardContent').innerHTML = html;
-}
+    function initTimeline(order){
+        if(!order.timeline) order.timeline = {};
+        const stages = getStages(order);
+        stages.forEach(s => {
+            if(!order.timeline[s.id]) {
+                order.timeline[s.id] = { status:'waiting', start:null, end:null, duration:0, doneQty:0, sentQty:0, history:[] };
+            }
+            const t = order.timeline[s.id];
+            t.doneQty = t.doneQty || 0;
+            t.sentQty = t.sentQty || 0;
+            if(!Array.isArray(t.history)) t.history = [];
+        });
+    }
 
-function showListScreen(){
-  document.getElementById('listView').style.display = '';
-  document.getElementById('cardPage').classList.remove('active');
-  renderTable();
-}
-function showCardScreen(orderId){
-  const orders = loadOrders();
-  const order = orders.find(o => String(o.id) === String(orderId));
-  if(!order){ showListScreen(); return; }
-  document.getElementById('listView').style.display = 'none';
-  document.getElementById('cardPage').classList.add('active');
-  renderCardPage(order);
-  window.scrollTo(0,0);
-}
+    function setStageStatus(order, stageId, newStatus){
+        initTimeline(order);
+        const data = order.timeline[stageId];
+        const now = Date.now();
+        if(newStatus === 'progress' && data.status !== 'progress'){
+            if(!data.start) data.start = now;
+            data.end = null;
+        } else if(newStatus === 'done'){
+            if(!data.start) data.start = now;
+            data.end = now;
+            data.duration = Math.round((data.end - data.start) / 60000);
+            const total = getStageTotal(order, stageId);
+            if(data.doneQty < total) data.doneQty = total;
+        } else if(newStatus === 'waiting'){
+            data.start = null; data.end = null; data.duration = 0;
+        } else if(newStatus === 'paused' || newStatus === 'error'){
+            if(data.start && !data.end) data.duration = Math.round((now - data.start) / 60000);
+        }
+        data.status = newStatus;
+    }
 
-window.openCard = function(orderId){
-  history.pushState({card:orderId}, '', `?card=${encodeURIComponent(orderId)}`);
-  showCardScreen(orderId);
-};
-window.goToList = function(){
-  history.pushState({}, '', location.pathname);
-  showListScreen();
-};
-function route(){
-  const params = new URLSearchParams(location.search);
-  const cardId = params.get('card');
-  if(cardId) showCardScreen(cardId); else showListScreen();
-}
-window.addEventListener('popstate', route);
+    function getStageTotal(order, stageId) {
+        const originalSheets = Math.ceil(order.print_sheets || 0);
+        if (stageId === 'flotorezka') return order.divide_by_two ? Math.ceil(originalSheets / 2) : originalSheets;
+        if (stageId === 'pechat') return Math.max(0, originalSheets - (order.make_ready || 0));
+        if (stageId === 'gluing' || stageId === 'skleyka') return order.order_qty || 0;
+        return Math.max(0, originalSheets - (order.make_ready || 0));
+    }
 
-window.changeStatus = function(orderId, stageId, newStatus){
-  const orders = loadOrders();
-  const order = orders.find(o => String(o.id) === String(orderId));
-  if(!order) return;
-  setStageStatus(order, stageId, newStatus);
-  saveOrders(orders);
-  showCardScreen(orderId);
-};
+    function formatDuration(min){
+        if(!min || min <= 0) return '—';
+        const h = Math.floor(min / 60), m = min % 60;
+        return h ? `${h}ч ${m}м` : `${m}м`;
+    }
+    function formatDate(ts){
+        if(!ts) return '—';
+        return new Date(ts).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    }
 
-window.saveAll = function(){
-  const orders = loadOrders();
-  saveOrders(orders);
-  alert('Все статусы сохранены');
-  renderTable();
-};
+    function overallStatus(order){
+        const stages = getStages(order);
+        const statuses = stages.map(s => order.timeline[s.id]?.status || 'waiting');
+        if(statuses.includes('error')) return 'error';
+        if(statuses.every(s => s === 'done')) return 'done';
+        if(statuses.includes('paused')) return 'paused';
+        if(statuses.includes('progress')) return 'progress';
+        return 'waiting';
+    }
 
-window.resetFilters = function(){
-  document.getElementById('searchInput').value = '';
-  document.getElementById('statusFilter').value = '';
-  renderTable();
-};
+    function renderPipeline(order){
+        const stages = getStages(order);
+        let html = '<div class="pipeline">';
+        stages.forEach((s, i) => {
+            const status = order.timeline[s.id]?.status || 'waiting';
+            const meta = STATUS_META[status];
+            const glyph = status === 'waiting' ? '' : meta.icon;
+            html += `<div class="pipeline-node ${status}" title="${s.label}: ${meta.label}">${glyph}</div>`;
+            if(i < stages.length - 1){
+                const nextDone = (status === 'done');
+                html += `<div class="pipeline-connector ${nextDone ? 'filled' : ''}"></div>`;
+            }
+        });
+        html += '</div>';
+        return html;
+    }
 
-route();
-window.addEventListener('storage', route);
+    function renderTable(){
+        const orders = loadOrders();
+        const container = document.getElementById('tableContainer');
+        if(!orders.length){
+            container.innerHTML = '<div class="empty-state">Нет техкарт. <a href="otpCex.html">Создать заказ</a></div>';
+            return;
+        }
+        const search = document.getElementById('searchInput').value.toLowerCase().trim();
+        const statusFilter = document.getElementById('statusFilter').value;
+
+        orders.forEach(initTimeline);
+
+        let filtered = orders.filter(o => {
+            if(search){
+                const hit = [o.techcard_no, o.customer, o.product_name].some(f => String(f || '').toLowerCase().includes(search));
+                if(!hit) return false;
+            }
+            if(statusFilter && overallStatus(o) !== statusFilter) return false;
+            return true;
+        });
+        filtered.sort((a,b) => b.id - a.id);
+
+        if(!filtered.length){
+            container.innerHTML = '<div class="empty-state">Ничего не найдено по заданным фильтрам.</div>';
+            return;
+        }
+
+        let html = `<div class="row-head"><div>№</div><div>Заказчик</div><div>Продукция</div><div>Прогресс</div></div><div class="row-list">`;
+        filtered.forEach(order => {
+            html += `<div class="order-row" onclick="openCard('${order.id}')">
+                <div class="order-no mono">№${order.techcard_no || order.id}</div>
+                <div class="order-customer">${order.customer || '—'}</div>
+                <div class="order-product">${order.product_name || '—'}</div>
+                <div>${renderPipeline(order)}</div>
+            </div>`;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function renderCardPage(order){
+        initTimeline(order);
+        const stages = getStages(order);
+        document.getElementById('cardTitle').textContent = `Техкарта №${order.techcard_no || order.id}`;
+        document.getElementById('cardSub').textContent = `${order.customer || 'Без заказчика'} · ${order.product_name || ''}`;
+
+        const overall = overallStatus(order);
+        const overallEl = document.getElementById('cardOverallStatus');
+        overallEl.className = `card-page-status ${overall}`;
+        overallEl.textContent = STATUS_META[overall].label;
+
+        let html = `<div class="stage-row-head"><div></div><div>Этап</div><div>Начало</div><div>Конец</div><div>Затрач.</div><div>Прогресс</div><div>Статус</div></div>`;
+        stages.forEach(stage => {
+            const data = order.timeline[stage.id];
+            const status = data.status || 'waiting';
+            const meta = STATUS_META[status];
+            const start = data.start, end = data.end;
+            const duration = data.duration || (start && end ? Math.round((end - start) / 60000) : 0);
+            const elapsed = status === 'progress' && start ? Math.round((Date.now() - start) / 60000) : 0;
+            const started = status !== 'waiting';
+            const available = isStageAvailable(order, stage.id);
+            const rowClass = available ? '' : 'disabled';
+
+            let progressPercent = 0;
+            if (status === 'done') progressPercent = 100;
+            else if (status === 'progress') progressPercent = 50;
+            else if (status === 'paused') progressPercent = 25;
+            else if (status === 'error') progressPercent = 10;
+
+            let extraInfo = '';
+            if (stage.id === 'sklad') {
+                const received = order.received_qty || 0;
+                const totalQty = order.order_qty || 0;
+                const shipped = (order.shipment_history || []).reduce((sum, s) => sum + (s.qty || 0), 0);
+                extraInfo = `<div class="stage-extra-info">
+                    <span>📥 Принято: ${received} / ${totalQty}</span>
+                    <span>🚚 Отгружено: ${shipped}</span>
+                </div>`;
+            }
+
+            html += `
+                <div class="stage-row ${rowClass}">
+                    <div class="stage-icon ${status}">${status === 'waiting' ? '' : meta.icon}</div>
+                    <div class="stage-name">
+                        ${stage.label}
+                        ${extraInfo}
+                        ${stage.detail ? `<span class="stage-cell-label">${stage.detail}</span>` : ''}
+                    </div>
+                    <div class="stage-cell-value">${started ? formatDate(start).split(', ')[1] || formatDate(start) : '—'}</div>
+                    <div class="stage-cell-value">${end ? formatDate(end).split(', ')[1] || formatDate(end) : '—'}</div>
+                    <div class="stage-cell-value">${started ? formatDuration(duration || elapsed) : '—'}</div>
+                    <div class="stage-progress"><div class="fill ${(status === 'progress' && elapsed > 60) || status === 'error' ? 'overdue' : ''}" style="width:${progressPercent}%"></div></div>
+                    <div class="status-select-wrap">
+                        <select class="status-select" onchange="changeStatus('${order.id}','${stage.id}', this.value)" ${available ? '' : 'disabled'}>
+                            ${STATUS_ORDER.map(st => `<option value="${st}" ${status === st ? 'selected' : ''}>${STATUS_META[st].label}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>`;
+        });
+        document.getElementById('cardContent').innerHTML = html;
+    }
+
+    function showListScreen(){
+        document.getElementById('listView').style.display = '';
+        document.getElementById('cardPage').classList.remove('active');
+        renderTable();
+    }
+    function showCardScreen(orderId){
+        const orders = loadOrders();
+        const order = orders.find(o => String(o.id) === String(orderId));
+        if(!order){ showListScreen(); return; }
+        document.getElementById('listView').style.display = 'none';
+        document.getElementById('cardPage').classList.add('active');
+        renderCardPage(order);
+        window.scrollTo(0,0);
+    }
+
+    window.openCard = function(orderId){
+        history.pushState({card:orderId}, '', `?card=${encodeURIComponent(orderId)}`);
+        showCardScreen(orderId);
+    };
+    window.goToList = function(){
+        history.pushState({}, '', location.pathname);
+        showListScreen();
+    };
+    function route(){
+        const params = new URLSearchParams(location.search);
+        const cardId = params.get('card');
+        if(cardId) showCardScreen(cardId); else showListScreen();
+    }
+    window.addEventListener('popstate', route);
+
+    window.changeStatus = function(orderId, stageId, newStatus){
+        const orders = loadOrders();
+        const order = orders.find(o => String(o.id) === String(orderId));
+        if(!order) return;
+        setStageStatus(order, stageId, newStatus);
+        saveOrders(orders);
+        showCardScreen(orderId);
+    };
+
+    window.saveAll = function(){
+        renderTable();
+    };
+
+    window.resetFilters = function(){
+        document.getElementById('searchInput').value = '';
+        document.getElementById('statusFilter').value = '';
+        renderTable();
+    };
+
+    route();
+    window.addEventListener('storage', route);
 </script>
-
 <script src="js/auth-check.js"></script>
 <script src="js/nav-filter.js"></script>
 </body>

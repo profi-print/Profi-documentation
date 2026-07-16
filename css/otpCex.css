@@ -1,0 +1,1897 @@
+    :root {
+      --bg-main: #f1f4f9;
+      --bg-white: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --primary-blue: #2563eb;
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+      --accent-red: #dc2626;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body.dark-theme, body[data-theme="dark"] {
+      --bg-main: #1e293b !important;
+      --bg-white: #0f172a !important;
+      --text-primary: #e2e8f0 !important;
+      --text-secondary: #94a3b8 !important;
+      --border-color: #334155 !important;
+      --primary-blue: #3b82f6 !important;
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.4) !important;
+      --accent-red: #ef4444 !important;
+    }
+    .theme-switch-wrapper { display: none !important; }
+
+    * { box-sizing: border-box; }
+
+    /* Бургер-меню */
+    .burger-btn {
+      display: none;
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 1100;
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: var(--text-primary);
+    }
+    @media screen and (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 280px;
+        height: 100%;
+        transition: left 0.3s ease;
+        z-index: 1050;
+        background: var(--bg-white);
+        box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+        overflow-y: auto;
+        padding-top: 16px;
+      }
+      .sidebar.open { left: 0; }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 1040;
+      }
+      .sidebar-overlay.show { display: block; }
+      .burger-btn { display: block; }
+      .main-content {
+        margin-left: 0 !important;
+        padding: 60px 12px 20px;
+        width: 100%;
+      }
+      .sidebar .nav-menu li a {
+        color: var(--text-primary) !important;
+        background: transparent !important;
+        font-weight: 500;
+      }
+      .sidebar .nav-menu li a:hover {
+        background: var(--bg-main) !important;
+      }
+      .sidebar .nav-menu li a.active {
+        background: var(--primary-blue) !important;
+        color: #fff !important;
+      }
+    }
+
+    /* Список заказов */
+    .orders-list {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.06);
+      max-width: 100%;
+      margin: 0 auto;
+      overflow-x: auto;
+    }
+    .orders-list .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .orders-list .header-row h2 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 20px;
+      border-bottom: 2px solid var(--primary-blue);
+      padding-bottom: 4px;
+    }
+    .orders-list .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .orders-list .controls input {
+      padding: 10px 14px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 14px;
+      background: var(--bg-white);
+      color: var(--text-primary);
+      min-width: 200px;
+      flex: 1;
+    }
+    .orders-list .controls input:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .table-responsive { overflow-x: auto; }
+    .orders-list table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      min-width: 700px;
+    }
+    .orders-list th {
+      text-align: left;
+      padding: 10px 12px;
+      background: var(--bg-main);
+      border-bottom: 2px solid var(--border-color);
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .orders-list td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+    .orders-list tr:hover td { background: var(--bg-main); cursor: pointer; }
+    .orders-list .btn-link {
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: var(--primary-blue);
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      margin-right: 4px;
+      display: inline-block;
+    }
+    .orders-list .btn-link:hover { opacity: 0.85; }
+    .orders-list .btn-danger { background: var(--accent-red); }
+    .orders-list .empty-msg { padding: 30px; text-align: center; color: var(--text-secondary); font-style: italic; }
+    .pagination { display: flex; justify-content: center; gap: 6px; margin-top: 16px; flex-wrap: wrap; }
+    .pagination button {
+      padding: 8px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-white);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.15s;
+    }
+    .pagination button:hover:not(:disabled) { background: var(--bg-main); border-color: var(--primary-blue); }
+    .pagination button.active { background: var(--primary-blue); color: #fff; border-color: var(--primary-blue); }
+    .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    #listContainer, #formContainer { display: none; }
+    #listContainer.active, #formContainer.active { display: block; }
+
+    /* Форма */
+    .form-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch; margin-top: 16px; }
+    .form-column {
+      background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px;
+      padding: 18px; box-shadow: 0 1px 3px rgba(15,23,42,0.06); display: flex; flex-direction: column; height: 100%;
+    }
+    .form-column-title {
+      font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 14px 0;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
+    }
+    .choice-strip { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 14px; }
+    .choice-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .choice-card {
+      position: relative; border: 1.5px solid var(--border-color); border-radius: 12px;
+      padding: 16px 10px; text-align: center; cursor: pointer; background: var(--bg-white);
+      transition: all 0.2s ease; user-select: none;
+    }
+    .choice-card:hover { border-color: var(--primary-blue); box-shadow: 0 2px 8px rgba(37,99,235,0.15); }
+    .choice-card input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .choice-card label {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      font-size: 14px; font-weight: 600; color: var(--text-primary); cursor: pointer;
+    }
+    .choice-card label::before {
+      content: ''; display: inline-block; width: 18px; height: 18px;
+      border: 2px solid var(--text-secondary); border-radius: 50%; margin-bottom: 2px; transition: 0.15s;
+    }
+    .choice-card input:checked+label::before {
+      border-color: var(--primary-blue); background: var(--primary-blue);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.2);
+    }
+    .choice-card:has(input:checked) { border-color: var(--primary-blue); background: rgba(37,99,235,0.06); }
+
+    .service-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 12px; align-items: start; }
+    .service-item {
+      background: linear-gradient(135deg, var(--bg-main), var(--bg-white));
+      border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.06); display: flex; flex-direction: column;
+      position: relative; overflow: visible;
+    }
+    .service-main { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .service-item input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--primary-blue); flex-shrink: 0; }
+    .service-item label { font-size: 16px; font-weight: 600; color: var(--text-primary); cursor: pointer; }
+    .service-options { margin-top: 8px; display: none; }
+    .service-options select, .service-options input {
+      width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 6px;
+      font-size: 14px; background: var(--bg-white); color: var(--text-primary); margin-top: 4px;
+    }
+    .service-options .cutting-fields { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+    .service-options .cutting-fields input { flex: 1; }
+
+    .data-table select {
+      width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px;
+      font-size: 14px; background: linear-gradient(135deg, var(--bg-white), rgba(240,244,250,0.5));
+      color: var(--text-primary); -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,..."); background-repeat: no-repeat;
+      background-position: right 12px center; padding-right: 2.5rem;
+    }
+    .print-sheets-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .print-sheets-info { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+    .print-sheets-info strong {
+      font-weight: 700; color: var(--primary-blue); background: rgba(37,99,235,0.08);
+      padding: 2px 8px; border-radius: 6px;
+    }
+    .customer-autocomplete { position: relative; width: 100%; }
+    .customer-autocomplete input {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 8px;
+      font-size: 14px; background: var(--bg-white);
+    }
+    .hidden-input { display: none; }
+
+    /* Скриншот – не растягивается, остаётся компактным */
+    .screenshot-drop-area {
+      flex: none;
+      min-height: 180px;
+      max-height: 300px;
+      overflow: hidden;
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      position: relative;
+      cursor: default;
+    }
+    .screenshot-drop-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: none;
+    }
+    .screenshot-drop-area.has-image img { display: block; }
+    .screenshot-drop-area .placeholder { color: var(--text-secondary); text-align: center; }
+    .screenshot-drop-area .clear-screenshot {
+      position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: #fff;
+      border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 20px;
+      cursor: pointer; display: none; align-items: center; justify-content: center;
+    }
+    .screenshot-drop-area.has-image .clear-screenshot { display: flex; }
+
+    .form-actions {
+      margin-top: 0;   /* подняли на 20 пикселей относительно исходного значения 20px */
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 16px;
+    }
+    .form-actions .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    input[type="number"] { -moz-appearance: textfield; }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+    .service-grid { margin-bottom: 30px; }
+    .pdf-block { margin-top: 30px; padding-top: 20px; }
+    .screenshot-block { margin-top: 30px; padding-top: 20px; }
+
+    /* Компактный блок материала */
+    .material-fields-row {
+      display: flex; align-items: flex-end; gap: 12px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .material-fields-row .field-group { flex: 1 1 0; min-width: 130px; display: flex; flex-direction: column; }
+    .material-fields-row .field-group label {
+      font-size: 13px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 4px;
+    }
+    .material-fields-row .field-group input {
+      width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 6px;
+      font-size: 14px; background: var(--bg-white); color: var(--text-primary);
+      height: 44px;
+    }
+    .material-fields-row .field-group input:focus {
+      outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .material-fields-row .btn-material {
+      width: 100%; height: 44px; border-radius: 6px; font-size: 14px; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--border-color); background: var(--bg-white); color: var(--text-primary);
+      font-weight: 500; white-space: nowrap; padding: 0 12px;
+    }
+    .material-fields-row .btn-material:hover { background: var(--bg-main); }
+    .material-fields-row .btn-divide-toggle.active { background: var(--primary-blue); color: #fff; border-color: var(--primary-blue); }
+    .material-fields-row .btn-transfer { background: #f0f4ff; color: var(--primary-blue); border-color: var(--primary-blue); }
+    .material-fields-row .btn-transfer:disabled { opacity: 0.5; cursor: not-allowed; background: var(--bg-main); color: var(--text-secondary); border-color: var(--border-color); }
+    .material-fields-row .btn-transfer:not(:disabled):hover { background: var(--primary-blue); color: #fff; }
+
+    .sidebar .nav-menu li a {
+      color: var(--text-primary) !important;
+      background: transparent !important;
+    }
+    .sidebar .nav-menu li a:hover { background: var(--bg-main) !important; }
+    .sidebar .nav-menu li a.active {
+      background: var(--primary-blue) !important;
+      color: #fff !important;
+    }
+    .sidebar { color: var(--text-primary); }
+    .nav-menu a { color: var(--text-primary) !important; }
+
+    @media (max-width: 768px) {
+      .form-columns { grid-template-columns: 1fr; }
+      .service-grid { grid-template-columns: 1fr; }
+      .material-fields-row { flex-direction: column; align-items: stretch; }
+      .material-fields-row .btn-material { height: 44px; }
+    }
+
+    .form-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+/* Правая колонка — flex, чтобы скриншот растягивался */
+#formContainer .form-column:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+#formContainer .form-column:last-child .form-column-title {
+  flex-shrink: 0;
+}
+
+#formContainer .form-column:last-child .service-grid {
+  flex-shrink: 0;
+}
+
+#formContainer .form-column:last-child .pdf-block {
+  flex-shrink: 0;
+}
+
+#formContainer .form-column:last-child .screenshot-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#formContainer .form-column:last-child .screenshot-drop-area {
+  flex: 1;
+  min-height: 200px;
+  max-height: none;
+}
+
+#formContainer .form-column:last-child .form-actions {
+  flex-shrink: 0;
+  margin-top: 16px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+.sidebar {
+  background: #1e3a8a !important;
+}
+
+.sidebar .nav-menu li a {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+.sidebar .nav-menu li a:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.sidebar .nav-menu li a.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.sidebar .sidebar-header .logo-small span {
+  color: #ffffff !important;
+}
+
+.sidebar .sidebar-header .logo-icon {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+.form-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+  width: 100%;
+}
+
+.form-actions .btn {
+  flex: 1;
+  padding: 16px 24px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .form-actions .btn {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 15px;
+    min-height: 52px;
+  }
+}
+
+.print-sheets-info { 
+  display: flex; 
+  align-items: center;
+  gap: 157px; /* было 8px, стало 20px */
+  font-size: 14px; 
+  font-weight: 500; 
+  flex-wrap: wrap;
+}
+.print-sheets-info strong {
+  font-weight: 700; 
+  color: var(--primary-blue); 
+  background: rgba(37,99,235,0.08);
+  padding: 2px 8px; 
+  border-radius: 6px;
+}
+.material-fields-row .btn-transfer.active { 
+  background: var(--primary-blue); 
+  color: #fff; 
+  border-color: var(--primary-blue); 
+}
+.print-sheets-container {
+  margin-top: 8px;
+}
+
+.print-sheets-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.print-sheets-info > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.print-sheets-info strong {
+  font-weight: 700;
+  color: var(--primary-blue);
+  background: rgba(37, 99, 235, 0.1);
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-align: center;
+  display: inline-block;
+  font-size: 14px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+}
+
+/* Мобильная адаптация */
+@media screen and (max-width: 768px) {
+  /* Основные контейнеры */
+  .main-content {
+    padding: 60px 8px 20px !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .content-section {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Список заказов - карточный вид */
+  .orders-list {
+    padding: 12px;
+    margin: 0;
+    border-radius: 8px;
+  }
+
+  .orders-list .header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .orders-list .header-row h2 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .orders-list .controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .orders-list .controls input {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .orders-list .controls .btn {
+    width: 100%;
+  }
+
+  /* Таблица заказов - скрыть на мобильных, использовать карточки */
+  .table-responsive {
+    display: none;
+  }
+
+  /* Карточки заказов для мобильных */
+  .orders-list::after {
+    content: '';
+    display: block;
+  }
+
+  #ordersBody tr {
+    display: block;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  #ordersBody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+  }
+
+  #ordersBody td:last-child {
+    border-bottom: none;
+  }
+
+  #ordersBody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  #ordersBody td:nth-child(1)::before { content: '№ техкарты:'; }
+  #ordersBody td:nth-child(2)::before { content: 'Заказчик:'; }
+  #ordersBody td:nth-child(3)::before { content: 'Продукция:'; }
+  #ordersBody td:nth-child(4)::before { content: 'Менеджер:'; }
+  #ordersBody td:nth-child(5)::before { content: 'Кол-во:'; }
+  #ordersBody td:nth-child(6)::before { content: 'Тираж:'; }
+
+  #ordersBody td {
+    text-align: right;
+  }
+
+  #ordersBody td:first-child {
+    text-align: left;
+  }
+
+  /* Форма */
+  .form-columns {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .form-column {
+    padding: 14px !important;
+  }
+
+  .form-column-title {
+    font-size: 16px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Choice cards */
+  .choice-cards {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .choice-card {
+    padding: 14px 10px !important;
+  }
+
+  /* Service grid */
+  .service-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .service-item {
+    padding: 14px !important;
+  }
+
+  .service-item label {
+    font-size: 15px !important;
+  }
+
+  /* Material fields */
+  .material-fields-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .material-fields-row .field-group {
+    width: 100% !important;
+    min-width: auto !important;
+  }
+
+  .material-fields-row .btn-material {
+    width: 100% !important;
+    height: 48px !important;
+  }
+
+
+  /* Print sheets info */
+  .print-sheets-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .print-sheets-info {
+    flex-direction: column;
+    gap: 10px !important;
+    width: 100%;
+  }
+
+  .print-sheets-info > span {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .print-sheets-info strong {
+    max-width: none !important;
+    font-size: 15px !important;
+    padding: 8px 14px !important;
+  }
+
+  /* Form row */
+  .form-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .form-group {
+    width: 100% !important;
+  }
+
+  .form-group label {
+    font-size: 14px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100% !important;
+    font-size: 15px !important;
+    padding: 12px !important;
+  }
+
+  /* PDF block */
+  .pdf-block {
+    margin-top: 20px !important;
+  }
+
+  .pdf-block > div {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .pdf-block .btn {
+    width: 100% !important;
+  }
+
+  .pdf-filename-input {
+    width: 100% !important;
+  }
+
+  .pdf-filename-input input {
+    width: 100% !important;
+  }
+
+  /* Screenshot block */
+  .screenshot-block {
+    margin-top: 20px !important;
+  }
+
+  .screenshot-drop-area {
+    min-height: 150px !important;
+    max-height: 250px !important;
+  }
+
+  /* Form actions */
+  .form-actions {
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 16px 0 !important;
+  }
+
+  .form-actions .btn {
+    width: 100% !important;
+    padding: 16px !important;
+    font-size: 16px !important;
+    min-height: 52px !important;
+  }
+
+  /* Pagination */
+  .pagination {
+    gap: 4px !important;
+    flex-wrap: wrap;
+  }
+
+  .pagination button {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    min-width: 40px;
+  }
+
+  /* Cutting fields */
+  .service-options .cutting-fields {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .service-options .cutting-fields input {
+    width: 100% !important;
+  }
+
+  .cutting-row-inline {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100%;
+  }
+
+  .cutting-row-inline label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+  }
+
+  .cutting-row-inline input {
+    width: 100% !important;
+  }
+
+  /* Sidebar overlay */
+  .sidebar-overlay {
+    z-index: 1040 !important;
+  }
+
+  /* Burger button */
+  .burger-btn {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 26px !important;
+  }
+
+  /* Top bar */
+  .top-bar h1 {
+    font-size: 20px !important;
+    padding-left: 50px !important;
+  }
+}
+
+/* Очень маленькие экраны */
+@media screen and (max-width: 480px) {
+  .main-content {
+    padding: 56px 6px 16px !important;
+  }
+
+  .orders-list {
+    padding: 10px !important;
+  }
+
+  .form-column {
+    padding: 12px !important;
+  }
+
+  .choice-card {
+    padding: 12px 8px !important;
+  }
+
+  .service-item {
+    padding: 12px !important;
+  }
+
+  .pagination button {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    min-width: 36px;
+  }
+}
+
+/* Предотвращение горизонтальной прокрутки */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+/* ============================================
+   МОБИЛЬНАЯ АДАПТАЦИЯ - ОТПРАВКА В ЦЕХ (otpCex)
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+  /* Убираем весь горизонтальный скролл */
+  body, html {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+
+  /* Основной контент */
+  .main-content {
+    padding: 70px 12px 20px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .content-section {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Контейнер формы */
+  #formContainer {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Заголовок формы */
+  #formContainer > div:first-child {
+    padding: 0 4px 16px !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  #formTitle {
+    font-size: 20px !important;
+    text-align: center !important;
+  }
+
+  #formContainer > div:first-child .btn {
+    width: 100% !important;
+    padding: 12px !important;
+  }
+
+  /* Форма */
+  #orderForm {
+    width: 100% !important;
+  }
+
+  /* Строки формы - одна колонка */
+  .form-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    margin-bottom: 16px !important;
+    width: 100% !important;
+  }
+
+  .form-row .form-group {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Группы полей */
+  .form-group {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+
+  .form-group label {
+    display: block !important;
+    margin-bottom: 8px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+  }
+
+  /* Все инпуты, селекты, textarea */
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group select,
+  .form-group textarea,
+  .customer-autocomplete input {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 14px 12px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
+    border: 1.5px solid var(--border-color) !important;
+    background: var(--bg-white) !important;
+    color: var(--text-primary) !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none !important;
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  }
+
+  /* Textarea */
+  .form-group textarea {
+    min-height: 80px !important;
+    resize: vertical !important;
+  }
+
+  /* Колонки формы */
+  .form-columns {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+  }
+
+  .form-column {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Заголовки колонок */
+  .form-column-title {
+    font-size: 16px !important;
+    margin-bottom: 14px !important;
+    padding-bottom: 10px !important;
+  }
+
+  /* Choice cards (радио кнопки) */
+  .choice-strip {
+    padding: 14px !important;
+    margin-bottom: 16px !important;
+    border-radius: 10px !important;
+  }
+
+  .choice-cards {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .choice-card {
+    padding: 16px 12px !important;
+    border-radius: 10px !important;
+  }
+
+  .choice-card label {
+    font-size: 15px !important;
+    padding: 8px !important;
+  }
+
+  /* Material fields */
+  .material-fields-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-top: 14px !important;
+    width: 100% !important;
+  }
+
+  .material-fields-row .field-group {
+    width: 100% !important;
+    min-width: auto !important;
+  }
+
+  .material-fields-row .field-group label {
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .material-fields-row .field-group input {
+    width: 100% !important;
+    padding: 14px 12px !important;
+    font-size: 16px !important;
+    height: 52px !important;
+  }
+
+  .material-fields-row .btn-material {
+    width: 100% !important;
+    height: 52px !important;
+    font-size: 15px !important;
+    padding: 0 16px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Print sheets info */
+  .print-sheets-container {
+    width: 100% !important;
+    margin-top: 10px !important;
+  }
+
+  .print-sheets-info {
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .print-sheets-info > span {
+    width: 100% !important;
+    justify-content: space-between !important;
+    padding: 10px 12px !important;
+    background: var(--bg-white) !important;
+    border-radius: 8px !important;
+    border: 1.5px solid var(--border-color) !important;
+  }
+
+  .print-sheets-info strong {
+    padding: 8px 16px !important;
+    font-size: 15px !important;
+    min-width: 80px !important;
+    text-align: center !important;
+  }
+
+  /* Service grid */
+  .service-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    margin-top: 14px !important;
+  }
+
+  .service-item {
+    padding: 16px !important;
+    border-radius: 10px !important;
+  }
+
+  .service-main {
+    margin-bottom: 10px !important;
+  }
+
+  .service-item input[type="checkbox"] {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .service-item label {
+    font-size: 15px !important;
+  }
+
+  .service-options {
+    margin-top: 12px !important;
+  }
+
+  .service-options select,
+  .service-options input {
+    width: 100% !important;
+    padding: 12px !important;
+    font-size: 15px !important;
+    margin-top: 8px !important;
+  }
+
+  /* Cutting fields */
+  .service-options .cutting-fields {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .service-options .cutting-fields input {
+    width: 100% !important;
+  }
+
+  .cutting-row-inline {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-bottom: 10px !important;
+  }
+
+  .cutting-row-inline label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+  }
+
+  .cutting-row-inline input {
+    width: 100% !important;
+  }
+
+  /* PDF block */
+  .pdf-block {
+    margin-top: 20px !important;
+    padding-top: 16px !important;
+  }
+
+  .pdf-block > div {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .pdf-select-btn,
+  .pdf-block .btn {
+    width: 100% !important;
+    padding: 14px !important;
+  }
+
+  .pdf-filename-input {
+    width: 100% !important;
+  }
+
+  .pdf-filename-input input {
+    width: 100% !important;
+    padding: 14px !important;
+  }
+
+  /* Screenshot block */
+  .screenshot-block {
+    margin-top: 20px !important;
+    padding-top: 16px !important;
+    width: 100% !important;
+  }
+
+  .screenshot-drop-area {
+    min-height: 180px !important;
+    max-height: 300px !important;
+    width: 100% !important;
+    padding: 16px !important;
+  }
+
+  .screenshot-drop-area .placeholder {
+    padding: 20px !important;
+  }
+
+  .screenshot-drop-area .placeholder div:first-child {
+    font-size: 40px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Form actions (кнопки) */
+  .form-actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-top: 20px !important;
+    padding: 20px 0 0 0 !important;
+    width: 100% !important;
+  }
+
+  .form-actions .btn {
+    width: 100% !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+    min-height: 52px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Список заказов (когда показывается) */
+  .orders-list {
+    padding: 14px !important;
+    margin: 0 !important;
+  }
+
+  .orders-list .header-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .orders-list .header-row h2 {
+    font-size: 18px !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .orders-list .controls {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .orders-list .controls input {
+    width: 100% !important;
+    min-width: auto !important;
+    padding: 14px !important;
+  }
+
+  .orders-list .controls .btn {
+    width: 100% !important;
+  }
+
+  .table-responsive {
+    display: none !important;
+  }
+
+  /* Pagination */
+  .pagination {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    margin-top: 16px !important;
+  }
+
+  .pagination button {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+}
+
+/* Очень маленькие экраны */
+@media screen and (max-width: 480px) {
+  .main-content {
+    padding: 65px 10px 16px !important;
+  }
+
+  .form-column {
+    padding: 14px !important;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 12px !important;
+    font-size: 15px !important;
+  }
+
+  .material-fields-row .field-group input,
+  .material-fields-row .btn-material {
+    height: 48px !important;
+  }
+
+  .data-table tr {
+    padding: 10px !important;
+  }
+
+  .data-table td:first-child {
+    font-size: 12px !important;
+  }
+
+  .choice-card {
+    padding: 14px 10px !important;
+  }
+
+  .service-item {
+    padding: 14px !important;
+  }
+
+  .form-actions .btn {
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    min-height: 48px !important;
+  }
+}
+
+/* Landscape mode */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .main-content {
+    padding: 60px 12px 12px !important;
+  }
+
+  .form-columns {
+    gap: 12px !important;
+  }
+
+  .form-column {
+    padding: 12px !important;
+  }
+
+  .form-group {
+    margin-bottom: 12px !important;
+  }
+
+  .form-actions {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+
+  .form-actions .btn {
+    flex: 1 1 auto !important;
+    min-width: 140px !important;
+  }
+}
+
+/* Safe area для iOS */
+@supports (padding: max(0px)) {
+  @media screen and (max-width: 768px) {
+    .main-content {
+      padding-left: max(12px, env(safe-area-inset-left)) !important;
+      padding-right: max(12px, env(safe-area-inset-right)) !important;
+      padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .burger-btn {
+      left: max(12px, env(safe-area-inset-left)) !important;
+      top: max(12px, env(safe-area-inset-top)) !important;
+    }
+  }
+}
+
+/* Предотвращение горизонтального скролла для всех элементов */
+@media screen and (max-width: 768px) {
+  *, *::before, *::after {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+  }
+
+  img, svg, video {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  input, select, textarea, button {
+    max-width: 100% !important;
+  }
+}
+/* ============================================
+   ИСПРАВЛЕНИЕ - ИНПУТЫ В ПАРАМЕТРАХ (data-table)
+   ============================================ */
+@media screen and (max-width: 768px) {
+  /* Убираем лишние отступы у строк data-table */
+  .data-table tr {
+    margin-bottom: 12px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+  }
+
+  /* Ячейки с лейблами */
+  .data-table td {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  /* Лейбл (первая ячейка) */
+  .data-table td:first-child {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 6px !important;
+    margin-top: 14px !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+  }
+
+  /* Инпуты и селекты — идентичны form-group */
+  .data-table select,
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 14px 12px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
+    border: 1.5px solid var(--border-color) !important;
+    background: var(--bg-white) !important;
+    color: var(--text-primary) !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+  }
+
+  /* Фокус — такой же как в form-group */
+  .data-table select:focus,
+  .data-table input:focus {
+    outline: none !important;
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  }
+
+  /* Select — стрелка как в form-group */
+  .data-table select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 14px center !important;
+    padding-right: 40px !important;
+  }
+
+  /* Блок "Тираж листов" — карточка */
+  .print-sheets-container {
+    background: var(--bg-white) !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    padding: 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .print-sheets-info {
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .print-sheets-info > span {
+    width: 100% !important;
+    justify-content: space-between !important;
+    padding: 10px 12px !important;
+    background: var(--bg-main) !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--border-color) !important;
+    font-size: 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .print-sheets-info strong {
+    padding: 6px 14px !important;
+    font-size: 14px !important;
+    min-width: 70px !important;
+    text-align: center !important;
+    max-width: none !important;
+  }
+
+  /* Первая строка data-table без верхнего отступа у лейбла */
+  .data-table tr:first-child td:first-child {
+    margin-top: 0 !important;
+  }
+}
+
+/* Очень маленькие экраны */
+@media screen and (max-width: 480px) {
+  .data-table td:first-child {
+    font-size: 12px !important;
+  }
+
+  .data-table select,
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    padding: 12px 10px !important;
+    font-size: 15px !important;
+  }
+
+  .print-sheets-container {
+    padding: 12px !important;
+  }
+}
+
+/* Кнопки действий в таблице заказов */
+.orders-list .btn-action {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    min-height: 36px;
+    white-space: nowrap;
+}
+
+.orders-list .btn-edit {
+    background: #2563eb;
+    color: #fff;
+}
+
+.orders-list .btn-edit:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+}
+
+.orders-list .btn-delete {
+    background: #dc2626;
+    color: #fff;
+}
+
+.orders-list .btn-delete:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(220,38,38,0.3);
+}
+
+.orders-list .btn-action:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.orders-list .actions-cell {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+/* Мобильная адаптация кнопок */
+@media screen and (max-width: 768px) {
+    .orders-list .btn-action {
+        padding: 10px 14px;
+        font-size: 14px;
+        min-height: 44px;
+    }
+    
+    #ordersBody .actions-cell {
+        justify-content: space-between;
+        margin-top: 8px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border-color);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #ordersBody td:last-child::before {
+        content: 'Действия:' !important;
+    }
+    
+    #ordersBody td:last-child {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* ============================================
+   ИСПРАВЛЕНИЕ: Компактные инпуты в "Параметры" для мобильных
+   ============================================ */
+@media screen and (max-width: 768px) {
+  .data-table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 10px !important; /* Расстояние между строками-карточками */
+  }
+
+  .data-table tr {
+    display: flex !important;
+    flex-direction: column !important;
+    background: var(--bg-white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+  }
+
+  .data-table td {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important; /* Ключевое: padding не увеличивает ширину */
+  }
+
+  .data-table td:first-child {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 6px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  /* ЖЁСТКОЕ ограничение ширины инпутов и селектов */
+  .data-table select,
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 12px !important;
+    font-size: 15px !important;
+    border-radius: 8px !important;
+    border: 1.5px solid var(--border-color) !important;
+    background: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .data-table select:focus,
+  .data-table input:focus {
+    outline: none !important;
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  }
+
+  /* Блок "Тираж листов" тоже делаем компактным */
+  .print-sheets-container {
+    width: 100% !important;
+    margin-top: 8px !important;
+  }
+  
+  .print-sheets-info {
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .print-sheets-info > span {
+    width: 100% !important;
+    justify-content: space-between !important;
+    padding: 10px !important;
+    background: var(--bg-white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .print-sheets-info strong {
+    padding: 6px 12px !important;
+    font-size: 14px !important;
+    min-width: 60px !important;
+    text-align: center !important;
+  }
+}
+
+/* ============================================
+   КОМПАКТНЫЕ ПАРАМЕТРЫ ДЛЯ МОБИЛЬНЫХ
+   ============================================ */
+@media screen and (max-width: 768px) {
+  .data-table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 8px !important;
+  }
+
+  .data-table tr {
+    display: block !important;
+    background: var(--bg-white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    padding: 10px 12px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .data-table td {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  .data-table td:first-child {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 6px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+  }
+
+  .data-table select,
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    border: 1.5px solid var(--border-color) !important;
+    background: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+  }
+
+  .data-table select:focus,
+  .data-table input:focus {
+    outline: none !important;
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  }
+
+  /* Блок тиража */
+  .print-sheets-container {
+    width: 100% !important;
+    margin-top: 6px !important;
+  }
+  
+  .print-sheets-info {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .print-sheets-info > span {
+    width: 100% !important;
+    padding: 8px !important;
+    background: var(--bg-white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+  }
+
+  .print-sheets-info strong {
+    padding: 4px 10px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Очень маленькие экраны */
+@media screen and (max-width: 380px) {
+  .data-table tr {
+    padding: 8px 10px !important;
+  }
+  
+  .data-table td:first-child {
+    font-size: 10px !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .data-table select,
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    padding: 8px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* ============================================
+   ЕДИНЫЙ БЛОК: МОБИЛЬНЫЕ ПАРАМЕТРЫ (data-table)
+   ============================================ */
+@media screen and (max-width: 768px) {
+  .data-table {
+    width: 100% !important;
+    min-width: 0 !important;  /* СБРАСЫВАЕМ min-width с десктопа */
+    border-collapse: separate !important;
+    border-spacing: 0 8px !important;
+    margin-top: 12px !important;
+    display: block !important;
+  }
+
+  .data-table tbody {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .data-table tr {
+    display: block !important;
+    background: var(--bg-white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    margin-bottom: 8px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .data-table td {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .data-table td:first-child {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 6px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+  }
+
+  .data-table select,
+  .data-table input[type="text"],
+  .data-table input[type="number"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    border: 1.5px solid var(--border-color) !important;
+    background: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .data-table select:focus,
+  .data-table input:focus {
+    outline: none !important;
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  }
+
+  .data-table select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    padding-right: 36px !important;
+  }
+
+  .print-sheets-container {
+    width: 100% !important;
+    margin-top: 6px !important;
+  }
+  
+  .print-sheets-info {
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .print-sheets-info > span {
+    width: 100% !important;
+    padding: 8px 10px !important;
+    background: var(--bg-main) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+
+  .print-sheets-info strong {
+    padding: 2px 8px !important;
+    font-size: 13px !important;
+    min-width: auto !important;
+  }
+}
+.sidebar .nav-menu li.nav-group > .nav-group-toggle { display: flex; justify-content: space-between; align-items: center; }
+.sidebar .nav-menu li.nav-group .nav-caret { font-size: 11px; transition: transform 0.2s ease; }
+.sidebar .nav-menu li.nav-group.open .nav-caret { transform: rotate(180deg); }
+.sidebar .nav-menu .nav-submenu { list-style: none; margin: 0; padding: 0; max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+.sidebar .nav-menu li.nav-group.open .nav-submenu { max-height: 300px; }
+.sidebar .nav-menu .nav-submenu li a { padding-left: 34px; font-size: 13px; }

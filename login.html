@@ -6,123 +6,11 @@
     <title>PrintMax — Вход</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            margin: 0;
-            background: var(--bg-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: var(--font-main, system-ui, -apple-system, sans-serif);
-            transition: background 0.3s;
-            padding: 16px;
-        }
-        .login-card {
-            background: var(--bg-white);
-            border-radius: 24px;
-            padding: 32px 24px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.08);
-            text-align: center;
-            transition: background 0.3s;
-        }
-        .login-logo {
-            width: 100%;
-            max-width: 280px;
-            height: auto;
-            margin: 0 auto 24px auto;
-            display: block;
-        }
-        .login-logo img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .login-card h1 {
-            margin: 0 0 4px;
-            font-size: clamp(22px, 5vw, 28px);
-            color: var(--text-primary);
-            font-weight: 700;
-        }
-        .login-card p {
-            margin: 0 0 24px;
-            color: var(--text-secondary);
-            font-size: 15px;
-        }
-        .login-card input {
-            width: 100%;
-            padding: 16px;
-            margin-bottom: 16px;
-            border: 1.5px solid var(--border-color);
-            border-radius: 14px;
-            font-size: 16px;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            transition: 0.2s;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        .login-card input:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
-        }
-        .login-error {
-            color: #dc2626;
-            font-size: 14px;
-            margin-bottom: 12px;
-            min-height: 20px;
-        }
-        .btn-login {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            background: var(--primary-blue);
-            color: #fff;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-        }
-        .btn-login:active {
-            transform: scale(0.97);
-        }
-        .btn-login:hover {
-            background: #1d4ed8;
-        }
-
-        @media (max-width: 400px) {
-            .login-card {
-                padding: 28px 20px;
-                border-radius: 20px;
-            }
-            .login-logo {
-                max-width: 240px;
-            }
-            .login-card input {
-                padding: 14px;
-                font-size: 16px;
-            }
-            .btn-login {
-                padding: 14px;
-                font-size: 16px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
 <div class="login-card">
-    <div class="login-logo">
-        <img src="printmax.jpg" alt="PrintMax">
-    </div>
+    <div class="login-logo"><img src="printmax.jpg" alt="PrintMax"></div>
     <input type="text" id="loginInput" placeholder="Логин" autocomplete="username" inputmode="text">
     <input type="password" id="passwordInput" placeholder="Пароль" autocomplete="current-password">
     <div class="login-error" id="loginError"></div>
@@ -130,7 +18,6 @@
 </div>
 
 <script>
-    // ========== ТЕМА ==========
     function setTheme(mode) {
         document.body.className = mode;
         localStorage.setItem('theme', mode);
@@ -140,40 +27,50 @@
         setTheme(saved);
     })();
 
-    // ========== АККАУНТЫ ==========
     const ACCOUNTS = [
-        // --- Существующие ---
         { login: 'Bekzod',     password: '0505',     role: 'manager'    },
         { login: 'Diyor',      password: 'diyorbek', role: 'designer'   },
         { login: 'Sklad',      password: '123',      role: 'warehouse'  },
-        { login: 'Flotorezka', password: '1234',     role: 'flotorezka' },
         { login: 'Pechat',     password: '1234',     role: 'pechat'     },
-        // --- Новые производственные станции (пароли можно поменять) ---
-        { login: 'Vysechka',   password: '1234',     role: 'vysechka'       },
-        { login: 'Tisnenie',   password: '1234',     role: 'tisnenie'       },
-        { login: 'Rezka',      password: '1234',     role: 'rezka'          },
-        { login: 'Skleyka',    password: '1234',     role: 'skleyka'        },
-        { login: 'CTP',        password: '1234',     role: 'ctp'            },
-        { login: 'Lak',        password: '1234',     role: 'lak'            },
-        { login: 'Archish',    password: '1234',     role: 'archish'        },
+        { login: 'Flotorezka', password: '1234',     role: 'flotorezka' },
+        { login: 'STP',        password: '1234',     role: 'stp'        },
+        { login: 'Vysechka',   password: '1234',     role: 'vysechka'   },
+        { login: 'Tisnenie',   password: '1234',     role: 'tisnenie'   },
+        { login: 'Kongrev',    password: '1234',     role: 'kongrev'    },
+        { login: 'UFLak',      password: '1234',     role: 'uf_lak'     },
+        { login: 'Rezka',      password: '1234',     role: 'rezka'      },
+        { login: 'Skleyka',    password: '1234',     role: 'skleyka'    },
+        { login: 'Laminaciya', password: '1234',     role: 'lamination' },
+        { login: 'Tiska',      password: '1234',     role: 'tiska'      },
+        { login: 'Ruchrab',    password: '1234',     role: 'manual_work'},
+        { login: 'UdalenieO',  password: '1234',     role: 'obloj_remove'},
         { login: 'Otgruzka',   password: '1234',     role: 'sklad_otgruzka' }
     ];
 
-    // Единая карта "роль -> куда вести после логина"
     const ROLE_REDIRECT = {
-        manager:    'index.html',
-        designer:   'index2.html',
-        warehouse:  'sklad.html',
-        flotorezka: 'texKarta.html',
-        pechat:     'texKarta.html',
-        vysechka:   'texKarta.html',
-        tisnenie:   'texKarta.html',
-        rezka:      'texKarta.html',
-        skleyka:    'texKarta.html',
-        ctp:        'texKarta.html',
-        lak:        'texKarta.html',
-        archish:    'texKarta.html',
+        manager: 'index.html', designer: 'index2.html', warehouse: 'sklad.html',
+        pechat: 'texKarta.html', flotorezka: 'texKarta.html', stp: 'texKarta.html',
+        vysechka: 'texKarta.html', tisnenie: 'texKarta.html', kongrev: 'texKarta.html',
+        uf_lak: 'texKarta.html', rezka: 'texKarta.html', skleyka: 'texKarta.html',
+        lamination: 'texKarta.html', tiska: 'texKarta.html',
+        manual_work: 'texKarta.html', obloj_remove: 'texKarta.html',
         sklad_otgruzka: 'texKarta.html'
+    };
+
+    const ROLE_OPERATORS = {
+        flotorezka:     ['Зиёвиддин Ака'],
+        stp:            ['Диёрбек'],
+        rezka:          ['Бахриддин'],
+        pechat:         ['Бекзод печатник', 'Тимур печатник', 'Аброр печатник'],
+        uf_lak:         ['Жума бой'],
+        tisnenie:       ['Алимардон'],
+        lamination:     ['Эльдор'],
+        kongrev:        ['Алимардон'],
+        vysechka:       ['Алимардон'],
+        obloj_remove:   ['Нортой'],
+        manual_work:    ['Нигора'],
+        skleyka:        ['Бахтиёр', 'Мухаммад'],
+        sklad_otgruzka: ['Сафарали']
     };
 
     const loginInput = document.getElementById('loginInput');
@@ -183,6 +80,27 @@
 
     function redirectForRole(role) {
         return ROLE_REDIRECT[role] || 'index.html';
+    }
+
+    function showOperatorSelection(role) {
+        const operators = ROLE_OPERATORS[role];
+        if (!operators) {
+            window.location.href = redirectForRole(role);
+            return;
+        }
+        document.body.innerHTML = `
+            <div class="login-card">
+                <h2>Выберите оператора</h2>
+                <p>Станция: ${role}</p>
+                <div id="opList">${operators.map(op => `<button class="btn-login" style="margin:6px 0;">${op}</button>`).join('')}</div>
+            </div>
+        `;
+        document.querySelectorAll('#opList .btn-login').forEach(btn => {
+            btn.addEventListener('click', function() {
+                sessionStorage.setItem('profitprint_operator', this.textContent);
+                window.location.href = redirectForRole(role);
+            });
+        });
     }
 
     function doLogin() {
@@ -196,7 +114,11 @@
         if (acc) {
             sessionStorage.setItem('profitprint_user', acc.login);
             sessionStorage.setItem('profitprint_role', acc.role);
-            window.location.href = redirectForRole(acc.role);
+            if (ROLE_OPERATORS[acc.role]) {
+                showOperatorSelection(acc.role);
+            } else {
+                window.location.href = redirectForRole(acc.role);
+            }
         } else {
             loginError.textContent = 'Неверный логин или пароль';
         }
@@ -206,11 +128,22 @@
     passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
     loginInput.addEventListener('keydown', e => { if (e.key === 'Enter') passwordInput.focus(); });
 
-    // Если уже вошли — сразу на нужный дашборд по роли
-    if (sessionStorage.getItem('profitprint_user')) {
+    (function autoEntry() {
+        const user = sessionStorage.getItem('profitprint_user');
         const role = sessionStorage.getItem('profitprint_role');
-        window.location.href = redirectForRole(role);
-    }
+        if (user && role) {
+            if (ROLE_OPERATORS[role]) {
+                const op = sessionStorage.getItem('profitprint_operator');
+                if (op) {
+                    window.location.href = redirectForRole(role);
+                } else {
+                    showOperatorSelection(role);
+                }
+            } else {
+                window.location.href = redirectForRole(role);
+            }
+        }
+    })();
 </script>
 </body>
 </html>

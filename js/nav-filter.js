@@ -4,30 +4,30 @@
 
     const menuItems = document.querySelectorAll('.nav-menu li a, .sidebar a');
 
-    // Все списки — в нижнем регистре, чтобы сравнение не зависело от написания href
-    // (otpCex.html / otpcex.html, texKarta.html / texkarta.html).
-    const forbiddenForManager = ['otpcex.html', 'texkarta.html', 'index2.html', 'statuses.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'];
-    const allowedForDesigner  = ['clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html', 'index2.html', 'settings.html', 'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'];
-    const allowedForWarehouse = ['sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html', 'settings.html'];
+    const forbiddenForManager = ['otpcex.html', 'texkarta.html', 'index2.html', 'statuses.html',
+        'sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html', 'palety.html'];
+    const allowedForDesigner  = ['clients.html', 'otpcex.html', 'texkarta.html', 'statuses.html',
+        'index2.html', 'settings.html', 'sklad.html', 'rashodniki.html', 'bumaga.html',
+        'instrumenty.html', 'palety.html'];
+    const allowedForWarehouse = ['sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html',
+        'palety.html', 'settings.html'];
 
-    // Производственные станции видят в меню только техкарту и свои настройки.
-    const STATION_ROLES = ['flotorezka', 'pechat', 'vysechka', 'tisnenie', 'rezka', 'skleyka', 'stp', 'lak', 'archish', 'sklad_otgruzka'];
+    const STATION_ROLES = ['pechat', 'flotorezka', 'stp', 'vysechka', 'tisnenie', 'kongrev',
+        'uf_lak', 'rezka', 'skleyka', 'lamination', 'tiska', 'manual_work', 'obloj_remove', 'sklad_otgruzka'];
     const allowedForStation = ['texkarta.html', 'settings.html'];
 
     function allowedListFor(r) {
         if (r === 'designer')  return allowedForDesigner;
         if (r === 'warehouse') return allowedForWarehouse;
         if (STATION_ROLES.includes(r)) return allowedForStation;
-        return null; // manager обрабатывается через forbidden ниже
+        return null;
     }
 
     const allowed = allowedListFor(role);
 
     menuItems.forEach(link => {
         const href = link.getAttribute('href');
-        if (!href) return;
-        // Стрелка-переключатель подменю "Склад" (href="#") — управляется отдельно ниже.
-        if (href === '#') return;
+        if (!href || href === '#') return;
         const page = href.split('?')[0].split('/').pop().toLowerCase();
 
         let hide = false;
@@ -38,23 +38,21 @@
         }
 
         if (hide) {
-            link.closest('li')?.style.setProperty('display', 'none', 'important');
+            const li = link.closest('li');
+            if (li) li.style.setProperty('display', 'none', 'important');
             link.style.display = 'none';
         }
     });
 
-    // Группа "Склад" (аккордеон) — видна только дизайнеру.
     const skladGroup = document.getElementById('skladNavGroup');
     if (skladGroup && role !== 'designer') {
         skladGroup.style.setProperty('display', 'none', 'important');
     }
 
-    // ===== Кнопка "Выйти" — добавляется автоматически в меню на всех страницах =====
     function injectLogout() {
         const menu = document.querySelector('.nav-menu');
         if (!menu || document.getElementById('ppLogoutItem')) return;
 
-        // Имя текущего аккаунта — маленькой подписью над кнопкой выхода
         const user = sessionStorage.getItem('profitprint_user') || '';
         const infoLi = document.createElement('li');
         infoLi.id = 'ppAccountInfo';
