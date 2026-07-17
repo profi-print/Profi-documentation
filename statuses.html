@@ -6,6 +6,7 @@
     <title>Статусы техкарт — PrintMax</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/pp-timeline.js"></script>
     <style>
         :root{
             --paper:#eef0ec;
@@ -339,6 +340,36 @@
                 display: none;
             }
         }
+        /* ---------- Выпадающее меню «Склад» ---------- */
+.nav-group {
+    position: relative;
+}
+.nav-submenu {
+    display: none;               /* скрыто по умолчанию */
+    flex-direction: column;
+    padding-left: 20px;
+    margin: 4px 0 8px;
+    list-style: none;
+}
+.nav-group.open .nav-submenu {
+    display: flex;               /* показывается при клике */
+}
+.nav-group-toggle {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+.nav-caret {
+    font-size: 10px;
+    transition: transform 0.2s;
+}
+.nav-group.open .nav-caret {
+    transform: rotate(180deg);   /* стрелочка поворачивается */
+}
     </style>
 </head>
 <body>
@@ -430,42 +461,20 @@
 <script>
     function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');}
     function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');}
-    const STATUS_META={waiting:{label:'В очереди',icon:'○'},progress:{label:'В процессе',icon:'▶'},done:{label:'Завершено',icon:'✓'},paused:{label:'Приостановлено',icon:'❚❚'},error:{label:'Проблема',icon:'!'}};
-    const STATUS_ORDER=['waiting','progress','done','paused','error'];
 
-    const ALL_STAGES_ORDER=[
-        {id:'flotorezka',label:'Флоторезка'},{id:'stp',label:'СТП'},{id:'cutting_pre',label:'Резка'},
-        {id:'pechat',label:'Печать'},{id:'cutting_post',label:'Резка пост печати'},{id:'uf_lak',label:'УФ лак'},
-        {id:'tisnenie',label:'Тиснение'},{id:'lamination',label:'Ламинация'},{id:'kongrev',label:'Конгрев'},
-        {id:'vysechka',label:'Высечка'},{id:'obloj_remove',label:'Удаление облоя'},{id:'manual_work',label:'Ручные работы'},
-        {id:'skleyka',label:'Склейка'},{id:'sklad',label:'Склад'}
-    ];
-
-    function getStages(order){
-        const services=order.services||[];
-        const has=(name)=>services.some(s=>s.name===name);
-        const hasCuttingPre=services.some(s=>s.name==='cutting'&&(s.type==='pre'||s.type==='до печать'||s.type==='оба'||s.type==='both'));
-        const hasCuttingPost=services.some(s=>s.name==='cutting'&&(s.type==='post'||s.type==='пост печать'||s.type==='оба'||s.type==='both'));
-        const stages=[];
-        for(let s of ALL_STAGES_ORDER){
-            if(s.id==='flotorezka'){if((order.material_type||'roll')!=='roll')continue;}
-            else if(s.id==='cutting_pre'){if(!hasCuttingPre)continue;}
-            else if(s.id==='cutting_post'){if(!hasCuttingPost)continue;}
-            else if(['uf_lak','tisnenie','lamination','kongrev','vysechka','obloj_remove','manual_work','skleyka'].includes(s.id)){if(!has(s.id))continue;}
-            stages.push(s);
-        }
-        return stages;
-    }
-
-    function isStageAvailable(order,stageId){
-        const stages=getStages(order);
-        const idx=stages.findIndex(s=>s.id===stageId);
-        if(idx===-1)return false;
-        if(idx===0||idx===1)return true;
-        const prev=stages[idx-1];
-        const prevStatus=order.timeline?.[prev.id]?.status||'waiting';
-        return prevStatus!=='waiting';
-    }
+    // Этапы/статусы больше не дублируются в этом файле — вся логика в js/pp-timeline.js,
+    // общем и для этой страницы, и для texKarta.html. Смена статуса в одном месте
+    // теперь физически не может не отразиться в другом: это один и тот же код и одни
+    // и те же данные в pp_orders.
+    const STATUS_META = {};
+    Object.keys(PPTimeline.STATUS_LABELS).forEach(key => {
+        STATUS_META[key] = { label: PPTimeline.STATUS_LABELS[key], icon: PPTimeline.STATUS_ICONS[key] };
+    });
+    const STATUS_ORDER = PPTimeline.STAGE_STATUSES;
+    const getStages = (order) => PPTimeline.getOrderStages(order);
+    const initTimeline = (order) => PPTimeline.ensureTimeline(order);
+    const getStageTotal = (order, stageId) => PPTimeline.getStageTotal(order, stageId);
+    const isStageAvailable = (order, stageId) => PPTimeline.isStageAvailable(order, stageId);
 
     function loadOrders(){
         try{
@@ -498,54 +507,16 @@
         return true;
     }
 
-    function initTimeline(order){
-        if(!order.timeline)order.timeline={};
-        const stages=getStages(order);
-        stages.forEach(s=>{
-            if(!order.timeline[s.id]){
-                order.timeline[s.id]={status:'waiting',start:null,end:null,duration:0,doneQty:0,sentQty:0,history:[]};
-            }
-            const t=order.timeline[s.id];
-            if(!STATUS_ORDER.includes(t.status))t.status='waiting';
-            t.doneQty=t.doneQty||0;
-            t.sentQty=t.sentQty||0;
-            if(!Array.isArray(t.history))t.history=[];
-        });
-        Object.keys(order.timeline).forEach(key=>{
-            if(!stages.find(s=>s.id===key)){
-                delete order.timeline[key];
-            }
-        });
-    }
-
     function setStageStatus(order,stageId,newStatus){
-        initTimeline(order);
-        const data=order.timeline[stageId];
-        const now=Date.now();
-        if(newStatus==='progress'&&data.status!=='progress'){
-            if(!data.start)data.start=now;
-            data.end=null;
-        }else if(newStatus==='done'){
-            if(!data.start)data.start=now;
-            data.end=now;
-            data.duration=Math.round((data.end-data.start)/60000);
-            const total=getStageTotal(order,stageId);
-            if(data.doneQty<total)data.doneQty=total;
-        }else if(newStatus==='waiting'){
-            data.start=null;data.end=null;data.duration=0;
-        }else if(newStatus==='paused'||newStatus==='error'){
-            if(data.start&&!data.end)data.duration=Math.round((now-data.start)/60000);
-        }
-        data.status=newStatus;
+        // Раньше здесь была отдельная копия правил смены статуса. Теперь — тот же
+        // PPTimeline.setStageStatus, которым пользуется и техкарта: если doneQty
+        // уже равен тиражу, статус не сможет остаться "paused"/"progress".
+        PPTimeline.setStageStatus(order, stageId, newStatus, {
+            history: { type: newStatus, comment: 'Изменено на странице «Статусы»' }
+        });
     }
 
-    function getStageTotal(order,stageId){
-        const originalSheets=Math.ceil(order.print_sheets||0);
-        if(stageId==='flotorezka')return order.divide_by_two?Math.ceil(originalSheets/2):originalSheets;
-        if(stageId==='pechat')return Math.max(0,originalSheets-(order.make_ready||0));
-        if(stageId==='gluing'||stageId==='skleyka')return order.order_qty||0;
-        return Math.max(0,originalSheets-(order.make_ready||0));
-    }
+    function getStageTotalForTimeline(order,stageId){return getStageTotal(order,stageId);}
 
     function formatDuration(min){
         if(!min||min<=0)return'—';
@@ -559,7 +530,7 @@
 
     function overallStatus(order){
         const stages=getStages(order);
-        const statuses=stages.map(s=>order.timeline[s.id]?.status||'waiting');
+        const statuses=stages.map(s=>order.timeline[s.key]?.status||'waiting');
         if(statuses.includes('error'))return'error';
         if(statuses.every(s=>s==='done'))return'done';
         if(statuses.includes('paused'))return'paused';
@@ -571,7 +542,7 @@
         const stages=getStages(order);
         let html='<div class="pipeline">';
         stages.forEach((s,i)=>{
-            const status=order.timeline[s.id]?.status||'waiting';
+            const status=order.timeline[s.key]?.status||'waiting';
             const meta=STATUS_META[status]||STATUS_META.waiting;
             const glyph=status==='waiting'?'':meta.icon;
             html+=`<div class="pipeline-node ${status}" title="${s.label}: ${meta.label}">${glyph}</div>`;
@@ -652,25 +623,25 @@
 
         let html=`<div class="stage-row-head"><div></div><div>Этап</div><div>Начало</div><div>Конец</div><div>Затрач.</div><div>Статус</div></div>`;
         stages.forEach(stage=>{
-            const data=order.timeline[stage.id];
+            const data=order.timeline[stage.key];
             const status=data.status||'waiting';
             const meta=STATUS_META[status]||STATUS_META.waiting;
             const start=data.start,end=data.end;
             const duration=data.duration||(start&&end?Math.round((end-start)/60000):0);
             const elapsed=status==='progress'&&start?Math.round((Date.now()-start)/60000):0;
             const started=status!=='waiting';
-            const available=isStageAvailable(order,stage.id);
+            const available=isStageAvailable(order,stage.key);
             const rowClass=available?'':'disabled';
 
             let statusBtnsHTML='';
             STATUS_ORDER.forEach(st=>{
                 const activeClass=(status===st)?'active':'';
                 const disabledAttr=!available?'disabled':'';
-                statusBtnsHTML+=`<button class="status-btn ${st} ${activeClass}" ${disabledAttr} onclick="changeStatus('${order.id}','${stage.id}','${st}')" title="${STATUS_META[st].label}">${STATUS_META[st].icon}</button>`;
+                statusBtnsHTML+=`<button class="status-btn ${st} ${activeClass}" ${disabledAttr} onclick="changeStatus('${order.id}','${stage.key}','${st}')" title="${STATUS_META[st].label}">${STATUS_META[st].icon}</button>`;
             });
 
             let extraInfo='';
-            if(stage.id==='sklad'){
+            if(stage.key==='sklad'){
                 const received=order.received_qty||0;
                 const totalQty=order.order_qty||0;
                 const shipped=(order.shipment_history||[]).reduce((sum,s)=>sum+(s.qty||0),0);
@@ -682,7 +653,7 @@
                 const label=typeLabels[h.type]||h.type;
                 const qtyText=h.qty?` ${h.qty.toLocaleString('ru-RU')}`:'';
                 const opText=h.operator?` (${h.operator})`:'';
-                return`<div class="history-item">${label}${qtyText} ${h.date}${opText}</div>`;
+                return`<div class="history-item">${label}${qtyText} ${h.date} ${opText}</div>`;
             }).join('')}</div>`:'';
 
             html+=`<div class="stage-row ${rowClass}">

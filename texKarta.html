@@ -16,6 +16,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="PrintMax">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <script src="js/pp-timeline.js"></script>
 </head>
 <body>
     <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
@@ -223,6 +224,7 @@
                 lamination: 'Ламинация', cutting_pre: 'Резка до печати', cutting_post: 'Резка пост печати',
                 vd_lak: 'ВД Лак', uv_lak: 'УФ Лак', manual_work: 'Ручные работы', obloj_remove: 'Удаление облоя'
             };
+            const OBOROT_LABELS = { none: '—', own: 'Свой оборот', foreign: 'Чужой оборот' };
             const stationConfig = ROLE_STATION_CONFIG[currentRole] || null;
             const isRestrictedRole = !!stationConfig;
 
@@ -251,68 +253,14 @@
                     </div>`;
             }
 
-            // ===== ПРАВИЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ ВСЕХ ЭТАПОВ =====
-            const ALL_STAGES_ORDER = [
-                { key: 'flotorezka',   label: 'Флоторезка' },
-                { key: 'stp',          label: 'СТП' },
-                { key: 'cutting_pre',  label: 'Резка' },
-                { key: 'pechat',       label: 'Печать' },
-                { key: 'cutting_post', label: 'Резка пост печати' },
-                { key: 'uf_lak',       label: 'УФ лак' },
-                { key: 'tisnenie',     label: 'Тиснение' },
-                { key: 'lamination',   label: 'Ламинация' },
-                { key: 'kongrev',      label: 'Конгрев' },
-                { key: 'vysechka',     label: 'Высечка' },
-                { key: 'obloj_remove', label: 'Удаление облоя' },
-                { key: 'manual_work',  label: 'Ручные работы' },
-                { key: 'skleyka',      label: 'Склейка' },
-                { key: 'sklad',        label: 'Склад' }
-            ];
-
-            function getOrderStages(order) {
-                const services = order.services || [];
-                const has = (name) => services.some(s => s.name === name);
-                const hasCuttingPre = services.some(s => s.name === 'cutting' && (s.type === 'pre' || s.type === 'до печать' || s.type === 'оба' || s.type === 'both'));
-                const hasCuttingPost = services.some(s => s.name === 'cutting' && (s.type === 'post' || s.type === 'пост печать' || s.type === 'оба' || s.type === 'both'));
-
-                const stages = [];
-                for (let s of ALL_STAGES_ORDER) {
-                    if (s.key === 'flotorezka') {
-                        if ((order.material_type || 'roll') !== 'roll') continue;
-                    } else if (s.key === 'cutting_pre') {
-                        if (!hasCuttingPre) continue;
-                    } else if (s.key === 'cutting_post') {
-                        if (!hasCuttingPost) continue;
-                    } else if (['uf_lak','tisnenie','lamination','kongrev','vysechka','obloj_remove','manual_work','skleyka'].includes(s.key)) {
-                        if (!has(s.key)) continue;
-                    }
-                    stages.push(s);
-                }
-                return stages;
-            }
-
-            // ===== TIMELINE (единое хранилище статусов) =====
-            function ensureTimeline(order) {
-                if (!order.timeline) order.timeline = {};
-                const stages = getOrderStages(order);
-                stages.forEach(s => {
-                    if (!order.timeline[s.key]) {
-                        order.timeline[s.key] = { status:'waiting', start:null, end:null, duration:0, doneQty:0, sentQty:0, history:[] };
-                    }
-                    const t = order.timeline[s.key];
-                    t.doneQty = t.doneQty || 0;
-                    t.sentQty = t.sentQty || 0;
-                    if (!Array.isArray(t.history)) t.history = [];
-                });
-            }
-
-            function getStageTotal(order, stageKey) {
-                const originalSheets = Math.ceil(order.print_sheets || 0);
-                if (stageKey === 'flotorezka') return order.divide_by_two ? Math.ceil(originalSheets / 2) : originalSheets;
-                if (stageKey === 'pechat') return Math.max(0, originalSheets - (order.make_ready || 0));
-                if (stageKey === 'gluing' || stageKey === 'skleyka') return order.order_qty || 0;
-                return Math.max(0, originalSheets - (order.make_ready || 0));
-            }
+            // ===== ЭТАПЫ И СТАТУСЫ =====
+            // Вся логика этапов/статусов вынесена в js/pp-timeline.js и используется
+            // одинаково и здесь, и на странице statuses.html — это единственный способ
+            // гарантировать, что смена статуса в одном месте всегда отражается в другом.
+            const getOrderStages = (order) => PPTimeline.getOrderStages(order);
+            const ensureTimeline = (order) => PPTimeline.ensureTimeline(order);
+            const getStageTotal = (order, stageKey) => PPTimeline.getStageTotal(order, stageKey);
+            const isStageAvailableForRole = (order, stageKey) => PPTimeline.isStageAvailable(order, stageKey);
 
             function saveStageEvent(orderId, stageKey, type, qty, comment) {
                 let orders = loadOrders();
@@ -320,43 +268,26 @@
                 if (idx === -1) return null;
                 const order = orders[idx];
                 ensureTimeline(order);
-                const t = order.timeline[stageKey];
-                if (!t) return null;
-                const total = getStageTotal(order, stageKey);
-                const dateStr = new Date().toISOString().slice(0, 10);
+                const historyEntry = { type, qty: qty || 0, comment: comment || '', operator: getSelectedOperator() };
 
                 if (type === 'start') {
-                    t.status = 'running';
-                    if (!t.start) t.start = Date.now();
+                    PPTimeline.setStageStatus(order, stageKey, 'progress', { history: historyEntry });
                 } else if (type === 'pause') {
-                    t.doneQty = (t.doneQty || 0) + qty;
-                    t.status = 'paused';
-                    if (t.start) t.duration = Math.round((Date.now() - t.start) / 60000);
+                    // setStageStatus сам решит: если doneQty дойдёт до тиража — статус
+                    // станет 'done', а не 'paused' (та самая синхронизация с "Статусами").
+                    PPTimeline.setStageStatus(order, stageKey, 'paused', { doneQtyDelta: qty, history: historyEntry });
                 } else if (type === 'finish') {
-                    t.doneQty = Math.max(t.doneQty || 0, total);
-                    t.status = 'completed';
-                    t.end = Date.now();
-                    if (t.start) t.duration = Math.round((t.end - t.start) / 60000);
+                    PPTimeline.setStageStatus(order, stageKey, 'done', { history: historyEntry });
                 } else if (type === 'send_full' || type === 'send_partial') {
-                    t.sentQty = (t.sentQty || 0) + qty;
+                    const t = order.timeline[stageKey];
+                    if (t) { t.sentQty = (t.sentQty || 0) + qty; t.history.push(Object.assign({ date: new Date().toISOString().slice(0,10), timestamp: Date.now() }, historyEntry)); }
                 }
-                t.history.push({ type, qty: qty || 0, date: dateStr, comment: comment || '', operator: getSelectedOperator(), timestamp: Date.now() });
                 orders[idx] = order;
                 saveOrders(orders);
                 return order;
             }
 
-            function isStageAvailableForRole(order, stageKey, role) {
-                const stages = getOrderStages(order);
-                const idx = stages.findIndex(s => s.key === stageKey);
-                if (idx === -1) return false;
-                if (idx === 0 || idx === 1) return true; // Флоторезка и СТП всегда доступны
-                const prevStage = stages[idx - 1];
-                const prevStatus = order.timeline?.[prevStage.key]?.status || 'waiting';
-                return prevStatus !== 'waiting';
-            }
-
-            const STAGE_STATUS_LABELS = { waiting:'⏳ Не начато', running:'▶️ В работе', paused:'⏸️ На паузе', completed:'✅ Завершено' };
+            const STAGE_STATUS_LABELS = PPTimeline.STATUS_LABELS;
             const STAGE_HISTORY_LABELS = {
                 start:'▶️ Начал работу', pause:'⏸️ Сделано на паузе', finish:'✅ Отмечено завершённым',
                 send_full:'📤 Отправлено полностью', send_partial:'📤 Отправлено частично'
@@ -393,14 +324,14 @@
                 const remainingToDo = Math.max(0, total - doneQty);
                 const remainingToSend = Math.max(0, total - sentQty);
                 const canSend = isStageSendEnabled();
-                const isCompleted = t.status === 'completed' || remainingToDo <= 0;
+                const isCompleted = t.status === 'done' || remainingToDo <= 0;
                 const canStart = operatorReady();
                 const startDisabled = !canStart;
 
                 let actionButtonsHTML = '';
                 if (isCompleted) {
                     actionButtonsHTML = '<div class="stage-status-done">✅ Работа полностью выполнена</div>';
-                } else if (t.status === 'running') {
+                } else if (t.status === 'progress') {
                     actionButtonsHTML = `
                         <button class="btn-stage-pause" onclick="window.openStagePauseModal(${order.id},'${stageKey}',${total})">⏸️ Пауза</button>
                         <button class="btn-stage-finish" onclick="window.stageFinish(${order.id},'${stageKey}')">✅ Завершить</button>`;
@@ -707,6 +638,8 @@
                 const orderQtyFormatted = orderQty.toLocaleString('ru-RU');
                 const makeReadyFormatted = (order.make_ready || 0).toLocaleString('ru-RU');
                 const gsmFormatted = (order.gsm || '').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                const showOborot = !!(order.oborot && order.oborot !== 'none');
+                const oborotFormatted = OBOROT_LABELS[order.oborot || 'none'] || '—';
 
                 const receivedQty = order.received_qty || 0;
                 let receiveProgressHTML = '';
@@ -824,12 +757,13 @@
                 const showPrintSection = !isRestrictedRole || (stationConfig && stationConfig.type === 'print');
                 const printSectionHTML = showPrintSection ? `
                     <div class="section-title">${printLabel}</div>
-                    <div class="table-responsive"><table><thead><tr><th>Печатный формат</th><th>Красочность</th><th>тираж</th><th>приладка</th><th>ВД лак</th><th>Кол-во брака</th><th>Кол-во факта печати</th></tr></thead><tbody><tr>
+                    <div class="table-responsive"><table><thead><tr><th>Печатный формат</th><th>Красочность</th><th>тираж</th><th>приладка</th><th>ВД лак</th>${showOborot ? '<th>Оборот</th>' : ''}<th>Кол-во брака</th><th>Кол-во факта печати</th></tr></thead><tbody><tr>
                         <td data-label="Печатный формат"><strong>${printSizeFormatted}</strong></td>
                         <td data-label="Красочность"><strong>${order.color||''}</strong></td>
                         <td data-label="тираж"><strong>${postPrintSheetsFormatted}</strong></td>
                         <td data-label="приладка"><strong>${makeReadyFormatted}</strong></td>
                         <td data-label="ВД лак"><strong>${serviceMap.vd_lak||''}</strong></td>
+                        ${showOborot ? `<td data-label="Оборот"><strong>${oborotFormatted}</strong></td>` : ''}
                         <td data-label="Кол-во брака"></td>
                         <td data-label="Кол-во факта печати"></td>
                     </tr></tbody></table></div>` : '';
@@ -960,7 +894,7 @@
                     const doneQty = t?.doneQty||0, sentQty = t?.sentQty||0;
                     const remainingToDo = Math.max(0, total - doneQty);
                     const remaining = Math.max(0, total - sentQty);
-                    if (t?.status === 'completed' || remainingToDo <= 0) {
+                    if (t?.status === 'done' || remainingToDo <= 0) {
                         if (idx >= stages.length-1) return '<div class="next-stage-block"><span class="next-stage-done">✔️ Готово — на складе</span></div>';
                         const next = stages[idx+1];
                         return `<div class="next-stage-block"><span class="next-stage-label">После: <strong>${next.label}</strong></span>
