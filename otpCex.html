@@ -1,973 +1,720 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Отправка в цех — PrintMax</title>
-  <link rel="stylesheet" href="css/theme.css">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#2563eb">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="ProfitPrint">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="./css/otpCex.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Отправка в цех — PrintMax</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/otpCex.css">
 </head>
 <body>
-  <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-  <div class="app-container">
+<button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="app-container">
     <nav class="sidebar" id="sidebar">
-      <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PM</div><span>Print Max</span></div></div>
-      <ul class="nav-menu">
-        <li><a href="index.html">📊 Главная</a></li>
-        <li><a href="index2.html">📊 Главная</a></li>
-        <li><a href="orders.html">📋 Заказы контрагентов</a></li>
-        <li><a href="production.html">🏭 Заказы на производство</a></li>
-        <li><a href="invoices.html">📦 Накладные</a></li>
-        <li><a href="clients.html">👥 Контрагенты</a></li>
-        <li><a href="products.html">📁 Продукты</a></li>
-        <li><a href="reconciliations.html">📑 Акты сверки</a></li>
-        <li><a href="backups.html">🗑️ Резервные копии</a></li>
-        <li><a href="otpCex.html" class="active">⚙️ На производство</a></li>
-        <li><a href="texKarta.html">⚙️ Техкарта</a></li>
-        <li><a href="statuses.html">📊 Статусы</a></li>
-        <li class="nav-group" id="skladNavGroup">
-                    <a href="#" class="nav-group-toggle" onclick="event.preventDefault(); this.closest('li').classList.toggle('open');">
-                        <span>🏬 Склад</span><span class="nav-caret">▾</span>
-                    </a>
-                    <ul class="nav-submenu">
-                        <li><a href="sklad.html">📋 Склад заказов</a></li>
-                        <li><a href="rashodniki.html">🧪 Расходники</a></li>
-                        <li><a href="bumaga.html">📄 Бумага</a></li>
-                        <li><a href="instrumenty.html">🛠️ Инструменты</a></li>
-                        <li><a href="palety.html">🪵 Палеты</a></li>
-                    </ul>
-                </li>
-        <li><a href="settings.html">⚙️ Настройки</a></li>
-        
-      </ul>
-      <div class="theme-switch-wrapper">
-        <button id="themeToggle" class="btn btn-secondary" style="display:none;"><span id="themeIcon">🌙</span> <span id="themeLabel">Тёмная тема</span></button>
-      </div>
+        <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PM</div><span>PrintMax</span></div></div>
+        <ul class="nav-menu">
+            <li><a href="index.html">📊 Главная</a></li>
+            <li><a href="index2.html">📊 Главная</a></li>
+            <li><a href="orders.html">📋 Заказы контрагентов</a></li>
+            <li><a href="production.html">🏭 Заказы на производство</a></li>
+            <li><a href="invoices.html">📦 Накладные</a></li>
+            <li><a href="clients.html">👥 Контрагенты</a></li>
+            <li><a href="products.html">📁 Продукты</a></li>
+            <li><a href="reconciliations.html">📑 Акты сверки</a></li>
+            <li><a href="backups.html">🗑️ Резервные копии</a></li>
+            <li><a href="otpCex.html" class="active">⚙️ На производство</a></li>
+            <li><a href="texKarta.html">⚙️ Техкарта</a></li>
+            <li><a href="statuses.html">📊 Статусы</a></li>
+            <li class="nav-group" id="skladNavGroup">
+                <a href="#" class="nav-group-toggle" onclick="event.preventDefault(); this.closest('li').classList.toggle('open');">
+                    <span>🏬 Склад</span><span class="nav-caret">▾</span>
+                </a>
+                <ul class="nav-submenu">
+                    <li><a href="sklad.html">📋 Склад заказов</a></li>
+                    <li><a href="rashodniki.html">🧪 Расходники</a></li>
+                    <li><a href="bumaga.html">📄 Бумага</a></li>
+                    <li><a href="instrumenty.html">🛠️ Инструменты</a></li>
+                    <li><a href="palety.html">🪵 Палеты</a></li>
+                </ul>
+            </li>
+            <li><a href="settings.html">⚙️ Настройки</a></li>
+        </ul>
     </nav>
-
     <main class="main-content">
-      <div class="top-bar"><h1>Отправка в цех</h1></div>
-      <div class="content-section">
-        <div id="listContainer" class="active">
-          <div class="orders-list">
-            <div class="header-row">
-              <h2>Производственные заказы</h2>
-              <div class="controls">
-                <input type="text" id="searchOrders" placeholder="🔍 Поиск..." oninput="renderOrders()">
-                <button class="btn btn-primary" onclick="showForm()">➕ Создать заказ</button>
-              </div>
-            </div>
-            <div class="table-responsive">
-              <table>
-                <thead><tr><th>№ техкарты</th><th>Заказчик</th><th>Продукция</th><th>Менеджер</th><th>Кол-во</th><th>Тираж</th></tr></thead>
-                <tbody id="ordersBody"></tbody>
-              </table>
-            </div>
-            <div id="pagination" class="pagination"></div>
-          </div>
-        </div>
-
-        <div id="formContainer">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-            <h2 id="formTitle" style="margin:0; font-size:22px; color:var(--text-primary);">Создание заказа</h2>
-            <button class="btn btn-secondary" onclick="showList()">← Вернуться к списку</button>
-          </div>
-          <form id="orderForm">
-            <input type="hidden" name="edit_id" id="editId" value="">
-            <div class="form-row">
-              <div class="form-group"><label>Техкарта №</label><input type="text" name="techcard_no" id="techcardNo" readonly></div>
-              <div class="form-group"><label>Менеджер</label><select name="manager" id="managerSelect" required><option value="Муниса">Муниса</option><option value="Расул">Расул</option><option value="Руслан">Руслан</option></select></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>Заказчик</label><div class="customer-autocomplete"><input type="text" id="customerInput" name="customer" placeholder="Введите название контрагента..." list="customerList" required><datalist id="customerList"></datalist></div></div>
-              <div class="form-group"><label>Название продукции</label><input type="text" name="product_name" id="productNameInput" required></div>
-            </div>
-            <div class="form-group"><label>Примечание</label><textarea name="description" id="descriptionInput" rows="2"></textarea></div>
-
-            <div class="form-columns">
-              <div class="form-column">
-                <div class="form-column-title">До печать и печать</div>
-                <div class="choice-strip">
-                  <div class="choice-cards">
-                    <div class="choice-card"><input type="radio" name="print_type" value="A1" id="printA1" checked><label for="printA1">🖨️ Печать А1</label></div>
-                    <div class="choice-card"><input type="radio" name="print_type" value="A2" id="printA2"><label for="printA2">🖨️ Печать А2</label></div>
-                  </div>
-                </div>
-
-                <div class="choice-strip">
-                  <div class="form-column-title" style="margin-top:0; margin-bottom:10px;">Информация о материале</div>
-                  <div class="choice-cards" id="materialTypeCards">
-                    <div class="choice-card"><input type="radio" name="material_type" value="roll" id="matRoll" checked><label for="matRoll">📜 Рулон</label></div>
-                    <div class="choice-card"><input type="radio" name="material_type" value="sheet" id="matSheet"><label for="matSheet">📄 Листовой</label></div>
-                  </div>
-                  <div id="rollFields" class="material-fields-row">
-                    <div class="field-group"><label for="flotLength">Формат рулона</label><input type="text" inputmode="numeric" class="masked-number" id="flotLength" placeholder="мм"></div>
-                    <div class="field-group"><label for="rollWidth">Формат флоторезки</label><input type="text" inputmode="numeric" class="masked-number" id="rollWidth" placeholder="мм"></div>
-                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-divide-toggle" id="divideToggleBtn">½ формата</button></div>
-                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-transfer" id="transferFormatBtn">Передать формат</button></div>
-                  </div>
-                  <div id="sheetFields" class="material-fields-row" style="display:none;">
-                    <div class="field-group"><label for="sheetLength">Длина листа</label><input type="text" inputmode="numeric" class="masked-number" id="sheetLength" placeholder="мм"></div>
-                    <div class="field-group"><label for="sheetWidth">Ширина листа</label><input type="text" inputmode="numeric" class="masked-number" id="sheetWidth" placeholder="мм"></div>
-                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-divide-toggle" id="divideToggleBtnSheet">½ формата</button></div>
-                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-transfer" id="transferFormatBtnSheet">Передать формат</button></div>
-                  </div>
-                </div>
-
-                <div class="calc-mode-switch"><label><input type="radio" name="calc_mode" value="warehouse" checked> Параметры</label></div>
-                <table class="data-table">
-  <tr><td>Тип материала</td><td><select name="paper_type" id="paperType" required><option value="картон">картон</option><option value="Меловка">Меловка</option><option value="Офсет">Офсет</option></select></td></tr>
-  <tr><td>гр/м²</td><td><input type="text" inputmode="numeric" class="masked-number" id="gsm" required></td></tr>
-  <tr><td>Печатный формат (Ширина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeWidth" required></td></tr>
-  <tr><td>Печатный формат (Длина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeLength" required></td></tr>
-  <tr><td>Кол-во продукции</td><td><input type="text" inputmode="numeric" class="masked-number" id="orderQty" required></td></tr>
-  <tr><td>Доля на печатном листе</td><td><input type="text" inputmode="numeric" class="masked-number" id="stripes" required></td></tr>
-  <tr><td>Приладка</td><td><input type="text" inputmode="numeric" class="masked-number" id="makeReady" required></td></tr>
-  <tr><td>Красочность</td><td><input type="text" name="color" id="color" required></td></tr>
-  <tr>
-    <td>Тираж листов</td>
-    <td>
-      <div class="print-sheets-container">
-        <div class="print-sheets-info">
-          <span>Тираж листов: <strong id="printSheetsAuto"></strong></span>
-          <span>Вес заказа: <strong id="weightResult">— кг</strong></span>
-        </div>
-      </div>
-      <input type="hidden" name="print_sheets" id="printSheetsHidden" value="0">
-    </td>
-  </tr>
-</table>
-                <!-- Кнопок здесь нет -->
-              </div>
-
-              <div class="form-column">
-                <div class="form-column-title">Пост Печать</div>
-                <div class="service-grid" id="servicesContainer"></div>
-                <div class="pdf-block">
-                  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                    <label class="btn btn-secondary pdf-select-btn" for="pdfFileInput" style="cursor:pointer;">📎 Выбрать PDF</label>
-                    <input type="file" id="pdfFileInput" accept=".pdf" class="hidden-input">
-                    <div class="pdf-filename-input"><input type="text" id="pdfFileNameInput" name="pdf_filename" placeholder="Имя PDF-файла (выберите файл)" readonly></div>
-                    <button type="button" id="clearPdfBtn" class="btn btn-secondary" style="display:none;">✕</button>
-                  </div>
-                </div>
-                <div class="screenshot-block">
-                  <div style="font-size:13px; font-weight:500; margin-bottom:6px;">🖼️ Скриншот (Ctrl+V)</div>
-                  <div id="screenshotDropArea" class="screenshot-drop-area" tabindex="0">
-                    <div class="placeholder">
-                      <div style="font-size:32px; margin-bottom:8px;">📷</div>
-                      <div>Вставьте скриншот из буфера обмена</div>
-                      <div class="key-hint">Ctrl + V</div>
+        <div class="top-bar"><h1>Отправка в цех</h1></div>
+        <div class="content-section">
+            <div id="listContainer" class="active">
+                <div class="orders-list">
+                    <div class="header-row">
+                        <h2>Производственные заказы</h2>
+                        <div class="controls">
+                            <input type="text" id="searchOrders" placeholder="🔍 Поиск..." oninput="renderOrders()">
+                            <button class="btn btn-primary" onclick="showForm()">➕ Создать заказ</button>
+                        </div>
                     </div>
-                    <img id="screenshotPreview" alt="Скриншот">
-                    <button type="button" id="clearScreenshotBtn" class="clear-screenshot" title="Удалить">✕</button>
-                  </div>
-                  <input type="hidden" id="screenshotData" name="screenshot_base64" value="">
-                  <div class="form-actions" style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:20px;">
-  <button type="button" class="btn btn-secondary" onclick="showList()">Отмена</button>
-  <button type="submit" class="btn btn-primary">📤 Отправить в Тех Карту</button>
-</div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>№ техкарты</th><th>Заказчик</th><th>Продукция</th><th>Менеджер</th><th>Кол-во</th><th>Тираж</th></tr></thead>
+                            <tbody id="ordersBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="pagination" class="pagination"></div>
                 </div>
-              </div>
             </div>
-            <!-- Кнопки возвращены на исходное место, margin-top уменьшен до 0 -->
-            <!-- <div class="form-actions">
-              <button type="button" class="btn btn-secondary" onclick="showList()">Отмена</button>
-              <button type="submit" class="btn btn-primary">📤 Отправить в Тех Карту</button>
-            </div> -->
-          </form>
+            <div id="formContainer">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h2 id="formTitle" style="margin:0; font-size:22px; color:var(--text-primary);">Создание заказа</h2>
+                    <button class="btn btn-secondary" onclick="showList()">← Вернуться к списку</button>
+                </div>
+                <form id="orderForm">
+                    <input type="hidden" name="edit_id" id="editId" value="">
+                    <div class="form-row">
+                        <div class="form-group"><label>Техкарта №</label><input type="text" name="techcard_no" id="techcardNo" readonly></div>
+                        <div class="form-group"><label>Менеджер</label><select name="manager" id="managerSelect" required><option value="Муниса">Муниса</option><option value="Расул">Расул</option><option value="Руслан">Руслан</option></select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Заказчик</label><div class="customer-autocomplete"><input type="text" id="customerInput" name="customer" placeholder="Введите название контрагента..." list="customerList" required><datalist id="customerList"></datalist></div></div>
+                        <div class="form-group"><label>Название продукции</label><input type="text" name="product_name" id="productNameInput" required></div>
+                    </div>
+                    <div class="form-group"><label>Примечание</label><textarea name="description" id="descriptionInput" rows="2"></textarea></div>
+                    <div class="form-columns">
+                        <div class="form-column">
+                            <div class="form-column-title">До печать и печать</div>
+                            <div class="choice-strip">
+                                <div class="choice-cards">
+                                    <div class="choice-card"><input type="radio" name="print_type" value="A1" id="printA1" checked><label for="printA1">🖨️ Печать А1</label></div>
+                                    <div class="choice-card"><input type="radio" name="print_type" value="A2" id="printA2"><label for="printA2">🖨️ Печать А2</label></div>
+                                </div>
+                            </div>
+                            <div class="choice-strip">
+                                <div class="form-column-title" style="margin-top:0; margin-bottom:10px;">Информация о материале</div>
+                                <div class="choice-cards" id="materialTypeCards">
+                                    <div class="choice-card"><input type="radio" name="material_type" value="roll" id="matRoll" checked><label for="matRoll">📜 Рулон</label></div>
+                                    <div class="choice-card"><input type="radio" name="material_type" value="sheet" id="matSheet"><label for="matSheet">📄 Листовой</label></div>
+                                </div>
+                                <div id="rollFields" class="material-fields-row">
+                                    <div class="field-group"><label for="flotLength">Формат рулона</label><input type="text" inputmode="numeric" class="masked-number" id="flotLength" placeholder="мм"></div>
+                                    <div class="field-group"><label for="rollWidth">Формат флоторезки</label><input type="text" inputmode="numeric" class="masked-number" id="rollWidth" placeholder="мм"></div>
+                                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-divide-toggle" id="divideToggleBtn">½ формата</button></div>
+                                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-transfer" id="transferFormatBtn">Передать формат</button></div>
+                                </div>
+                                <div id="sheetFields" class="material-fields-row" style="display:none;">
+                                    <div class="field-group"><label for="sheetLength">Длина листа</label><input type="text" inputmode="numeric" class="masked-number" id="sheetLength" placeholder="мм"></div>
+                                    <div class="field-group"><label for="sheetWidth">Ширина листа</label><input type="text" inputmode="numeric" class="masked-number" id="sheetWidth" placeholder="мм"></div>
+                                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-divide-toggle" id="divideToggleBtnSheet">½ формата</button></div>
+                                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-transfer" id="transferFormatBtnSheet">Передать формат</button></div>
+                                </div>
+                            </div>
+                            <div class="calc-mode-switch"><label><input type="radio" name="calc_mode" value="warehouse" checked> Параметры</label></div>
+                            <table class="data-table">
+                                <tr><td>Тип материала</td><td><select name="paper_type" id="paperType" required><option value="картон">картон</option><option value="Меловка">Меловка</option><option value="Офсет">Офсет</option></select></td></tr>
+                                <tr><td>гр/м²</td><td><input type="text" inputmode="numeric" class="masked-number" id="gsm" required></td></tr>
+                                <tr><td>Печатный формат (Ширина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeWidth" required></td></tr>
+                                <tr><td>Печатный формат (Длина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeLength" required></td></tr>
+                                <tr><td>Кол-во продукции</td><td><input type="text" inputmode="numeric" class="masked-number" id="orderQty" required></td></tr>
+                                <tr><td>Доля на печатном листе</td><td><input type="text" inputmode="numeric" class="masked-number" id="stripes" required></td></tr>
+                                <tr><td>Приладка</td><td><input type="text" inputmode="numeric" class="masked-number" id="makeReady" required></td></tr>
+                                <tr><td>Красочность</td><td><input type="text" name="color" id="color" required></td></tr>
+                                <tr>
+                                    <td>Тираж листов</td>
+                                    <td>
+                                        <div class="print-sheets-container">
+                                            <div class="print-sheets-info">
+                                                <span>Тираж листов: <strong id="printSheetsAuto"></strong></span>
+                                                <span>Вес заказа: <strong id="weightResult">— кг</strong></span>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="print_sheets" id="printSheetsHidden" value="0">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="form-column">
+                            <div class="form-column-title">Пост Печать</div>
+                            <div class="service-grid" id="servicesContainer"></div>
+                            <div class="pdf-block">
+                                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                    <label class="btn btn-secondary pdf-select-btn" for="pdfFileInput" style="cursor:pointer;">📎 Выбрать PDF</label>
+                                    <input type="file" id="pdfFileInput" accept=".pdf" class="hidden-input">
+                                    <div class="pdf-filename-input"><input type="text" id="pdfFileNameInput" name="pdf_filename" placeholder="Имя PDF-файла (выберите файл)" readonly></div>
+                                    <button type="button" id="clearPdfBtn" class="btn btn-secondary" style="display:none;">✕</button>
+                                </div>
+                            </div>
+                            <div class="screenshot-block">
+                                <div style="font-size:13px; font-weight:500; margin-bottom:6px;">🖼️ Скриншот (Ctrl+V)</div>
+                                <div id="screenshotDropArea" class="screenshot-drop-area" tabindex="0">
+                                    <div class="placeholder">
+                                        <div style="font-size:32px; margin-bottom:8px;">📷</div>
+                                        <div>Вставьте скриншот из буфера обмена</div>
+                                        <div class="key-hint">Ctrl + V</div>
+                                    </div>
+                                    <img id="screenshotPreview" alt="Скриншот">
+                                    <button type="button" id="clearScreenshotBtn" class="clear-screenshot" title="Удалить">✕</button>
+                                </div>
+                                <input type="hidden" id="screenshotData" name="screenshot_base64" value="">
+                                <div class="form-actions" style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:20px;">
+                                    <button type="button" class="btn btn-secondary" onclick="showList()">Отмена</button>
+                                    <button type="submit" class="btn btn-primary">📤 Отправить в Тех Карту</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-      </div>
     </main>
-  </div>
+</div>
 
- <script>
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-      document.getElementById('sidebarOverlay').classList.toggle('show');
-    }
-    function closeSidebar() {
-      document.getElementById('sidebar').classList.remove('open');
-      document.getElementById('sidebarOverlay').classList.remove('show');
-    }
-
-    (function() {
-      document.body.classList.remove('dark-theme', 'dark');
-      document.body.removeAttribute('data-theme');
-    })();
-</script>
-<script src="js/storage.js"></script>
-<script src="js/multi-account-storage.js"></script>
 <script>
-    // Базовый URL API сервера (замените на актуальный порт вашего Express)
-    const API_BASE = 'http://localhost:8090';  // для Docker скорее всего http://localhost:8090
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const body = document.body;
-      const themeToggle = document.getElementById('themeToggle');
-      if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-          const next = body.classList.contains('dark') ? 'light' : 'dark';
-          body.className = next;
-          localStorage.setItem('theme', next);
-        });
-      }
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      body.className = savedTheme;
-
-      let allOrders = [];
-      let currentPage = 1;
-      const perPage = 100;
-
-      function loadOrders() {
-        try {
-          const raw = localStorage.getItem('pp_orders') || localStorage.getItem('print_orders');
-          allOrders = raw ? JSON.parse(raw) : [];
-          allOrders.sort((a, b) => b.id - a.id);
-        } catch (e) { console.error('Ошибка загрузки заказов:', e); allOrders = []; }
-      }
-
-      function showList() {
-        document.getElementById('listContainer').classList.add('active');
-        document.getElementById('formContainer').classList.remove('active');
-        renderOrders();
-      }
-      function showForm(editData) {
-        document.getElementById('listContainer').classList.remove('active');
-        document.getElementById('formContainer').classList.add('active');
-        if (editData) {
-          fillForm(editData);
-          document.getElementById('formTitle').textContent = 'Редактирование заказа';
-        } else {
-          resetForm();
-          document.getElementById('formTitle').textContent = 'Создание заказа';
-        }
-        document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth' });
-      }
-      window.showList = showList;
-      window.showForm = showForm;
-
-      function formatWithSpaces(value) {
-        let digits = value.replace(/\D/g, '');
-        if (digits === '') return '';
-        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-      }
-
-      function applyMask(input) {
-        if (!input) return;
-        let start = input.selectionStart;
-        let oldVal = input.value;
-        let newVal = formatWithSpaces(oldVal);
-        if (newVal !== oldVal) {
-          let addedSpaces = 0;
-          for (let i = 0; i < start; i++) {
-            if (oldVal[i] === ' ' && newVal[i] !== ' ') addedSpaces--;
-            else if (oldVal[i] !== ' ' && newVal[i] === ' ') addedSpaces++;
-          }
-          input.value = newVal;
-          let newPos = start + addedSpaces;
-          if (newPos < 0) newPos = 0;
-          if (newPos > newVal.length) newPos = newVal.length;
-          input.setSelectionRange(newPos, newPos);
-        }
-      }
-
-      function setupMasks() {
-        document.querySelectorAll('.masked-number').forEach(inp => {
-          inp.removeEventListener('input', maskHandler);
-          inp.addEventListener('input', maskHandler);
-        });
-      }
-
-      function maskHandler(e) {
-        applyMask(e.target);
-        recalc();
-      }
-
-      function getCleanNumber(id) {
-        let el = document.getElementById(id);
-        if (!el) return 0;
-        return parseFloat(el.value.replace(/\s/g, '')) || 0;
-      }
-
-      const matRoll = document.getElementById('matRoll');
-      const matSheet = document.getElementById('matSheet');
-      const rollFields = document.getElementById('rollFields');
-      const sheetFields = document.getElementById('sheetFields');
-
-      const transferBtn = document.getElementById('transferFormatBtn');
-      const divideToggleBtn = document.getElementById('divideToggleBtn');
-      const transferBtnSheet = document.getElementById('transferFormatBtnSheet');
-      const divideToggleBtnSheet = document.getElementById('divideToggleBtnSheet');
-
-      let divideByTwo = false;
-      let transferActive = false;
-
-      function syncButtonStates() {
-        if (divideByTwo) {
-          divideToggleBtn.classList.add('active');
-          divideToggleBtnSheet.classList.add('active');
-          transferBtn.classList.remove('active');
-          transferBtnSheet.classList.remove('active');
-        } else if (transferActive) {
-          divideToggleBtn.classList.remove('active');
-          divideToggleBtnSheet.classList.remove('active');
-          transferBtn.classList.add('active');
-          transferBtnSheet.classList.add('active');
-        } else {
-          divideToggleBtn.classList.remove('active');
-          divideToggleBtnSheet.classList.remove('active');
-          transferBtn.classList.remove('active');
-          transferBtnSheet.classList.remove('active');
-        }
-      }
-
-      function toggleDivideState() {
-        divideByTwo = !divideByTwo;
-        if (divideByTwo) {
-          transferActive = false;
-        }
-        syncButtonStates();
-      }
-
-      function activateTransfer() {
-        transferActive = true;
-        divideByTwo = false;
-        syncButtonStates();
-      }
-
-      divideToggleBtn.addEventListener('click', toggleDivideState);
-      divideToggleBtnSheet.addEventListener('click', toggleDivideState);
-
-      function toggleMaterialFields() {
-        if (matRoll.checked) {
-          rollFields.style.display = 'flex';
-          sheetFields.style.display = 'none';
-        } else {
-          rollFields.style.display = 'none';
-          sheetFields.style.display = 'flex';
-        }
-        syncButtonStates();
-      }
-
-      matRoll.addEventListener('change', toggleMaterialFields);
-      matSheet.addEventListener('change', toggleMaterialFields);
-
-      function transferFormat() {
-        const sizeWidth = document.getElementById('sizeWidth');
-        const sizeLength = document.getElementById('sizeLength');
-        let w = 0, l = 0;
-
-        if (matRoll.checked) {
-          w = getCleanNumber('flotLength');
-          l = getCleanNumber('rollWidth');
-        } else {
-          w = getCleanNumber('sheetWidth');
-          l = getCleanNumber('sheetLength');
-        }
-
-        sizeWidth.value = formatWithSpaces(Math.round(w).toString());
-        sizeLength.value = formatWithSpaces(Math.round(l).toString());
-        recalc();
-      }
-
-      transferBtn.addEventListener('click', function(e) {
-        activateTransfer();
-        transferFormat();
-      });
-
-      transferBtnSheet.addEventListener('click', function(e) {
-        activateTransfer();
-        transferFormat();
-      });
-
-      function fillForm(order) {
-        document.getElementById('editId').value = order.id;
-        document.getElementById('techcardNo').value = order.techcard_no || '';
-        document.getElementById('managerSelect').value = order.manager || 'Муниса';
-        document.getElementById('customerInput').value = order.customer || '';
-        document.getElementById('productNameInput').value = order.product_name || '';
-        document.getElementById('descriptionInput').value = order.description || '';
-        document.querySelector('input[name="print_type"][value="'+(order.print_type||'A1')+'"]').checked = true;
-
-        const materialType = order.material_type || 'roll';
-        document.getElementById(materialType === 'roll' ? 'matRoll' : 'matSheet').checked = true;
-        toggleMaterialFields();
-
-        document.getElementById('paperType').value = order.paper_type || 'картон';
-        setMaskedValue('gsm', order.gsm);
-        setMaskedValue('orderQty', order.order_qty);
-        setMaskedValue('sizeWidth', order.size_width);
-        setMaskedValue('sizeLength', order.size_length);
-        setMaskedValue('makeReady', order.make_ready);
-        setMaskedValue('stripes', order.stripes);
-        setMaskedValue('rollWidth', order.roll_width);
-        setMaskedValue('flotLength', order.flot_length);
-        setMaskedValue('sheetWidth', order.sheet_width);
-        setMaskedValue('sheetLength', order.sheet_length);
-        document.getElementById('color').value = order.color || '';
-
-        divideByTwo = order.divide_by_two === true;
-        transferActive = order.transfer_active === true;
-        syncButtonStates();
-
-        if (order.pdf_filename) {
-  document.getElementById('pdfFileNameInput').value = order.pdf_originalname || order.pdf_filename;
-  document.getElementById('clearPdfBtn').style.display = 'inline-block';
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');}
+(function(){document.body.classList.remove('dark-theme','dark');document.body.removeAttribute('data-theme');})();
+document.addEventListener('DOMContentLoaded',function(){
+const ORDERS_KEY='pp_orders';
+let allOrders=[];
+let currentPage=1;
+const perPage=100;
+function loadOrders(){try{const raw=localStorage.getItem(ORDERS_KEY);allOrders=raw?JSON.parse(raw):[];allOrders.sort((a,b)=>b.id-a.id);}catch(e){console.error(e);allOrders=[];}}
+function saveOrders(orders){localStorage.setItem(ORDERS_KEY,JSON.stringify(orders));}
+function showList(){document.getElementById('listContainer').classList.add('active');document.getElementById('formContainer').classList.remove('active');renderOrders();}
+function showForm(editData){document.getElementById('listContainer').classList.remove('active');document.getElementById('formContainer').classList.add('active');if(editData){fillForm(editData);document.getElementById('formTitle').textContent='Редактирование заказа';}else{resetForm();document.getElementById('formTitle').textContent='Создание заказа';}}
+window.showList=showList;window.showForm=showForm;
+function formatWithSpaces(value){let digits=value.replace(/\D/g,'');if(digits==='')return'';return digits.replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+function applyMask(input){if(!input)return;let start=input.selectionStart;let oldVal=input.value;let newVal=formatWithSpaces(oldVal);if(newVal!==oldVal){let addedSpaces=0;for(let i=0;i<start;i++){if(oldVal[i]===' '&&newVal[i]!==' ')addedSpaces--;else if(oldVal[i]!==' '&&newVal[i]===' ')addedSpaces++;}input.value=newVal;let newPos=start+addedSpaces;if(newPos<0)newPos=0;if(newPos>newVal.length)newPos=newVal.length;input.setSelectionRange(newPos,newPos);}}
+function setupMasks(){document.querySelectorAll('.masked-number').forEach(inp=>{inp.removeEventListener('input',maskHandler);inp.addEventListener('input',maskHandler);});}
+function maskHandler(e){applyMask(e.target);recalc();}
+function getCleanNumber(id){let el=document.getElementById(id);if(!el)return 0;return parseFloat(el.value.replace(/\s/g,''))||0;}
+const matRoll=document.getElementById('matRoll');const matSheet=document.getElementById('matSheet');const rollFields=document.getElementById('rollFields');const sheetFields=document.getElementById('sheetFields');
+const transferBtn=document.getElementById('transferFormatBtn');const divideToggleBtn=document.getElementById('divideToggleBtn');
+const transferBtnSheet=document.getElementById('transferFormatBtnSheet');const divideToggleBtnSheet=document.getElementById('divideToggleBtnSheet');
+let divideByTwo=false;let transferActive=false;
+function syncButtonStates(){if(divideByTwo){divideToggleBtn.classList.add('active');divideToggleBtnSheet.classList.add('active');transferBtn.classList.remove('active');transferBtnSheet.classList.remove('active');}else if(transferActive){divideToggleBtn.classList.remove('active');divideToggleBtnSheet.classList.remove('active');transferBtn.classList.add('active');transferBtnSheet.classList.add('active');}else{divideToggleBtn.classList.remove('active');divideToggleBtnSheet.classList.remove('active');transferBtn.classList.remove('active');transferBtnSheet.classList.remove('active');}}
+function toggleDivideState(){divideByTwo=!divideByTwo;if(divideByTwo){transferActive=false;}syncButtonStates();}
+function activateTransfer(){transferActive=true;divideByTwo=false;syncButtonStates();}
+divideToggleBtn.addEventListener('click',toggleDivideState);divideToggleBtnSheet.addEventListener('click',toggleDivideState);
+function toggleMaterialFields(){if(matRoll.checked){rollFields.style.display='flex';sheetFields.style.display='none';}else{rollFields.style.display='none';sheetFields.style.display='flex';}syncButtonStates();}
+matRoll.addEventListener('change',toggleMaterialFields);matSheet.addEventListener('change',toggleMaterialFields);
+function transferFormat(){const sizeWidth=document.getElementById('sizeWidth');const sizeLength=document.getElementById('sizeLength');let w=0,l=0;if(matRoll.checked){w=getCleanNumber('flotLength');l=getCleanNumber('rollWidth');}else{w=getCleanNumber('sheetWidth');l=getCleanNumber('sheetLength');}sizeWidth.value=formatWithSpaces(Math.round(w).toString());sizeLength.value=formatWithSpaces(Math.round(l).toString());recalc();}
+transferBtn.addEventListener('click',function(e){activateTransfer();transferFormat();});
+transferBtnSheet.addEventListener('click',function(e){activateTransfer();transferFormat();});
+function fillForm(order){
+document.getElementById('editId').value=order.id;
+document.getElementById('techcardNo').value=order.techcard_no||'';
+document.getElementById('managerSelect').value=order.manager||'Муниса';
+document.getElementById('customerInput').value=order.customer||'';
+document.getElementById('productNameInput').value=order.product_name||'';
+document.getElementById('descriptionInput').value=order.description||'';
+document.querySelector('input[name="print_type"][value="'+(order.print_type||'A1')+'"]').checked=true;
+const materialType=order.material_type||'roll';
+document.getElementById(materialType==='roll'?'matRoll':'matSheet').checked=true;toggleMaterialFields();
+document.getElementById('paperType').value=order.paper_type||'картон';
+setMaskedValue('gsm',order.gsm);setMaskedValue('orderQty',order.order_qty);setMaskedValue('sizeWidth',order.size_width);
+setMaskedValue('sizeLength',order.size_length);setMaskedValue('makeReady',order.make_ready);setMaskedValue('stripes',order.stripes);
+setMaskedValue('rollWidth',order.roll_width);setMaskedValue('flotLength',order.flot_length);setMaskedValue('sheetWidth',order.sheet_width);
+setMaskedValue('sheetLength',order.sheet_length);document.getElementById('color').value=order.color||'';
+divideByTwo=order.divide_by_two===true;transferActive=order.transfer_active===true;syncButtonStates();
+if(order.pdf_filename){document.getElementById('pdfFileNameInput').value=order.pdf_originalname||order.pdf_filename;document.getElementById('clearPdfBtn').style.display='inline-block';}
+if(order.screenshot_base64){document.getElementById('screenshotData').value=order.screenshot_base64;document.getElementById('screenshotPreview').src=order.screenshot_base64;const drop=document.getElementById('screenshotDropArea');drop.classList.add('has-image');const placeholder=drop.querySelector('.placeholder');if(placeholder)placeholder.style.display='none';}
+const services=order.services||[];
+document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb=>{cb.checked=false;const optionsDiv=cb.closest('.service-item').querySelector('.service-options');if(optionsDiv)optionsDiv.style.display='none';});
+services.forEach(s=>{const cb=document.getElementById('chk_'+s.name);if(cb){cb.checked=true;const item=cb.closest('.service-item');const optionsDiv=item.querySelector('.service-options');if(optionsDiv)optionsDiv.style.display='block';
+if(s.name==='cutting'){const sel=document.getElementById('cutting_type');if(sel){if(s.type==='до печать')sel.value='pre';else if(s.type==='пост печать')sel.value='post';else if(s.type==='оба')sel.value='both';sel.dispatchEvent(new Event('change'));
+if(s.type==='до печать'){document.getElementById('cut_pre_width').value=s.width||'';document.getElementById('cut_pre_length').value=s.length||'';}
+else if(s.type==='пост печать'){document.getElementById('cut_post_width').value=s.width||'';document.getElementById('cut_post_length').value=s.length||'';}
+else if(s.type==='оба'&&s.details){const pre=s.details.find(d=>d.type==='до печать');const post=s.details.find(d=>d.type==='пост печать');if(pre){document.getElementById('cut_both_pre_width').value=pre.width||'';document.getElementById('cut_both_pre_length').value=pre.length||'';}if(post){document.getElementById('cut_both_post_width').value=post.width||'';document.getElementById('cut_both_post_length').value=post.length||'';}}}
+}else if(s.name!=='flot_cutting'){const sel=document.getElementById('sel_'+s.name);if(sel)sel.value=s.type||'';}}});
+recalc();
 }
-        if (order.screenshot_base64) {
-          document.getElementById('screenshotData').value = order.screenshot_base64;
-          document.getElementById('screenshotPreview').src = order.screenshot_base64;
-          const drop = document.getElementById('screenshotDropArea');
-          drop.classList.add('has-image');
-          const placeholder = drop.querySelector('.placeholder');
-          if (placeholder) placeholder.style.display = 'none';
-        }
-
-        const services = order.services || [];
-        document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb => {
-          cb.checked = false;
-          const optionsDiv = cb.closest('.service-item').querySelector('.service-options');
-          if (optionsDiv) optionsDiv.style.display = 'none';
-        });
-        services.forEach(s => {
-          const cb = document.getElementById('chk_' + s.name);
-          if (cb) {
-            cb.checked = true;
-            const item = cb.closest('.service-item');
-            const optionsDiv = item.querySelector('.service-options');
-            if (optionsDiv) optionsDiv.style.display = 'block';
-            if (s.name === 'cutting') {
-              const sel = document.getElementById('cutting_type');
-              if (sel) {
-                if (s.type === 'до печать') sel.value = 'pre';
-                else if (s.type === 'пост печать') sel.value = 'post';
-                else if (s.type === 'оба') sel.value = 'both';
-                sel.dispatchEvent(new Event('change'));
-                if (s.type === 'до печать') {
-                  document.getElementById('cut_pre_width').value = s.width || '';
-                  document.getElementById('cut_pre_length').value = s.length || '';
-                } else if (s.type === 'пост печать') {
-                  document.getElementById('cut_post_width').value = s.width || '';
-                  document.getElementById('cut_post_length').value = s.length || '';
-                } else if (s.type === 'оба' && s.details) {
-                  const pre = s.details.find(d => d.type === 'до печать');
-                  const post = s.details.find(d => d.type === 'пост печать');
-                  if (pre) {
-                    document.getElementById('cut_both_pre_width').value = pre.width || '';
-                    document.getElementById('cut_both_pre_length').value = pre.length || '';
-                  }
-                  if (post) {
-                    document.getElementById('cut_both_post_width').value = post.width || '';
-                    document.getElementById('cut_both_post_length').value = post.length || '';
-                  }
-                }
-              }
-            } else if (s.name !== 'flot_cutting') {
-              const sel = document.getElementById('sel_' + s.name);
-              if (sel) sel.value = s.type || '';
-            }
-          }
-        });
-        recalc();
-      }
-
-      function setMaskedValue(id, value) {
-        const el = document.getElementById(id);
-        if (el) {
-          el.value = value !== undefined && value !== null ? formatWithSpaces(String(value)) : '';
-        }
-      }
-
-      function resetForm() {
-        document.getElementById('editId').value = '';
-        document.getElementById('techcardNo').value = allOrders.length + 1;
-        document.getElementById('managerSelect').value = 'Муниса';
-        document.getElementById('customerInput').value = '';
-        document.getElementById('productNameInput').value = '';
-        document.getElementById('descriptionInput').value = '';
-        document.getElementById('printA1').checked = true;
-        document.getElementById('matRoll').checked = true;
-        toggleMaterialFields();
-        document.getElementById('paperType').value = 'картон';
-        setMaskedValue('gsm', '');
-        setMaskedValue('orderQty', '');
-        setMaskedValue('sizeWidth', '');
-        setMaskedValue('sizeLength', '');
-        setMaskedValue('makeReady', '');
-        setMaskedValue('stripes', '');
-        setMaskedValue('rollWidth', '');
-        setMaskedValue('flotLength', '');
-        setMaskedValue('sheetWidth', '');
-        setMaskedValue('sheetLength', '');
-        document.getElementById('color').value = '';
-        document.getElementById('pdfFileNameInput').value = '';
-        document.getElementById('clearPdfBtn').style.display = 'none';
-        document.getElementById('pdfFileInput').value = '';
-        document.getElementById('screenshotData').value = '';
-        document.getElementById('screenshotPreview').src = '';
-        const drop = document.getElementById('screenshotDropArea');
-        drop.classList.remove('has-image');
-        const placeholder = drop.querySelector('.placeholder');
-        if (placeholder) placeholder.style.display = 'block';
-        document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb => {
-          cb.checked = false;
-          const optionsDiv = cb.closest('.service-item').querySelector('.service-options');
-          if (optionsDiv) optionsDiv.style.display = 'none';
-        });
-        document.querySelectorAll('#cuttingDetails input[type="number"]').forEach(inp => inp.value = '');
-        divideByTwo = false;
-        transferActive = false;
-        syncButtonStates();
-        recalc();
-      }
-
-      window.editOrder = function(id) {
-        const order = allOrders.find(o => o.id === id);
-        if (order) {
-          showForm(order);
-        }
-      };
-
-      window.deleteOrder = function(id) {
-        if (confirm('Вы уверены, что хотите удалить этот заказ?')) {
-          let orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
-          orders = orders.filter(o => o.id !== id);
-          localStorage.setItem('pp_orders', JSON.stringify(orders));
-          loadOrders();
-          renderOrders();
-          alert('Заказ удалён!');
-        }
-      };
-
-      function renderOrders() {
-        const search = document.getElementById('searchOrders').value.toLowerCase().trim();
-        let filtered = allOrders;
-        if (search) {
-          filtered = filtered.filter(o => {
-            const fields = [o.techcard_no, o.customer, o.product_name, o.manager].map(f => String(f || '').toLowerCase());
-            return fields.some(f => f.includes(search));
-          });
-        }
-        const total = filtered.length;
-        const totalPages = Math.ceil(total / perPage) || 1;
-        if (currentPage > totalPages) currentPage = totalPages;
-        const start = (currentPage - 1) * perPage;
-        const pageItems = filtered.slice(start, start + perPage);
-        const tbody = document.getElementById('ordersBody');
-
-        const editModeEnabled = (window.PPSettings ? PPSettings.get('pp_edit_mode_enabled') : localStorage.getItem('pp_edit_mode_enabled') === 'true');
-
-        if (pageItems.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" class="empty-msg">Нет заказов</td></tr>';
-        } else {
-          tbody.innerHTML = pageItems.map(o => {
-            const formattedNo = String(o.techcard_no || o.id).padStart(3, '0');
-            return `
-              <tr>
-                <td><strong>${formattedNo}</strong></td>
-                <td>${o.customer || ''}</td>
-                <td>${o.product_name || ''}</td>
-                <td>${o.manager || ''}</td>
-                <td>${o.order_qty || ''}</td>
-                <td><strong>${Math.ceil(o.print_sheets || 0).toLocaleString('ru-RU')}</strong></td>
-                ${editModeEnabled ? `
-                <td>
-                  <div class="actions-cell">
-                    <button class="btn-action btn-edit" onclick="editOrder(${o.id})">✏️ Изменить</button>
-                    <button class="btn-action btn-delete" onclick="deleteOrder(${o.id})">🗑️ Удалить</button>
-                  </div>
-                </td>
-                ` : '<td></td>'}
-              </tr>
-            `;
-          }).join('');
-        }
-        const pag = document.getElementById('pagination');
-        if (totalPages <= 1) { pag.innerHTML = ''; return; }
-        let pagHTML = `<button onclick="goPage(1)" ${currentPage===1?'disabled':''}>«</button>
-                      <button onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-        for (let i = 1; i <= totalPages; i++) {
-          if (i === currentPage || i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
-            pagHTML += `<button onclick="goPage(${i})" class="${i===currentPage?'active':''}">${i}</button>`;
-          } else if (i === currentPage - 3 || i === currentPage + 3) {
-            pagHTML += '<button disabled>…</button>';
-          }
-        }
-        pagHTML += `<button onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>
-                    <button onclick="goPage(${totalPages})" ${currentPage===totalPages?'disabled':''}>»</button>`;
-        pag.innerHTML = pagHTML;
-      }
-
-      window.goPage = function(p) { currentPage = p; renderOrders(); };
-
-      // ===== Загрузка PDF на сервер =====
-      async function uploadPdfAndGetFilename(orderId) {
-  const pdfInput = document.getElementById('pdfFileInput');
-  const file = pdfInput.files[0];
-  if (!file) return null;
-
-  const formData = new FormData();
-  formData.append('pdf', file);
-
-  try {
-    const response = await fetch(`${API_BASE}/api/upload/pdf/${orderId}`, {
-      method: 'POST',
-      body: formData
-    });
-    if (!response.ok) throw new Error('Ошибка загрузки');
-    const data = await response.json();
-    // Возвращаем объект с системным и оригинальным именами
-    return { filename: data.filename, originalname: data.originalname };
-  } catch (err) {
-    console.error(err);
-    alert('Не удалось загрузить PDF на сервер');
-    return undefined;
-  }
+function setMaskedValue(id,value){const el=document.getElementById(id);if(el){el.value=value!==undefined&&value!==null?formatWithSpaces(String(value)):'';}}
+function resetForm(){
+document.getElementById('editId').value='';document.getElementById('techcardNo').value=allOrders.length+1;
+document.getElementById('managerSelect').value='Муниса';document.getElementById('customerInput').value='';
+document.getElementById('productNameInput').value='';document.getElementById('descriptionInput').value='';
+document.getElementById('printA1').checked=true;document.getElementById('matRoll').checked=true;toggleMaterialFields();
+document.getElementById('paperType').value='картон';setMaskedValue('gsm','');setMaskedValue('orderQty','');
+setMaskedValue('sizeWidth','');setMaskedValue('sizeLength','');setMaskedValue('makeReady','');setMaskedValue('stripes','');
+setMaskedValue('rollWidth','');setMaskedValue('flotLength','');setMaskedValue('sheetWidth','');setMaskedValue('sheetLength','');
+document.getElementById('color').value='';document.getElementById('pdfFileNameInput').value='';
+document.getElementById('clearPdfBtn').style.display='none';document.getElementById('pdfFileInput').value='';
+document.getElementById('screenshotData').value='';document.getElementById('screenshotPreview').src='';
+const drop=document.getElementById('screenshotDropArea');drop.classList.remove('has-image');const placeholder=drop.querySelector('.placeholder');if(placeholder)placeholder.style.display='block';
+document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb=>{cb.checked=false;const optionsDiv=cb.closest('.service-item').querySelector('.service-options');if(optionsDiv)optionsDiv.style.display='none';});
+document.querySelectorAll('#cuttingDetails input[type="number"]').forEach(inp=>inp.value='');
+divideByTwo=false;transferActive=false;syncButtonStates();recalc();
 }
-
-      // ===== Обработчик отправки формы =====
-      document.getElementById('orderForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const id = document.getElementById('editId').value;
-        const orderId = id ? parseInt(id) : Date.now();
-
-         const uploadedPdf = await uploadPdfAndGetFilename(orderId);
-  if (uploadedPdf === undefined) return; // ошибка – прерываем
-
-  const order = {
-    id: orderId,
-    techcard_no: document.getElementById('techcardNo').value,
-    manager: document.getElementById('managerSelect').value,
-    customer: document.getElementById('customerInput').value,
-    product_name: document.getElementById('productNameInput').value,
-    description: document.getElementById('descriptionInput').value,
-    print_type: document.querySelector('input[name="print_type"]:checked').value,
-    material_type: matRoll.checked ? 'roll' : 'sheet',
-    paper_type: document.getElementById('paperType').value,
-    order_qty: getCleanNumber('orderQty'),
-    make_ready: getCleanNumber('makeReady'),
-    size_width: getCleanNumber('sizeWidth'),
-    size_length: getCleanNumber('sizeLength'),
-    roll_width: getCleanNumber('rollWidth') || null,
-    flot_length: getCleanNumber('flotLength') || null,
-    sheet_width: getCleanNumber('sheetWidth') || null,
-    sheet_length: getCleanNumber('sheetLength') || null,
-    stripes: getCleanNumber('stripes'),
-    gsm: getCleanNumber('gsm'),
-    color: document.getElementById('color').value,
-    print_sheets: currentTotalSheets,
-    weight_kg: currentWeightKg,
-    divide_by_two: divideByTwo,
-    transfer_active: transferActive,
-    // pdf_filename – системное имя, pdf_originalname – красивое название
-    pdf_filename: uploadedPdf ? uploadedPdf.filename : (document.getElementById('pdfFileNameInput').value.trim() || null),
-    pdf_originalname: uploadedPdf ? uploadedPdf.originalname : null,
-    screenshot_base64: document.getElementById('screenshotData').value || null,
-    services: []
-  };
-
-  // ... дальше сбор services и сохранение, как было ...
-
-        for (let key in SERVICE_TYPES) {
-          const chk = document.getElementById('chk_' + key);
-          if (chk && chk.checked) {
-            if (key === 'cutting') {
-              const type = document.getElementById('cutting_type').value;
-              if (type === 'pre') {
-                const w = parseFloat(document.getElementById('cut_pre_width').value) || 0;
-                const l = parseFloat(document.getElementById('cut_pre_length').value) || 0;
-                order.services.push({ name:'cutting', type:'до печать', width:w, length:l });
-              } else if (type === 'post') {
-                const w = parseFloat(document.getElementById('cut_post_width').value) || 0;
-                const l = parseFloat(document.getElementById('cut_post_length').value) || 0;
-                order.services.push({ name:'cutting', type:'пост печать', width:w, length:l });
-              } else if (type === 'both') {
-                const wPre = parseFloat(document.getElementById('cut_both_pre_width').value) || 0;
-                const lPre = parseFloat(document.getElementById('cut_both_pre_length').value) || 0;
-                const wPost = parseFloat(document.getElementById('cut_both_post_width').value) || 0;
-                const lPost = parseFloat(document.getElementById('cut_both_post_length').value) || 0;
-                order.services.push({
-                  name:'cutting', type:'оба',
-                  details: [
-                    { type:'до печать', width:wPre, length:lPre },
-                    { type:'пост печать', width:wPost, length:lPost }
-                  ]
-                });
-              }
-            } else {
-              const sel = document.getElementById('sel_' + key);
-              order.services.push({ name: key, type: sel ? sel.value : '' });
-            }
-          }
-        }
-
-        let orders = JSON.parse(localStorage.getItem('pp_orders') || '[]');
-        const index = orders.findIndex(o => o.id === order.id);
-        if (index >= 0) orders[index] = order;
-        else orders.push(order);
-        localStorage.setItem('pp_orders', JSON.stringify(orders));
-
-        loadOrders();
-        showList();
-        alert('Заказ сохранён!');
-      });
-
-      const SERVICE_TYPES = {
-        vd_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
-        lamination: ['Глянцевый','Матовый','Золота','Серебро'],
-        embossing: ['Золота','Серебро','Голограмма'],
-        die_cut: ['автомат'],
-        kongrev: ['автомат'],
-        gluing: ['1','2','3','4 и более'],
-        cutting: [],
-        uv_lak: ['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый']
-      };
-      const SERVICE_LABELS = {
-        vd_lak:'ВД лак', lamination:'Ламинация', embossing:'Тиснение',
-        cutting:'Резка', gluing:'Склейка', uv_lak:'УФ лак',
-        die_cut:'Высечка', kongrev:'Конгрев'
-      };
-
-      function buildServicesBlock() {
-        const container = document.getElementById('servicesContainer');
-        container.innerHTML = '';
-        for (let key in SERVICE_TYPES) {
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'service-item';
-          const mainRow = document.createElement('div');
-          mainRow.className = 'service-main';
-          const cb = document.createElement('input');
-          cb.type = 'checkbox'; cb.id = 'chk_' + key; cb.value = key;
-          const lbl = document.createElement('label');
-          lbl.htmlFor = 'chk_' + key;
-          lbl.textContent = SERVICE_LABELS[key];
-          mainRow.appendChild(cb); mainRow.appendChild(lbl);
-          itemDiv.appendChild(mainRow);
-          const optionsDiv = document.createElement('div');
-          optionsDiv.className = 'service-options';
-          optionsDiv.style.display = 'none';
-          if (key === 'cutting') {
-            optionsDiv.innerHTML = `
-              <select id="cutting_type" class="cutting-select">
-                <option value="pre" selected>до печать</option>
-                <option value="post">пост печать</option>
-                <option value="both">оба</option>
-              </select>
-              <div id="fields_pre" class="cutting-fields" style="display:flex;">
-                <input type="number" id="cut_pre_width" placeholder="Ширина" min="0">
-                <input type="number" id="cut_pre_length" placeholder="Длина" min="0">
-              </div>
-              <div id="fields_post" class="cutting-fields" style="display:none;">
-                <input type="number" id="cut_post_width" placeholder="Ширина" min="0">
-                <input type="number" id="cut_post_length" placeholder="Длина" min="0">
-              </div>
-              <div id="fields_both" class="cutting-fields cutting-both" style="display:none;">
-                <div class="cutting-row-inline">
-                  <label>До печать:</label><input type="number" id="cut_both_pre_width" placeholder="Ширина" min="0">
-                  <label>До печать:</label><input type="number" id="cut_both_pre_length" placeholder="Длина" min="0">
-                </div>
-                <div class="cutting-row-inline">
-                  <label>Пост печать:</label><input type="number" id="cut_both_post_width" placeholder="Ширина" min="0">
-                  <label>Пост печать:</label><input type="number" id="cut_both_post_length" placeholder="Длина" min="0">
-                </div>
-              </div>
-            `;
-          } else {
-            const selId = 'sel_' + key;
-            let optionsHTML = `<select id="${selId}">`;
-            SERVICE_TYPES[key].forEach(v => { optionsHTML += `<option value="${v}">${v}</option>`; });
-            optionsHTML += '</select>';
-            optionsDiv.innerHTML = optionsHTML;
-          }
-          itemDiv.appendChild(optionsDiv);
-          cb.addEventListener('change', function() {
-            if (this.checked) {
-              if (key === 'cutting') {
-                optionsDiv.style.display = 'block';
-                document.getElementById('cutting_type').dispatchEvent(new Event('change'));
-              } else {
-                optionsDiv.style.display = 'block';
-              }
-            } else {
-              optionsDiv.style.display = 'none';
-            }
-            recalc();
-          });
-          if (key === 'cutting') {
-            optionsDiv.querySelector('select').addEventListener('change', function() {
-              const val = this.value;
-              document.getElementById('fields_pre').style.display = (val === 'pre') ? 'flex' : 'none';
-              document.getElementById('fields_post').style.display = (val === 'post') ? 'flex' : 'none';
-              document.getElementById('fields_both').style.display = (val === 'both') ? 'flex' : 'none';
-            });
-          }
-          container.appendChild(itemDiv);
-        }
-      }
-
-      const pdfFileInput = document.getElementById('pdfFileInput');
-      const pdfFileNameInput = document.getElementById('pdfFileNameInput');
-      const clearPdfBtn = document.getElementById('clearPdfBtn');
-      if (pdfFileInput && pdfFileNameInput) {
-        pdfFileInput.addEventListener('change', function(e) {
-          const file = e.target.files[0];
-          if (!file) return;
-          pdfFileNameInput.value = file.name;
-          if (clearPdfBtn) clearPdfBtn.style.display = 'inline-block';
-        });
-      }
-      if (clearPdfBtn) {
-        clearPdfBtn.addEventListener('click', function() {
-          if (pdfFileInput) pdfFileInput.value = '';
-          if (pdfFileNameInput) pdfFileNameInput.value = '';
-          clearPdfBtn.style.display = 'none';
-        });
-      }
-
-      const dropArea = document.getElementById('screenshotDropArea');
-      const previewImg = document.getElementById('screenshotPreview');
-      const screenshotData = document.getElementById('screenshotData');
-      const clearScreenshotBtn = document.getElementById('clearScreenshotBtn');
-
-      function handlePaste(e) {
-        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-        for (let item of items) {
-          if (item.type.startsWith('image/')) {
-            const blob = item.getAsFile();
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-              const base64 = ev.target.result;
-              screenshotData.value = base64;
-              previewImg.src = base64;
-              dropArea.classList.add('has-image');
-              if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
-              const placeholder = dropArea.querySelector('.placeholder');
-              if (placeholder) placeholder.style.display = 'none';
-            };
-            reader.readAsDataURL(blob);
-            e.preventDefault();
-            break;
-          }
-        }
-      }
-
-      document.addEventListener('paste', function(e) {
-        const target = e.target;
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-          if (target.closest('#screenshotDropArea')) { handlePaste(e); }
-          return;
-        }
-        handlePaste(e);
-      });
-
-      dropArea.addEventListener('dragover', function(e) { e.preventDefault(); dropArea.classList.add('dragover'); });
-      dropArea.addEventListener('dragleave', function(e) { dropArea.classList.remove('dragover'); });
-      dropArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        dropArea.classList.remove('dragover');
-        const files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = function(ev) {
-            const base64 = ev.target.result;
-            screenshotData.value = base64;
-            previewImg.src = base64;
-            dropArea.classList.add('has-image');
-            if (clearScreenshotBtn) clearScreenshotBtn.style.display = 'flex';
-            const placeholder = dropArea.querySelector('.placeholder');
-            if (placeholder) placeholder.style.display = 'none';
-          };
-          reader.readAsDataURL(files[0]);
-        }
-      });
-
-      if (clearScreenshotBtn) {
-        clearScreenshotBtn.addEventListener('click', function() {
-          screenshotData.value = '';
-          previewImg.src = '';
-          dropArea.classList.remove('has-image');
-          clearScreenshotBtn.style.display = 'none';
-          const placeholder = dropArea.querySelector('.placeholder');
-          if (placeholder) placeholder.style.display = 'block';
-        });
-      }
-
-      let currentWeightKg = 0, currentTotalSheets = 0;
-      function recalc() {
-        const orderQty  = getCleanNumber('orderQty');
-        const makeReady = getCleanNumber('makeReady');
-        const stripes   = getCleanNumber('stripes');
-        const width     = getCleanNumber('sizeWidth');
-        const length    = getCleanNumber('sizeLength');
-        const gsm       = getCleanNumber('gsm');
-
-        let totalSheets = 0;
-        if (stripes > 0) totalSheets = (orderQty / stripes) + makeReady;
-        currentTotalSheets = Math.ceil(totalSheets);
-
-        let weightKg = 0;
-        if (width > 0 && length > 0 && gsm > 0 && totalSheets > 0) {
-          weightKg = (width * length * gsm * totalSheets) / 1_000_000_000;
-        }
-        currentWeightKg = weightKg;
-        updateUI();
-      }
-
-      function updateUI() {
-        document.getElementById('printSheetsHidden').value = currentTotalSheets;
-        document.getElementById('printSheetsAuto').textContent = currentTotalSheets > 0 ? currentTotalSheets.toLocaleString('ru-RU') : '';
-        const wEl = document.getElementById('weightResult');
-        if (wEl) {
-          if (currentWeightKg <= 0) wEl.textContent = '— кг';
-          else wEl.textContent = Math.round(currentWeightKg).toLocaleString('ru-RU') + ' кг';
-        }
-      }
-
-      ['orderQty','makeReady','stripes','sizeWidth','sizeLength','gsm','rollWidth','flotLength','sheetWidth','sheetLength'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('input', recalc);
-      });
-
-      setupMasks();
-      recalc();
-
-      function loadClients() {
-        const datalist = document.getElementById('customerList');
-        let clients = [];
-        try { clients = JSON.parse(localStorage.getItem('pp_clients') || '[]'); } catch(e) {}
-        datalist.innerHTML = clients.map(c => `<option value="${c.name}">`).join('');
-      }
-
-      function showIndex2ForDiyor() {
-        const user = sessionStorage.getItem('profitprint_user') || '';
-        const role = sessionStorage.getItem('profitprint_role') || '';
-        const link = document.getElementById('index2Link');
-        if (!link) return;  // элемент отсутствует — просто выходим
-        if (user === 'Diyor' || role === 'designer') link.classList.add('visible');
-      }
-
-      loadOrders();
-      loadClients();
-      buildServicesBlock();
-      recalc();
-      renderOrders();
-      showIndex2ForDiyor();
-
-      syncButtonStates();
-    });
+window.editOrder=function(id){const order=allOrders.find(o=>o.id===id);if(order){showForm(order);}};
+window.deleteOrder=function(id){if(confirm('Вы уверены, что хотите удалить этот заказ?')){let orders=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');orders=orders.filter(o=>o.id!==id);localStorage.setItem(ORDERS_KEY,JSON.stringify(orders));loadOrders();renderOrders();alert('Заказ удалён!');}};
+function renderOrders(){
+const search=document.getElementById('searchOrders').value.toLowerCase().trim();let filtered=allOrders;
+if(search){filtered=filtered.filter(o=>{const fields=[o.techcard_no,o.customer,o.product_name,o.manager].map(f=>String(f||'').toLowerCase());return fields.some(f=>f.includes(search));});}
+const total=filtered.length;const totalPages=Math.ceil(total/perPage)||1;if(currentPage>totalPages)currentPage=totalPages;
+const start=(currentPage-1)*perPage;const pageItems=filtered.slice(start,start+perPage);const tbody=document.getElementById('ordersBody');
+const editModeEnabled=(window.PPSettings?PPSettings.get('pp_edit_mode_enabled'):localStorage.getItem('pp_edit_mode_enabled')==='true');
+if(pageItems.length===0){tbody.innerHTML='<tr><td colspan="7" class="empty-msg">Нет заказов</td></tr>';}else{
+tbody.innerHTML=pageItems.map(o=>{const formattedNo=String(o.techcard_no||o.id).padStart(3,'0');return`
+<tr>
+<td><strong>${formattedNo}</strong></td>
+<td>${o.customer||''}</td>
+<td>${o.product_name||''}</td>
+<td>${o.manager||''}</td>
+<td>${o.order_qty||''}</td>
+<td><strong>${Math.ceil(o.print_sheets||0).toLocaleString('ru-RU')}</strong></td>
+${editModeEnabled?`
+<td>
+<div class="actions-cell">
+<button class="btn-action btn-edit" onclick="editOrder(${o.id})">✏️ Изменить</button>
+<button class="btn-action btn-delete" onclick="deleteOrder(${o.id})">🗑️ Удалить</button>
+</div>
+</td>
+`:'<td></td>'}
+</tr>`;}).join('');
+}
+const pag=document.getElementById('pagination');if(totalPages<=1){pag.innerHTML='';return;}
+let pagHTML=`<button onclick="goPage(1)" ${currentPage===1?'disabled':''}>«</button><button onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+for(let i=1;i<=totalPages;i++){if(i===currentPage||i===1||i===totalPages||Math.abs(i-currentPage)<=2){pagHTML+=`<button onclick="goPage(${i})" class="${i===currentPage?'active':''}">${i}</button>`;}else if(i===currentPage-3||i===currentPage+3){pagHTML+='<button disabled>…</button>';}}
+pagHTML+=`<button onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button><button onclick="goPage(${totalPages})" ${currentPage===totalPages?'disabled':''}>»</button>`;
+pag.innerHTML=pagHTML;
+}
+window.goPage=function(p){currentPage=p;renderOrders();};
+const SERVICE_TYPES={
+vd_lak:['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
+lamination:['Глянцевый','Матовый','Золота','Серебро'],
+embossing:['Золота','Серебро','Голограмма'],
+die_cut:['автомат'],
+kongrev:['автомат'],
+gluing:['1','2','3','4 и более'],
+cutting:[],
+uv_lak:['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый']
+};
+const SERVICE_LABELS={vd_lak:'ВД лак',lamination:'Ламинация',embossing:'Тиснение',cutting:'Резка',gluing:'Склейка',uv_lak:'УФ лак',die_cut:'Высечка',kongrev:'Конгрев'};
+function buildServicesBlock(){const container=document.getElementById('servicesContainer');container.innerHTML='';
+for(let key in SERVICE_TYPES){const itemDiv=document.createElement('div');itemDiv.className='service-item';const mainRow=document.createElement('div');mainRow.className='service-main';const cb=document.createElement('input');cb.type='checkbox';cb.id='chk_'+key;cb.value=key;const lbl=document.createElement('label');lbl.htmlFor='chk_'+key;lbl.textContent=SERVICE_LABELS[key];mainRow.appendChild(cb);mainRow.appendChild(lbl);itemDiv.appendChild(mainRow);const optionsDiv=document.createElement('div');optionsDiv.className='service-options';optionsDiv.style.display='none';
+if(key==='cutting'){optionsDiv.innerHTML=`<select id="cutting_type" class="cutting-select"><option value="pre" selected>до печать</option><option value="post">пост печать</option><option value="both">оба</option></select><div id="fields_pre" class="cutting-fields" style="display:flex;"><input type="number" id="cut_pre_width" placeholder="Ширина" min="0"><input type="number" id="cut_pre_length" placeholder="Длина" min="0"></div><div id="fields_post" class="cutting-fields" style="display:none;"><input type="number" id="cut_post_width" placeholder="Ширина" min="0"><input type="number" id="cut_post_length" placeholder="Длина" min="0"></div><div id="fields_both" class="cutting-fields cutting-both" style="display:none;"><div class="cutting-row-inline"><label>До печать:</label><input type="number" id="cut_both_pre_width" placeholder="Ширина" min="0"><label>До печать:</label><input type="number" id="cut_both_pre_length" placeholder="Длина" min="0"></div><div class="cutting-row-inline"><label>Пост печать:</label><input type="number" id="cut_both_post_width" placeholder="Ширина" min="0"><label>Пост печать:</label><input type="number" id="cut_both_post_length" placeholder="Длина" min="0"></div></div>`;}
+else{const selId='sel_'+key;let optionsHTML=`<select id="${selId}">`;SERVICE_TYPES[key].forEach(v=>{optionsHTML+=`<option value="${v}">${v}</option>`;});optionsHTML+='</select>';optionsDiv.innerHTML=optionsHTML;}
+itemDiv.appendChild(optionsDiv);
+cb.addEventListener('change',function(){if(this.checked){if(key==='cutting'){optionsDiv.style.display='block';document.getElementById('cutting_type').dispatchEvent(new Event('change'));}else{optionsDiv.style.display='block';}}else{optionsDiv.style.display='none';}recalc();});
+if(key==='cutting'){optionsDiv.querySelector('select').addEventListener('change',function(){const val=this.value;document.getElementById('fields_pre').style.display=(val==='pre')?'flex':'none';document.getElementById('fields_post').style.display=(val==='post')?'flex':'none';document.getElementById('fields_both').style.display=(val==='both')?'flex':'none';});}
+container.appendChild(itemDiv);}}
+const pdfFileInput=document.getElementById('pdfFileInput');const pdfFileNameInput=document.getElementById('pdfFileNameInput');const clearPdfBtn=document.getElementById('clearPdfBtn');
+if(pdfFileInput&&pdfFileNameInput){pdfFileInput.addEventListener('change',function(e){const file=e.target.files[0];if(!file)return;pdfFileNameInput.value=file.name;if(clearPdfBtn)clearPdfBtn.style.display='inline-block';});}
+if(clearPdfBtn){clearPdfBtn.addEventListener('click',function(){if(pdfFileInput)pdfFileInput.value='';if(pdfFileNameInput)pdfFileNameInput.value='';clearPdfBtn.style.display='none';});}
+const dropArea=document.getElementById('screenshotDropArea');const previewImg=document.getElementById('screenshotPreview');const screenshotData=document.getElementById('screenshotData');const clearScreenshotBtn=document.getElementById('clearScreenshotBtn');
+function handlePaste(e){const items=(e.clipboardData||e.originalEvent.clipboardData).items;for(let item of items){if(item.type.startsWith('image/')){const blob=item.getAsFile();const reader=new FileReader();reader.onload=function(ev){const base64=ev.target.result;screenshotData.value=base64;previewImg.src=base64;dropArea.classList.add('has-image');if(clearScreenshotBtn)clearScreenshotBtn.style.display='flex';const placeholder=dropArea.querySelector('.placeholder');if(placeholder)placeholder.style.display='none';};reader.readAsDataURL(blob);e.preventDefault();break;}}}
+document.addEventListener('paste',function(e){const target=e.target;if(target.tagName==='INPUT'||target.tagName==='TEXTAREA'){if(target.closest('#screenshotDropArea')){handlePaste(e);}return;}handlePaste(e);});
+dropArea.addEventListener('dragover',function(e){e.preventDefault();dropArea.classList.add('dragover');});
+dropArea.addEventListener('dragleave',function(e){dropArea.classList.remove('dragover');});
+dropArea.addEventListener('drop',function(e){e.preventDefault();dropArea.classList.remove('dragover');const files=e.dataTransfer.files;if(files.length>0&&files[0].type.startsWith('image/')){const reader=new FileReader();reader.onload=function(ev){const base64=ev.target.result;screenshotData.value=base64;previewImg.src=base64;dropArea.classList.add('has-image');if(clearScreenshotBtn)clearScreenshotBtn.style.display='flex';const placeholder=dropArea.querySelector('.placeholder');if(placeholder)placeholder.style.display='none';};reader.readAsDataURL(files[0]);}});
+if(clearScreenshotBtn){clearScreenshotBtn.addEventListener('click',function(){screenshotData.value='';previewImg.src='';dropArea.classList.remove('has-image');clearScreenshotBtn.style.display='none';const placeholder=dropArea.querySelector('.placeholder');if(placeholder)placeholder.style.display='block';});}
+let currentWeightKg=0,currentTotalSheets=0;
+function recalc(){const orderQty=getCleanNumber('orderQty');const makeReady=getCleanNumber('makeReady');const stripes=getCleanNumber('stripes');const width=getCleanNumber('sizeWidth');const length=getCleanNumber('sizeLength');const gsm=getCleanNumber('gsm');let totalSheets=0;if(stripes>0)totalSheets=(orderQty/stripes)+makeReady;currentTotalSheets=Math.ceil(totalSheets);let weightKg=0;if(width>0&&length>0&&gsm>0&&totalSheets>0){weightKg=(width*length*gsm*totalSheets)/1_000_000_000;}currentWeightKg=weightKg;updateUI();}
+function updateUI(){document.getElementById('printSheetsHidden').value=currentTotalSheets;document.getElementById('printSheetsAuto').textContent=currentTotalSheets>0?currentTotalSheets.toLocaleString('ru-RU'):'';const wEl=document.getElementById('weightResult');if(wEl){if(currentWeightKg<=0)wEl.textContent='— кг';else wEl.textContent=Math.round(currentWeightKg).toLocaleString('ru-RU')+' кг';}}
+['orderQty','makeReady','stripes','sizeWidth','sizeLength','gsm','rollWidth','flotLength','sheetWidth','sheetLength'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',recalc);});
+setupMasks();recalc();
+function loadClients(){const datalist=document.getElementById('customerList');let clients=[];try{clients=JSON.parse(localStorage.getItem('pp_clients')||'[]');}catch(e){}datalist.innerHTML=clients.map(c=>`<option value="${c.name}">`).join('');}
+async function uploadPdfAndGetFilename(orderId){const pdfInput=document.getElementById('pdfFileInput');const file=pdfInput.files[0];if(!file)return null;const formData=new FormData();formData.append('pdf',file);try{const response=await fetch('/api/upload/pdf/'+orderId,{method:'POST',body:formData});if(!response.ok)throw new Error('Ошибка загрузки');const data=await response.json();return{filename:data.filename,originalname:data.originalname};}catch(err){console.error(err);alert('Не удалось загрузить PDF на сервер');return undefined;}}
+document.getElementById('orderForm').addEventListener('submit',async function(e){
+e.preventDefault();
+const id=document.getElementById('editId').value;const orderId=id?parseInt(id):Date.now();
+const uploadedPdf=await uploadPdfAndGetFilename(orderId);if(uploadedPdf===undefined)return;
+const order={
+id:orderId,
+techcard_no:document.getElementById('techcardNo').value,
+manager:document.getElementById('managerSelect').value,
+customer:document.getElementById('customerInput').value,
+product_name:document.getElementById('productNameInput').value,
+description:document.getElementById('descriptionInput').value,
+print_type:document.querySelector('input[name="print_type"]:checked').value,
+material_type:matRoll.checked?'roll':'sheet',
+paper_type:document.getElementById('paperType').value,
+order_qty:getCleanNumber('orderQty'),
+make_ready:getCleanNumber('makeReady'),
+size_width:getCleanNumber('sizeWidth'),
+size_length:getCleanNumber('sizeLength'),
+roll_width:getCleanNumber('rollWidth')||null,
+flot_length:getCleanNumber('flotLength')||null,
+sheet_width:getCleanNumber('sheetWidth')||null,
+sheet_length:getCleanNumber('sheetLength')||null,
+stripes:getCleanNumber('stripes'),
+gsm:getCleanNumber('gsm'),
+color:document.getElementById('color').value,
+print_sheets:currentTotalSheets,
+weight_kg:currentWeightKg,
+divide_by_two:divideByTwo,
+transfer_active:transferActive,
+pdf_filename:uploadedPdf?uploadedPdf.filename:(document.getElementById('pdfFileNameInput').value.trim()||null),
+pdf_originalname:uploadedPdf?uploadedPdf.originalname:null,
+screenshot_base64:document.getElementById('screenshotData').value||null,
+services:[]
+};
+for(let key in SERVICE_TYPES){const chk=document.getElementById('chk_'+key);if(chk&&chk.checked){if(key==='cutting'){const type=document.getElementById('cutting_type').value;if(type==='pre'){const w=parseFloat(document.getElementById('cut_pre_width').value)||0;const l=parseFloat(document.getElementById('cut_pre_length').value)||0;order.services.push({name:'cutting',type:'до печать',width:w,length:l});}else if(type==='post'){const w=parseFloat(document.getElementById('cut_post_width').value)||0;const l=parseFloat(document.getElementById('cut_post_length').value)||0;order.services.push({name:'cutting',type:'пост печать',width:w,length:l});}else if(type==='both'){const wPre=parseFloat(document.getElementById('cut_both_pre_width').value)||0;const lPre=parseFloat(document.getElementById('cut_both_pre_length').value)||0;const wPost=parseFloat(document.getElementById('cut_both_post_width').value)||0;const lPost=parseFloat(document.getElementById('cut_both_post_length').value)||0;order.services.push({name:'cutting',type:'оба',details:[{type:'до печать',width:wPre,length:lPre},{type:'пост печать',width:wPost,length:lPost}]});}}else{const sel=document.getElementById('sel_'+key);order.services.push({name:key,type:sel?sel.value:''});}}}
+let orders=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');const index=orders.findIndex(o=>o.id===order.id);if(index>=0)orders[index]=order;else orders.push(order);localStorage.setItem(ORDERS_KEY,JSON.stringify(orders));
+loadOrders();showList();alert('Заказ сохранён!');
+});
+loadOrders();loadClients();buildServicesBlock();recalc();renderOrders();syncButtonStates();
+});
 </script>
-<script src="js/role-settings.js"></script>
+<script src="js/auth-check.js"></script>
+<script src="js/nav-filter.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Отправка в цех — PrintMax</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/otpCex.css">
+</head>
+<body>
+<button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="app-container">
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header"><div class="logo-small"><div class="logo-icon">PM</div><span>PrintMax</span></div></div>
+        <ul class="nav-menu">
+            <li><a href="index.html">📊 Главная</a></li>
+            <li><a href="index2.html">📊 Главная</a></li>
+            <li><a href="orders.html">📋 Заказы контрагентов</a></li>
+            <li><a href="production.html">🏭 Заказы на производство</a></li>
+            <li><a href="invoices.html">📦 Накладные</a></li>
+            <li><a href="clients.html">👥 Контрагенты</a></li>
+            <li><a href="products.html">📁 Продукты</a></li>
+            <li><a href="reconciliations.html">📑 Акты сверки</a></li>
+            <li><a href="backups.html">🗑️ Резервные копии</a></li>
+            <li><a href="otpCex.html" class="active">⚙️ На производство</a></li>
+            <li><a href="texKarta.html">⚙️ Техкарта</a></li>
+            <li><a href="statuses.html">📊 Статусы</a></li>
+            <li class="nav-group" id="skladNavGroup">
+                <a href="#" class="nav-group-toggle" onclick="event.preventDefault(); this.closest('li').classList.toggle('open');">
+                    <span>🏬 Склад</span><span class="nav-caret">▾</span>
+                </a>
+                <ul class="nav-submenu">
+                    <li><a href="sklad.html">📋 Склад заказов</a></li>
+                    <li><a href="rashodniki.html">🧪 Расходники</a></li>
+                    <li><a href="bumaga.html">📄 Бумага</a></li>
+                    <li><a href="instrumenty.html">🛠️ Инструменты</a></li>
+                    <li><a href="palety.html">🪵 Палеты</a></li>
+                </ul>
+            </li>
+            <li><a href="settings.html">⚙️ Настройки</a></li>
+        </ul>
+    </nav>
+    <main class="main-content">
+        <div class="top-bar"><h1>Отправка в цех</h1></div>
+        <div class="content-section">
+            <div id="listContainer" class="active">
+                <div class="orders-list">
+                    <div class="header-row">
+                        <h2>Производственные заказы</h2>
+                        <div class="controls">
+                            <input type="text" id="searchOrders" placeholder="🔍 Поиск..." oninput="renderOrders()">
+                            <button class="btn btn-primary" onclick="showForm()">➕ Создать заказ</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>№ техкарты</th><th>Заказчик</th><th>Продукция</th><th>Менеджер</th><th>Кол-во</th><th>Тираж</th></tr></thead>
+                            <tbody id="ordersBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="pagination" class="pagination"></div>
+                </div>
+            </div>
+            <div id="formContainer">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h2 id="formTitle" style="margin:0; font-size:22px; color:var(--text-primary);">Создание заказа</h2>
+                    <button class="btn btn-secondary" onclick="showList()">← Вернуться к списку</button>
+                </div>
+                <form id="orderForm">
+                    <input type="hidden" name="edit_id" id="editId" value="">
+                    <div class="form-row">
+                        <div class="form-group"><label>Техкарта №</label><input type="text" name="techcard_no" id="techcardNo" readonly></div>
+                        <div class="form-group"><label>Менеджер</label><select name="manager" id="managerSelect" required><option value="Муниса">Муниса</option><option value="Расул">Расул</option><option value="Руслан">Руслан</option></select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Заказчик</label><div class="customer-autocomplete"><input type="text" id="customerInput" name="customer" placeholder="Введите название контрагента..." list="customerList" required><datalist id="customerList"></datalist></div></div>
+                        <div class="form-group"><label>Название продукции</label><input type="text" name="product_name" id="productNameInput" required></div>
+                    </div>
+                    <div class="form-group"><label>Примечание</label><textarea name="description" id="descriptionInput" rows="2"></textarea></div>
+                    <div class="form-columns">
+                        <div class="form-column">
+                            <div class="form-column-title">До печать и печать</div>
+                            <div class="choice-strip">
+                                <div class="choice-cards">
+                                    <div class="choice-card"><input type="radio" name="print_type" value="A1" id="printA1" checked><label for="printA1">🖨️ Печать А1</label></div>
+                                    <div class="choice-card"><input type="radio" name="print_type" value="A2" id="printA2"><label for="printA2">🖨️ Печать А2</label></div>
+                                </div>
+                            </div>
+                            <div class="choice-strip">
+                                <div class="form-column-title" style="margin-top:0; margin-bottom:10px;">Информация о материале</div>
+                                <div class="choice-cards" id="materialTypeCards">
+                                    <div class="choice-card"><input type="radio" name="material_type" value="roll" id="matRoll" checked><label for="matRoll">📜 Рулон</label></div>
+                                    <div class="choice-card"><input type="radio" name="material_type" value="sheet" id="matSheet"><label for="matSheet">📄 Листовой</label></div>
+                                </div>
+                                <div id="rollFields" class="material-fields-row">
+                                    <div class="field-group"><label for="flotLength">Формат рулона</label><input type="text" inputmode="numeric" class="masked-number" id="flotLength" placeholder="мм"></div>
+                                    <div class="field-group"><label for="rollWidth">Формат флоторезки</label><input type="text" inputmode="numeric" class="masked-number" id="rollWidth" placeholder="мм"></div>
+                                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-divide-toggle" id="divideToggleBtn">½ формата</button></div>
+                                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-transfer" id="transferFormatBtn">Передать формат</button></div>
+                                </div>
+                                <div id="sheetFields" class="material-fields-row" style="display:none;">
+                                    <div class="field-group"><label for="sheetLength">Длина листа</label><input type="text" inputmode="numeric" class="masked-number" id="sheetLength" placeholder="мм"></div>
+                                    <div class="field-group"><label for="sheetWidth">Ширина листа</label><input type="text" inputmode="numeric" class="masked-number" id="sheetWidth" placeholder="мм"></div>
+                                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-divide-toggle" id="divideToggleBtnSheet">½ формата</button></div>
+                                    <div class="field-group"><label>&nbsp;</label><button type="button" class="btn-material btn-transfer" id="transferFormatBtnSheet">Передать формат</button></div>
+                                </div>
+                            </div>
+                            <div class="calc-mode-switch"><label><input type="radio" name="calc_mode" value="warehouse" checked> Параметры</label></div>
+                            <table class="data-table">
+                                <tr><td>Тип материала</td><td><select name="paper_type" id="paperType" required><option value="картон">картон</option><option value="Меловка">Меловка</option><option value="Офсет">Офсет</option></select></td></tr>
+                                <tr><td>гр/м²</td><td><input type="text" inputmode="numeric" class="masked-number" id="gsm" required></td></tr>
+                                <tr><td>Печатный формат (Ширина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeWidth" required></td></tr>
+                                <tr><td>Печатный формат (Длина)</td><td><input type="text" inputmode="numeric" class="masked-number" id="sizeLength" required></td></tr>
+                                <tr><td>Кол-во продукции</td><td><input type="text" inputmode="numeric" class="masked-number" id="orderQty" required></td></tr>
+                                <tr><td>Доля на печатном листе</td><td><input type="text" inputmode="numeric" class="masked-number" id="stripes" required></td></tr>
+                                <tr><td>Приладка</td><td><input type="text" inputmode="numeric" class="masked-number" id="makeReady" required></td></tr>
+                                <tr><td>Красочность</td><td><input type="text" name="color" id="color" required></td></tr>
+                                <tr>
+                                    <td>Тираж листов</td>
+                                    <td>
+                                        <div class="print-sheets-container">
+                                            <div class="print-sheets-info">
+                                                <span>Тираж листов: <strong id="printSheetsAuto"></strong></span>
+                                                <span>Вес заказа: <strong id="weightResult">— кг</strong></span>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="print_sheets" id="printSheetsHidden" value="0">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="form-column">
+                            <div class="form-column-title">Пост Печать</div>
+                            <div class="service-grid" id="servicesContainer"></div>
+                            <div class="pdf-block">
+                                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                    <label class="btn btn-secondary pdf-select-btn" for="pdfFileInput" style="cursor:pointer;">📎 Выбрать PDF</label>
+                                    <input type="file" id="pdfFileInput" accept=".pdf" class="hidden-input">
+                                    <div class="pdf-filename-input"><input type="text" id="pdfFileNameInput" name="pdf_filename" placeholder="Имя PDF-файла (выберите файл)" readonly></div>
+                                    <button type="button" id="clearPdfBtn" class="btn btn-secondary" style="display:none;">✕</button>
+                                </div>
+                            </div>
+                            <div class="screenshot-block">
+                                <div style="font-size:13px; font-weight:500; margin-bottom:6px;">🖼️ Скриншот (Ctrl+V)</div>
+                                <div id="screenshotDropArea" class="screenshot-drop-area" tabindex="0">
+                                    <div class="placeholder">
+                                        <div style="font-size:32px; margin-bottom:8px;">📷</div>
+                                        <div>Вставьте скриншот из буфера обмена</div>
+                                        <div class="key-hint">Ctrl + V</div>
+                                    </div>
+                                    <img id="screenshotPreview" alt="Скриншот">
+                                    <button type="button" id="clearScreenshotBtn" class="clear-screenshot" title="Удалить">✕</button>
+                                </div>
+                                <input type="hidden" id="screenshotData" name="screenshot_base64" value="">
+                                <div class="form-actions" style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:20px;">
+                                    <button type="button" class="btn btn-secondary" onclick="showList()">Отмена</button>
+                                    <button type="submit" class="btn btn-primary">📤 Отправить в Тех Карту</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');}
+(function(){document.body.classList.remove('dark-theme','dark');document.body.removeAttribute('data-theme');})();
+document.addEventListener('DOMContentLoaded',function(){
+const ORDERS_KEY='pp_orders';
+let allOrders=[];
+let currentPage=1;
+const perPage=100;
+function loadOrders(){try{const raw=localStorage.getItem(ORDERS_KEY);allOrders=raw?JSON.parse(raw):[];allOrders.sort((a,b)=>b.id-a.id);}catch(e){console.error(e);allOrders=[];}}
+function saveOrders(orders){localStorage.setItem(ORDERS_KEY,JSON.stringify(orders));}
+function showList(){document.getElementById('listContainer').classList.add('active');document.getElementById('formContainer').classList.remove('active');renderOrders();}
+function showForm(editData){document.getElementById('listContainer').classList.remove('active');document.getElementById('formContainer').classList.add('active');if(editData){fillForm(editData);document.getElementById('formTitle').textContent='Редактирование заказа';}else{resetForm();document.getElementById('formTitle').textContent='Создание заказа';}}
+window.showList=showList;window.showForm=showForm;
+function formatWithSpaces(value){let digits=value.replace(/\D/g,'');if(digits==='')return'';return digits.replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+function applyMask(input){if(!input)return;let start=input.selectionStart;let oldVal=input.value;let newVal=formatWithSpaces(oldVal);if(newVal!==oldVal){let addedSpaces=0;for(let i=0;i<start;i++){if(oldVal[i]===' '&&newVal[i]!==' ')addedSpaces--;else if(oldVal[i]!==' '&&newVal[i]===' ')addedSpaces++;}input.value=newVal;let newPos=start+addedSpaces;if(newPos<0)newPos=0;if(newPos>newVal.length)newPos=newVal.length;input.setSelectionRange(newPos,newPos);}}
+function setupMasks(){document.querySelectorAll('.masked-number').forEach(inp=>{inp.removeEventListener('input',maskHandler);inp.addEventListener('input',maskHandler);});}
+function maskHandler(e){applyMask(e.target);recalc();}
+function getCleanNumber(id){let el=document.getElementById(id);if(!el)return 0;return parseFloat(el.value.replace(/\s/g,''))||0;}
+const matRoll=document.getElementById('matRoll');const matSheet=document.getElementById('matSheet');const rollFields=document.getElementById('rollFields');const sheetFields=document.getElementById('sheetFields');
+const transferBtn=document.getElementById('transferFormatBtn');const divideToggleBtn=document.getElementById('divideToggleBtn');
+const transferBtnSheet=document.getElementById('transferFormatBtnSheet');const divideToggleBtnSheet=document.getElementById('divideToggleBtnSheet');
+let divideByTwo=false;let transferActive=false;
+function syncButtonStates(){if(divideByTwo){divideToggleBtn.classList.add('active');divideToggleBtnSheet.classList.add('active');transferBtn.classList.remove('active');transferBtnSheet.classList.remove('active');}else if(transferActive){divideToggleBtn.classList.remove('active');divideToggleBtnSheet.classList.remove('active');transferBtn.classList.add('active');transferBtnSheet.classList.add('active');}else{divideToggleBtn.classList.remove('active');divideToggleBtnSheet.classList.remove('active');transferBtn.classList.remove('active');transferBtnSheet.classList.remove('active');}}
+function toggleDivideState(){divideByTwo=!divideByTwo;if(divideByTwo){transferActive=false;}syncButtonStates();}
+function activateTransfer(){transferActive=true;divideByTwo=false;syncButtonStates();}
+divideToggleBtn.addEventListener('click',toggleDivideState);divideToggleBtnSheet.addEventListener('click',toggleDivideState);
+function toggleMaterialFields(){if(matRoll.checked){rollFields.style.display='flex';sheetFields.style.display='none';}else{rollFields.style.display='none';sheetFields.style.display='flex';}syncButtonStates();}
+matRoll.addEventListener('change',toggleMaterialFields);matSheet.addEventListener('change',toggleMaterialFields);
+function transferFormat(){const sizeWidth=document.getElementById('sizeWidth');const sizeLength=document.getElementById('sizeLength');let w=0,l=0;if(matRoll.checked){w=getCleanNumber('flotLength');l=getCleanNumber('rollWidth');}else{w=getCleanNumber('sheetWidth');l=getCleanNumber('sheetLength');}sizeWidth.value=formatWithSpaces(Math.round(w).toString());sizeLength.value=formatWithSpaces(Math.round(l).toString());recalc();}
+transferBtn.addEventListener('click',function(e){activateTransfer();transferFormat();});
+transferBtnSheet.addEventListener('click',function(e){activateTransfer();transferFormat();});
+function fillForm(order){
+document.getElementById('editId').value=order.id;
+document.getElementById('techcardNo').value=order.techcard_no||'';
+document.getElementById('managerSelect').value=order.manager||'Муниса';
+document.getElementById('customerInput').value=order.customer||'';
+document.getElementById('productNameInput').value=order.product_name||'';
+document.getElementById('descriptionInput').value=order.description||'';
+document.querySelector('input[name="print_type"][value="'+(order.print_type||'A1')+'"]').checked=true;
+const materialType=order.material_type||'roll';
+document.getElementById(materialType==='roll'?'matRoll':'matSheet').checked=true;toggleMaterialFields();
+document.getElementById('paperType').value=order.paper_type||'картон';
+setMaskedValue('gsm',order.gsm);setMaskedValue('orderQty',order.order_qty);setMaskedValue('sizeWidth',order.size_width);
+setMaskedValue('sizeLength',order.size_length);setMaskedValue('makeReady',order.make_ready);setMaskedValue('stripes',order.stripes);
+setMaskedValue('rollWidth',order.roll_width);setMaskedValue('flotLength',order.flot_length);setMaskedValue('sheetWidth',order.sheet_width);
+setMaskedValue('sheetLength',order.sheet_length);document.getElementById('color').value=order.color||'';
+divideByTwo=order.divide_by_two===true;transferActive=order.transfer_active===true;syncButtonStates();
+if(order.pdf_filename){document.getElementById('pdfFileNameInput').value=order.pdf_originalname||order.pdf_filename;document.getElementById('clearPdfBtn').style.display='inline-block';}
+if(order.screenshot_base64){document.getElementById('screenshotData').value=order.screenshot_base64;document.getElementById('screenshotPreview').src=order.screenshot_base64;const drop=document.getElementById('screenshotDropArea');drop.classList.add('has-image');const placeholder=drop.querySelector('.placeholder');if(placeholder)placeholder.style.display='none';}
+const services=order.services||[];
+document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb=>{cb.checked=false;const optionsDiv=cb.closest('.service-item').querySelector('.service-options');if(optionsDiv)optionsDiv.style.display='none';});
+services.forEach(s=>{const cb=document.getElementById('chk_'+s.name);if(cb){cb.checked=true;const item=cb.closest('.service-item');const optionsDiv=item.querySelector('.service-options');if(optionsDiv)optionsDiv.style.display='block';
+if(s.name==='cutting'){const sel=document.getElementById('cutting_type');if(sel){if(s.type==='до печать')sel.value='pre';else if(s.type==='пост печать')sel.value='post';else if(s.type==='оба')sel.value='both';sel.dispatchEvent(new Event('change'));
+if(s.type==='до печать'){document.getElementById('cut_pre_width').value=s.width||'';document.getElementById('cut_pre_length').value=s.length||'';}
+else if(s.type==='пост печать'){document.getElementById('cut_post_width').value=s.width||'';document.getElementById('cut_post_length').value=s.length||'';}
+else if(s.type==='оба'&&s.details){const pre=s.details.find(d=>d.type==='до печать');const post=s.details.find(d=>d.type==='пост печать');if(pre){document.getElementById('cut_both_pre_width').value=pre.width||'';document.getElementById('cut_both_pre_length').value=pre.length||'';}if(post){document.getElementById('cut_both_post_width').value=post.width||'';document.getElementById('cut_both_post_length').value=post.length||'';}}}
+}else if(s.name!=='flot_cutting'){const sel=document.getElementById('sel_'+s.name);if(sel)sel.value=s.type||'';}}});
+recalc();
+}
+function setMaskedValue(id,value){const el=document.getElementById(id);if(el){el.value=value!==undefined&&value!==null?formatWithSpaces(String(value)):'';}}
+function resetForm(){
+document.getElementById('editId').value='';document.getElementById('techcardNo').value=allOrders.length+1;
+document.getElementById('managerSelect').value='Муниса';document.getElementById('customerInput').value='';
+document.getElementById('productNameInput').value='';document.getElementById('descriptionInput').value='';
+document.getElementById('printA1').checked=true;document.getElementById('matRoll').checked=true;toggleMaterialFields();
+document.getElementById('paperType').value='картон';setMaskedValue('gsm','');setMaskedValue('orderQty','');
+setMaskedValue('sizeWidth','');setMaskedValue('sizeLength','');setMaskedValue('makeReady','');setMaskedValue('stripes','');
+setMaskedValue('rollWidth','');setMaskedValue('flotLength','');setMaskedValue('sheetWidth','');setMaskedValue('sheetLength','');
+document.getElementById('color').value='';document.getElementById('pdfFileNameInput').value='';
+document.getElementById('clearPdfBtn').style.display='none';document.getElementById('pdfFileInput').value='';
+document.getElementById('screenshotData').value='';document.getElementById('screenshotPreview').src='';
+const drop=document.getElementById('screenshotDropArea');drop.classList.remove('has-image');const placeholder=drop.querySelector('.placeholder');if(placeholder)placeholder.style.display='block';
+document.querySelectorAll('#servicesContainer .service-item input[type="checkbox"]').forEach(cb=>{cb.checked=false;const optionsDiv=cb.closest('.service-item').querySelector('.service-options');if(optionsDiv)optionsDiv.style.display='none';});
+document.querySelectorAll('#cuttingDetails input[type="number"]').forEach(inp=>inp.value='');
+divideByTwo=false;transferActive=false;syncButtonStates();recalc();
+}
+window.editOrder=function(id){const order=allOrders.find(o=>o.id===id);if(order){showForm(order);}};
+window.deleteOrder=function(id){if(confirm('Вы уверены, что хотите удалить этот заказ?')){let orders=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');orders=orders.filter(o=>o.id!==id);localStorage.setItem(ORDERS_KEY,JSON.stringify(orders));loadOrders();renderOrders();alert('Заказ удалён!');}};
+function renderOrders(){
+const search=document.getElementById('searchOrders').value.toLowerCase().trim();let filtered=allOrders;
+if(search){filtered=filtered.filter(o=>{const fields=[o.techcard_no,o.customer,o.product_name,o.manager].map(f=>String(f||'').toLowerCase());return fields.some(f=>f.includes(search));});}
+const total=filtered.length;const totalPages=Math.ceil(total/perPage)||1;if(currentPage>totalPages)currentPage=totalPages;
+const start=(currentPage-1)*perPage;const pageItems=filtered.slice(start,start+perPage);const tbody=document.getElementById('ordersBody');
+const editModeEnabled=(window.PPSettings?PPSettings.get('pp_edit_mode_enabled'):localStorage.getItem('pp_edit_mode_enabled')==='true');
+if(pageItems.length===0){tbody.innerHTML='<tr><td colspan="7" class="empty-msg">Нет заказов</td></tr>';}else{
+tbody.innerHTML=pageItems.map(o=>{const formattedNo=String(o.techcard_no||o.id).padStart(3,'0');return`
+<tr>
+<td><strong>${formattedNo}</strong></td>
+<td>${o.customer||''}</td>
+<td>${o.product_name||''}</td>
+<td>${o.manager||''}</td>
+<td>${o.order_qty||''}</td>
+<td><strong>${Math.ceil(o.print_sheets||0).toLocaleString('ru-RU')}</strong></td>
+${editModeEnabled?`
+<td>
+<div class="actions-cell">
+<button class="btn-action btn-edit" onclick="editOrder(${o.id})">✏️ Изменить</button>
+<button class="btn-action btn-delete" onclick="deleteOrder(${o.id})">🗑️ Удалить</button>
+</div>
+</td>
+`:'<td></td>'}
+</tr>`;}).join('');
+}
+const pag=document.getElementById('pagination');if(totalPages<=1){pag.innerHTML='';return;}
+let pagHTML=`<button onclick="goPage(1)" ${currentPage===1?'disabled':''}>«</button><button onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+for(let i=1;i<=totalPages;i++){if(i===currentPage||i===1||i===totalPages||Math.abs(i-currentPage)<=2){pagHTML+=`<button onclick="goPage(${i})" class="${i===currentPage?'active':''}">${i}</button>`;}else if(i===currentPage-3||i===currentPage+3){pagHTML+='<button disabled>…</button>';}}
+pagHTML+=`<button onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button><button onclick="goPage(${totalPages})" ${currentPage===totalPages?'disabled':''}>»</button>`;
+pag.innerHTML=pagHTML;
+}
+window.goPage=function(p){currentPage=p;renderOrders();};
+const SERVICE_TYPES={
+vd_lak:['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый'],
+lamination:['Глянцевый','Матовый','Золота','Серебро'],
+embossing:['Золота','Серебро','Голограмма'],
+die_cut:['автомат'],
+kongrev:['автомат'],
+gluing:['1','2','3','4 и более'],
+cutting:[],
+uv_lak:['Сплошной+Матовый','Сплошной+Глянцевый','Выборочный+Матовый','Выборочный+Глянцевый']
+};
+const SERVICE_LABELS={vd_lak:'ВД лак',lamination:'Ламинация',embossing:'Тиснение',cutting:'Резка',gluing:'Склейка',uv_lak:'УФ лак',die_cut:'Высечка',kongrev:'Конгрев'};
+function buildServicesBlock(){const container=document.getElementById('servicesContainer');container.innerHTML='';
+for(let key in SERVICE_TYPES){const itemDiv=document.createElement('div');itemDiv.className='service-item';const mainRow=document.createElement('div');mainRow.className='service-main';const cb=document.createElement('input');cb.type='checkbox';cb.id='chk_'+key;cb.value=key;const lbl=document.createElement('label');lbl.htmlFor='chk_'+key;lbl.textContent=SERVICE_LABELS[key];mainRow.appendChild(cb);mainRow.appendChild(lbl);itemDiv.appendChild(mainRow);const optionsDiv=document.createElement('div');optionsDiv.className='service-options';optionsDiv.style.display='none';
+if(key==='cutting'){optionsDiv.innerHTML=`<select id="cutting_type" class="cutting-select"><option value="pre" selected>до печать</option><option value="post">пост печать</option><option value="both">оба</option></select><div id="fields_pre" class="cutting-fields" style="display:flex;"><input type="number" id="cut_pre_width" placeholder="Ширина" min="0"><input type="number" id="cut_pre_length" placeholder="Длина" min="0"></div><div id="fields_post" class="cutting-fields" style="display:none;"><input type="number" id="cut_post_width" placeholder="Ширина" min="0"><input type="number" id="cut_post_length" placeholder="Длина" min="0"></div><div id="fields_both" class="cutting-fields cutting-both" style="display:none;"><div class="cutting-row-inline"><label>До печать:</label><input type="number" id="cut_both_pre_width" placeholder="Ширина" min="0"><label>До печать:</label><input type="number" id="cut_both_pre_length" placeholder="Длина" min="0"></div><div class="cutting-row-inline"><label>Пост печать:</label><input type="number" id="cut_both_post_width" placeholder="Ширина" min="0"><label>Пост печать:</label><input type="number" id="cut_both_post_length" placeholder="Длина" min="0"></div></div>`;}
+else{const selId='sel_'+key;let optionsHTML=`<select id="${selId}">`;SERVICE_TYPES[key].forEach(v=>{optionsHTML+=`<option value="${v}">${v}</option>`;});optionsHTML+='</select>';optionsDiv.innerHTML=optionsHTML;}
+itemDiv.appendChild(optionsDiv);
+cb.addEventListener('change',function(){if(this.checked){if(key==='cutting'){optionsDiv.style.display='block';document.getElementById('cutting_type').dispatchEvent(new Event('change'));}else{optionsDiv.style.display='block';}}else{optionsDiv.style.display='none';}recalc();});
+if(key==='cutting'){optionsDiv.querySelector('select').addEventListener('change',function(){const val=this.value;document.getElementById('fields_pre').style.display=(val==='pre')?'flex':'none';document.getElementById('fields_post').style.display=(val==='post')?'flex':'none';document.getElementById('fields_both').style.display=(val==='both')?'flex':'none';});}
+container.appendChild(itemDiv);}}
+const pdfFileInput=document.getElementById('pdfFileInput');const pdfFileNameInput=document.getElementById('pdfFileNameInput');const clearPdfBtn=document.getElementById('clearPdfBtn');
+if(pdfFileInput&&pdfFileNameInput){pdfFileInput.addEventListener('change',function(e){const file=e.target.files[0];if(!file)return;pdfFileNameInput.value=file.name;if(clearPdfBtn)clearPdfBtn.style.display='inline-block';});}
+if(clearPdfBtn){clearPdfBtn.addEventListener('click',function(){if(pdfFileInput)pdfFileInput.value='';if(pdfFileNameInput)pdfFileNameInput.value='';clearPdfBtn.style.display='none';});}
+const dropArea=document.getElementById('screenshotDropArea');const previewImg=document.getElementById('screenshotPreview');const screenshotData=document.getElementById('screenshotData');const clearScreenshotBtn=document.getElementById('clearScreenshotBtn');
+function handlePaste(e){const items=(e.clipboardData||e.originalEvent.clipboardData).items;for(let item of items){if(item.type.startsWith('image/')){const blob=item.getAsFile();const reader=new FileReader();reader.onload=function(ev){const base64=ev.target.result;screenshotData.value=base64;previewImg.src=base64;dropArea.classList.add('has-image');if(clearScreenshotBtn)clearScreenshotBtn.style.display='flex';const placeholder=dropArea.querySelector('.placeholder');if(placeholder)placeholder.style.display='none';};reader.readAsDataURL(blob);e.preventDefault();break;}}}
+document.addEventListener('paste',function(e){const target=e.target;if(target.tagName==='INPUT'||target.tagName==='TEXTAREA'){if(target.closest('#screenshotDropArea')){handlePaste(e);}return;}handlePaste(e);});
+dropArea.addEventListener('dragover',function(e){e.preventDefault();dropArea.classList.add('dragover');});
+dropArea.addEventListener('dragleave',function(e){dropArea.classList.remove('dragover');});
+dropArea.addEventListener('drop',function(e){e.preventDefault();dropArea.classList.remove('dragover');const files=e.dataTransfer.files;if(files.length>0&&files[0].type.startsWith('image/')){const reader=new FileReader();reader.onload=function(ev){const base64=ev.target.result;screenshotData.value=base64;previewImg.src=base64;dropArea.classList.add('has-image');if(clearScreenshotBtn)clearScreenshotBtn.style.display='flex';const placeholder=dropArea.querySelector('.placeholder');if(placeholder)placeholder.style.display='none';};reader.readAsDataURL(files[0]);}});
+if(clearScreenshotBtn){clearScreenshotBtn.addEventListener('click',function(){screenshotData.value='';previewImg.src='';dropArea.classList.remove('has-image');clearScreenshotBtn.style.display='none';const placeholder=dropArea.querySelector('.placeholder');if(placeholder)placeholder.style.display='block';});}
+let currentWeightKg=0,currentTotalSheets=0;
+function recalc(){const orderQty=getCleanNumber('orderQty');const makeReady=getCleanNumber('makeReady');const stripes=getCleanNumber('stripes');const width=getCleanNumber('sizeWidth');const length=getCleanNumber('sizeLength');const gsm=getCleanNumber('gsm');let totalSheets=0;if(stripes>0)totalSheets=(orderQty/stripes)+makeReady;currentTotalSheets=Math.ceil(totalSheets);let weightKg=0;if(width>0&&length>0&&gsm>0&&totalSheets>0){weightKg=(width*length*gsm*totalSheets)/1_000_000_000;}currentWeightKg=weightKg;updateUI();}
+function updateUI(){document.getElementById('printSheetsHidden').value=currentTotalSheets;document.getElementById('printSheetsAuto').textContent=currentTotalSheets>0?currentTotalSheets.toLocaleString('ru-RU'):'';const wEl=document.getElementById('weightResult');if(wEl){if(currentWeightKg<=0)wEl.textContent='— кг';else wEl.textContent=Math.round(currentWeightKg).toLocaleString('ru-RU')+' кг';}}
+['orderQty','makeReady','stripes','sizeWidth','sizeLength','gsm','rollWidth','flotLength','sheetWidth','sheetLength'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',recalc);});
+setupMasks();recalc();
+function loadClients(){const datalist=document.getElementById('customerList');let clients=[];try{clients=JSON.parse(localStorage.getItem('pp_clients')||'[]');}catch(e){}datalist.innerHTML=clients.map(c=>`<option value="${c.name}">`).join('');}
+async function uploadPdfAndGetFilename(orderId){const pdfInput=document.getElementById('pdfFileInput');const file=pdfInput.files[0];if(!file)return null;const formData=new FormData();formData.append('pdf',file);try{const response=await fetch('/api/upload/pdf/'+orderId,{method:'POST',body:formData});if(!response.ok)throw new Error('Ошибка загрузки');const data=await response.json();return{filename:data.filename,originalname:data.originalname};}catch(err){console.error(err);alert('Не удалось загрузить PDF на сервер');return undefined;}}
+document.getElementById('orderForm').addEventListener('submit',async function(e){
+e.preventDefault();
+const id=document.getElementById('editId').value;const orderId=id?parseInt(id):Date.now();
+const uploadedPdf=await uploadPdfAndGetFilename(orderId);if(uploadedPdf===undefined)return;
+const order={
+id:orderId,
+techcard_no:document.getElementById('techcardNo').value,
+manager:document.getElementById('managerSelect').value,
+customer:document.getElementById('customerInput').value,
+product_name:document.getElementById('productNameInput').value,
+description:document.getElementById('descriptionInput').value,
+print_type:document.querySelector('input[name="print_type"]:checked').value,
+material_type:matRoll.checked?'roll':'sheet',
+paper_type:document.getElementById('paperType').value,
+order_qty:getCleanNumber('orderQty'),
+make_ready:getCleanNumber('makeReady'),
+size_width:getCleanNumber('sizeWidth'),
+size_length:getCleanNumber('sizeLength'),
+roll_width:getCleanNumber('rollWidth')||null,
+flot_length:getCleanNumber('flotLength')||null,
+sheet_width:getCleanNumber('sheetWidth')||null,
+sheet_length:getCleanNumber('sheetLength')||null,
+stripes:getCleanNumber('stripes'),
+gsm:getCleanNumber('gsm'),
+color:document.getElementById('color').value,
+print_sheets:currentTotalSheets,
+weight_kg:currentWeightKg,
+divide_by_two:divideByTwo,
+transfer_active:transferActive,
+pdf_filename:uploadedPdf?uploadedPdf.filename:(document.getElementById('pdfFileNameInput').value.trim()||null),
+pdf_originalname:uploadedPdf?uploadedPdf.originalname:null,
+screenshot_base64:document.getElementById('screenshotData').value||null,
+services:[]
+};
+for(let key in SERVICE_TYPES){const chk=document.getElementById('chk_'+key);if(chk&&chk.checked){if(key==='cutting'){const type=document.getElementById('cutting_type').value;if(type==='pre'){const w=parseFloat(document.getElementById('cut_pre_width').value)||0;const l=parseFloat(document.getElementById('cut_pre_length').value)||0;order.services.push({name:'cutting',type:'до печать',width:w,length:l});}else if(type==='post'){const w=parseFloat(document.getElementById('cut_post_width').value)||0;const l=parseFloat(document.getElementById('cut_post_length').value)||0;order.services.push({name:'cutting',type:'пост печать',width:w,length:l});}else if(type==='both'){const wPre=parseFloat(document.getElementById('cut_both_pre_width').value)||0;const lPre=parseFloat(document.getElementById('cut_both_pre_length').value)||0;const wPost=parseFloat(document.getElementById('cut_both_post_width').value)||0;const lPost=parseFloat(document.getElementById('cut_both_post_length').value)||0;order.services.push({name:'cutting',type:'оба',details:[{type:'до печать',width:wPre,length:lPre},{type:'пост печать',width:wPost,length:lPost}]});}}else{const sel=document.getElementById('sel_'+key);order.services.push({name:key,type:sel?sel.value:''});}}}
+let orders=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');const index=orders.findIndex(o=>o.id===order.id);if(index>=0)orders[index]=order;else orders.push(order);localStorage.setItem(ORDERS_KEY,JSON.stringify(orders));
+loadOrders();showList();alert('Заказ сохранён!');
+});
+loadOrders();loadClients();buildServicesBlock();recalc();renderOrders();syncButtonStates();
+});
+</script>
 <script src="js/auth-check.js"></script>
 <script src="js/nav-filter.js"></script>
 </body>

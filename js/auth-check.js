@@ -4,7 +4,9 @@
   if (!user || !role) { window.location.href = 'login.html'; return; }
 
   const currentPage = window.location.pathname.split('/').pop().toLowerCase();
-  const stationRule = { allowed: ['texkarta.html', 'settings.html'], defaultRedirect: 'texkarta.html' };
+
+  // Все производственные станции могут смотреть статусы, техкарту и настройки
+  const stationRule = { allowed: ['texkarta.html', 'settings.html', 'statuses.html'], defaultRedirect: 'texkarta.html' };
 
   const ACCESS = {
     manager: {
@@ -20,7 +22,7 @@
     },
     warehouse: {
         allowed: ['sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html',
-                  'palety.html', 'settings.html'],
+                  'palety.html', 'settings.html', 'statuses.html'],
         defaultRedirect: 'sklad.html'
     },
     pechat:           stationRule,

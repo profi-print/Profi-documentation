@@ -10,11 +10,11 @@
         'index2.html', 'settings.html', 'sklad.html', 'rashodniki.html', 'bumaga.html',
         'instrumenty.html', 'palety.html'];
     const allowedForWarehouse = ['sklad.html', 'rashodniki.html', 'bumaga.html', 'instrumenty.html',
-        'palety.html', 'settings.html'];
+        'palety.html', 'settings.html', 'statuses.html'];
 
     const STATION_ROLES = ['pechat', 'flotorezka', 'stp', 'vysechka', 'tisnenie', 'kongrev',
         'uf_lak', 'rezka', 'skleyka', 'lamination', 'tiska', 'manual_work', 'obloj_remove', 'sklad_otgruzka'];
-    const allowedForStation = ['texkarta.html', 'settings.html'];
+    const allowedForStation = ['texkarta.html', 'settings.html', 'statuses.html'];
 
     function allowedListFor(r) {
         if (r === 'designer')  return allowedForDesigner;

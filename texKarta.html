@@ -226,6 +226,7 @@
             const stationConfig = ROLE_STATION_CONFIG[currentRole] || null;
             const isRestrictedRole = !!stationConfig;
 
+            // ===== ОПЕРАТОР СТАНЦИИ =====
             const OPERATORS = (window.PP_OPERATORS && window.PP_OPERATORS[currentRole]) || [];
             function getSelectedOperator() {
                 return sessionStorage.getItem('profitprint_operator') || '';
@@ -250,7 +251,7 @@
                     </div>`;
             }
 
-            // ===== ПРАВИЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ ЭТАПОВ =====
+            // ===== ПРАВИЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ ВСЕХ ЭТАПОВ =====
             const ALL_STAGES_ORDER = [
                 { key: 'flotorezka',   label: 'Флоторезка' },
                 { key: 'stp',          label: 'СТП' },
@@ -290,7 +291,7 @@
                 return stages;
             }
 
-            // ===== TIMELINE =====
+            // ===== TIMELINE (единое хранилище статусов) =====
             function ensureTimeline(order) {
                 if (!order.timeline) order.timeline = {};
                 const stages = getOrderStages(order);
@@ -349,9 +350,7 @@
                 const stages = getOrderStages(order);
                 const idx = stages.findIndex(s => s.key === stageKey);
                 if (idx === -1) return false;
-                // Первые два этапа (Флоторезка и СТП) всегда доступны для старта
-                if (idx === 0 || idx === 1) return true;
-                // Для остальных этапов: предыдущий этап должен быть не в waiting
+                if (idx === 0 || idx === 1) return true; // Флоторезка и СТП всегда доступны
                 const prevStage = stages[idx - 1];
                 const prevStatus = order.timeline?.[prevStage.key]?.status || 'waiting';
                 return prevStatus !== 'waiting';
@@ -459,12 +458,14 @@
                 return orders;
             }
             function saveOrders(orders) { localStorage.setItem('pp_orders', JSON.stringify(orders)); }
+
             function loadWarehouseOrders() {
                 let orders = [];
                 try { const raw = localStorage.getItem('pp_warehouse_orders'); if (raw) orders = JSON.parse(raw); } catch(e){}
                 return orders;
             }
             function saveWarehouseOrders(orders) { localStorage.setItem('pp_warehouse_orders', JSON.stringify(orders)); }
+
             function getRemaining(order) { return Math.max(0, (order.order_qty||0) - (order.received_qty||0)); }
 
             function moveToWarehouseIfComplete(order, orders) {
@@ -833,28 +834,12 @@
                         <td data-label="Кол-во факта печати"></td>
                     </tr></tbody></table></div>` : '';
 
+                // Без дублирования: для сервисных ролей НЕ выводим отдельную таблицу параметров
                 let techOpSectionHTML = '';
                 if (!isRestrictedRole) {
                     techOpSectionHTML = techOpHTML;
-                } else if (stationConfig && stationConfig.type === 'service') {
-                    const keys = stationConfig.serviceKeys || [];
-                    const present = keys.filter(k => serviceMap[k] && serviceMap[k] !== '');
-                    if (present.length === 0) {
-                        techOpSectionHTML = `<div class="section-title">${stationConfig.label}</div><p style="color:var(--text-secondary);font-style:italic;margin:10px 0;">Для этого заказа операция «${stationConfig.label}» не требуется</p>`;
-                    } else {
-                        const blocks = present.map(k => {
-                            let paramVal = serviceMap[k];
-                            if (k==='die_cut'||k==='gluing') paramVal = 'есть';
-                            const planVal = k==='gluing' ? orderQtyFormatted : postPrintSheetsFormatted;
-                            const lbl = STATION_SERVICE_LABELS[k] || k;
-                            return `<div class="section-title" style="font-size:15px;">${lbl}</div>
-                                <div class="table-responsive"><table><thead><tr><th>Параметры</th><th>План</th><th>Факт</th><th>Брак</th></tr></thead><tbody><tr><td data-label="Параметры"><strong>${paramVal}</strong></td><td data-label="План"><strong>${planVal}</strong></td><td data-label="Факт"></td><td data-label="Брак"></td></tr></tbody></table></div>`;
-                        }).join('');
-                        techOpSectionHTML = `<div class="section-title">${stationConfig.label}</div>${blocks}`;
-                    }
                 }
 
-                // ===== ЕДИНЫЙ БЛОК УПРАВЛЕНИЯ ДЛЯ ВСЕХ РОЛЕЙ (БЕЗ ДУБЛИРОВАНИЯ) =====
                 let workSectionsHTML = '';
                 if (stationConfig) {
                     const cfg = stationConfig;
